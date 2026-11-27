@@ -5,7 +5,7 @@
 
 | Learning path | Lab | Status |
 |---|---|---|
-| 1. Implement container application hosting on Azure | Microsoft Learn exercises: [M1](https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/5-exercise-build-manage-acr-tasks) · [M2](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/6-exercise) · [M3](https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/6-exercise-deploy-ai-api-sidecar) | Our lab is being built and tested |
+| 1. Implement container application hosting on Azure | [Build, store and run containers: ACR, App Service, sidecars](lp1-container-hosting/README.md) | ✅ Tested live (bash) |
 | 2. Deploy and manage apps on Azure Container Apps | Microsoft Learn exercises: [M1](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/7-exercise-deploy-backend-api) · [M2](https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/7-exercise-diagnose-fix-failing-deployment) · [M3](https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/7-exercise-configure-autoscaling-keda) · [M4](https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/6-exercise-execute-code-dynamic-session) | Our lab is being built and tested |
 | 3. Deploy and monitor applications on Azure Kubernetes Service | Microsoft Learn exercises: [M1](https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/5-exercise-deploy-ai-api) · [M2](https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/5-exercise-configure-apps) · [M3](https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/5-exercise-troubleshoot-apps) | Our lab is being built and tested |
 | 4. Develop AI solutions with Azure Cosmos DB for NoSQL | Microsoft Learn exercises: [M1](https://learn.microsoft.com/en-us/training/modules/build-query-azure-cosmos-db/5-exercise-build-rag-document-store) · [M2](https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-cosmos-db/6-exercise-build-semantic-search) · [M3](https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/7-exercise-optimize-query-performance) | Our lab is being built and tested |
@@ -19,7 +19,7 @@
 
 - **Cost first.** The README states the official price of every resource and what the lab costs in total.
 - **Clean up.** The last step deletes everything. Soft-deleted resources (Key Vault, App Configuration) are purged too.
-- **Two shells.** `cmd/bash.sh` and `cmd/ps.ps1` have the same named steps (`# @@ step-name`), so the guide can switch between them.
+- **Two shells.** `cmd/bash.sh` and `cmd/ps.ps1` have the same named steps (`# @@ step-name`). Lab READMEs show each step's commands, filled in from those files by `npm run build:labs`, so the README and the scripts never disagree.
 - **Recover from a new terminal.** Each guide has a block that restores your variables and venv without creating new resources.
 - **Tested.** Each lab is run live before release. Anything not yet run is marked as untested.
 

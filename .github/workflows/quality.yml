@@ -30,6 +30,8 @@ jobs:
         run: |
           node tools/build-md.mjs
           git diff --exit-code -- practice/ guides/coverage.md || (echo "::error::Run 'npm run build:md' and commit the result" && exit 1)
+          node tools/build-labs.mjs
+          git diff --exit-code -- labs/ || (echo "::error::Run 'npm run build:labs' and commit the result" && exit 1)
 
   lint:
     name: Markdown and spelling

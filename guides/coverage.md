@@ -4,9 +4,9 @@
 
 | LP | Module | Lesson | Practice | In mocks | Lab |
 |---|---|---|---|---|---|
-| 1 | [Store and manage containers in Azure Container Registry](../content/lessons/lp1m1.md) | ✅ | [27 questions](../practice/lp1m1.md) | 5 | — |
-| 1 | [Deploy containers to Azure App Service](../content/lessons/lp1m2.md) | ✅ | [30 questions](../practice/lp1m2.md) | 5 | — |
-| 1 | [Run sidecar-enabled AI applications on Azure App Service](../content/lessons/lp1m3.md) | ✅ | [27 questions](../practice/lp1m3.md) | 4 | — |
+| 1 | [Store and manage containers in Azure Container Registry](../content/lessons/lp1m1.md) | ✅ | [27 questions](../practice/lp1m1.md) | 5 | [lp1-container-hosting](../labs/lp1-container-hosting/README.md) |
+| 1 | [Deploy containers to Azure App Service](../content/lessons/lp1m2.md) | ✅ | [30 questions](../practice/lp1m2.md) | 5 | [lp1-container-hosting](../labs/lp1-container-hosting/README.md) |
+| 1 | [Run sidecar-enabled AI applications on Azure App Service](../content/lessons/lp1m3.md) | ✅ | [27 questions](../practice/lp1m3.md) | 4 | [lp1-container-hosting](../labs/lp1-container-hosting/README.md) |
 | 2 | [Deploy containers to Azure Container Apps](../content/lessons/lp2m1.md) | ✅ | [19 questions](../practice/lp2m1.md) | 4 | — |
 | 2 | [Manage containers in Azure Container Apps](../content/lessons/lp2m2.md) | ✅ | [21 questions](../practice/lp2m2.md) | 4 | — |
 | 2 | [Scale containers in Azure Container Apps](../content/lessons/lp2m3.md) | ✅ | [18 questions](../practice/lp2m3.md) | 4 | — |
