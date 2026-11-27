@@ -216,6 +216,36 @@ OpenTelemetry components: APIs (interfaces), SDKs (processing, batching, samplin
 
 ## 8. `lp9m1-008`
 
+In the traceparent header 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01, what does the final 01 mean?
+
+- **A.** The trace-context format version
+- **B.** The trace is sampled
+- **C.** The request had one retry
+- **D.** It's the first span in the trace
+
+<details><summary>💡 Hint</summary>
+
+The four fields are version, trace ID, parent span ID, and one set of flags.
+
+</details>
+
+<details><summary>✅ Answer</summary>
+
+**B.** The trace is sampled
+
+- A: The version is the first field, 00.
+- B: Correct. The trace flags field 01 indicates the trace is sampled.
+- C: Retries aren't recorded in traceparent.
+- D: Span position isn't encoded in the header.
+
+traceparent fields: version (00), 32-hex trace ID, 16-hex parent span ID, and trace flags (01 = sampled).
+
+📘 Source: [Explore OpenTelemetry and its role in observability](https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/2-explore-opentelemetry-observability)
+
+</details>
+
+## 9. `lp9m1-009`
+
 Which call initializes OpenTelemetry tracing, metrics and logging to Application Insights in a Python app?
 
 - **A.** span.set_attribute()
@@ -244,7 +274,7 @@ pip install azure-monitor-opentelemetry, then configure_azure_monitor().
 
 </details>
 
-## 9. `lp9m1-009`
+## 10. `lp9m1-010`
 
 Which environment variable should hold the Application Insights connection string in production?
 
@@ -274,7 +304,7 @@ Environment variable is recommended; code-based configuration is least recommend
 
 </details>
 
-## 10. `lp9m1-010`
+## 11. `lp9m1-011`
 
 For each statement, select Yes if the statement is true. Otherwise, select No. A Flask app calls an embeddings API with the requests library and queries PostgreSQL with psycopg2, after configure_azure_monitor().
 
@@ -306,7 +336,7 @@ The Distro auto-collects common HTTP, web, database, Azure SDK and logging telem
 
 </details>
 
-## 11. `lp9m1-011`
+## 12. `lp9m1-012`
 
 Four RAG services send telemetry to one Application Insights resource but appear as one node on the Application Map. What should you set?
 
@@ -336,7 +366,7 @@ For example rag-pipeline.embedding-service, rag-pipeline.llm-orchestrator.
 
 </details>
 
-## 12. `lp9m1-012`
+## 13. `lp9m1-013`
 
 APPLICATIONINSIGHTS_CONNECTION_STRING points to the production resource, but code also passes a connection string for a test resource. Where does telemetry go?
 
@@ -366,7 +396,7 @@ Connection string precedence: code first, then environment variable.
 
 </details>
 
-## 13. `lp9m1-013`
+## 14. `lp9m1-014`
 
 You can't change the embedding service's code, but it must appear on the Application Map as rag-pipeline.embedding-service. How can you set this?
 
@@ -396,7 +426,7 @@ The cloud role name is service.namespace + service.name. Set them in code (Resou
 
 </details>
 
-## 14. `lp9m1-014`
+## 15. `lp9m1-015`
 
 A Flask RAG service uses psycopg2 for PostgreSQL. After you add the Azure Monitor OpenTelemetry Distro, where do the database queries appear?
 
@@ -426,7 +456,7 @@ The Distro instruments requests, urllib/urllib3, Flask/Django/FastAPI, psycopg2 
 
 </details>
 
-## 15. `lp9m1-015`
+## 16. `lp9m1-016`
 
 If you don't specify a kind when starting a span, which SpanKind is used?
 
@@ -456,7 +486,7 @@ Set kind explicitly for outgoing calls (CLIENT) or message processing (CONSUMER)
 
 </details>
 
-## 16. `lp9m1-016`
+## 17. `lp9m1-017`
 
 You want to record which model and how many tokens each LLM call used, so you can filter traces later. What should you add?
 
@@ -467,7 +497,7 @@ You want to record which model and how many tokens each LLM call used, so you ca
 
 <details><summary>💡 Hint</summary>
 
-Custom key-value context on a span is searchable later.
+You want key-value context that you can filter traces by later.
 
 </details>
 
@@ -486,7 +516,7 @@ Use namespaced keys for searchability.
 
 </details>
 
-## 17. `lp9m1-017`
+## 18. `lp9m1-018`
 
 A span named CallLlmApi represents an outgoing HTTP call to Azure OpenAI. Which kind should it use?
 
@@ -516,7 +546,7 @@ Correct span kinds put telemetry in the right tables.
 
 </details>
 
-## 18. `lp9m1-018`
+## 19. `lp9m1-019`
 
 For each statement, select Yes if the statement is true. Otherwise, select No. Code inside `with tracer.start_as_current_span("GenerateEmbedding") as span:` catches a timeout exception and returns a fallback.
 
@@ -548,7 +578,7 @@ start_as_current_span handles lifetime and parentage; caught errors need explici
 
 </details>
 
-## 19. `lp9m1-019`
+## 20. `lp9m1-020`
 
 A request handler creates nested spans for a RAG query. Put them in the order they start in the waterfall.
 
@@ -576,7 +606,7 @@ Nested context managers create parent-child spans; the waterfall shows each step
 
 </details>
 
-## 20. `lp9m1-020`
+## 21. `lp9m1-021`
 
 Code sets sampling_ratio=0.5, but OTEL_TRACES_SAMPLER=microsoft.fixed_percentage and OTEL_TRACES_SAMPLER_ARG=0.1 are set on the host. What sampling applies?
 
@@ -606,7 +636,7 @@ Adjust sampling via environment variables without redeploying.
 
 </details>
 
-## 21. `lp9m1-021`
+## 22. `lp9m1-022`
 
 In Application Insights, which table receives log records emitted through Python's logging module?
 
@@ -636,7 +666,7 @@ Despite its name, the traces table holds logs; spans go to requests and dependen
 
 </details>
 
-## 22. `lp9m1-022`
+## 23. `lp9m1-023`
 
 For each statement, select Yes if the statement is true. Otherwise, select No. A high-volume service uses fixed-percentage sampling at 0.05.
 
@@ -663,36 +693,6 @@ Sampling applies to traces, not custom metrics. Lower ratios make counts less pr
 | Without any sampler configured, the Python Distro sends 100% of traces. | No | The default is RateLimitedSampler. |
 
 Sample traces for cost; metrics stay complete; offline storage covers outages.
-
-📘 Source: [Export telemetry to Azure Monitor](https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/5-export-telemetry-azure-monitor)
-
-</details>
-
-## 23. `lp9m1-023`
-
-In the traceparent header 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01, what does the final 01 mean?
-
-- **A.** The trace-context format version
-- **B.** The trace is sampled
-- **C.** The request had one retry
-- **D.** It's the first span in the trace
-
-<details><summary>💡 Hint</summary>
-
-The four fields are version, trace ID, parent span ID, and one set of flags.
-
-</details>
-
-<details><summary>✅ Answer</summary>
-
-**B.** The trace is sampled
-
-- A: The version is the first field, 00.
-- B: Correct. The trace flags field 01 indicates the trace is sampled.
-- C: Retries aren't recorded in traceparent.
-- D: Span position isn't encoded in the header.
-
-traceparent fields: version (00), 32-hex trace ID, 16-hex parent span ID, and trace flags (01 = sampled).
 
 📘 Source: [Export telemetry to Azure Monitor](https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/5-export-telemetry-azure-monitor)
 

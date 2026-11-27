@@ -231,6 +231,37 @@
   },
   {
    "id": "lp9m1-008",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "medium",
+   "q": "In the traceparent header 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01, what does the final 01 mean?",
+   "options": [
+    {
+     "text": "The trace-context format version",
+     "why": "The version is the first field, 00."
+    },
+    {
+     "text": "The trace is sampled",
+     "why": "Correct. The trace flags field 01 indicates the trace is sampled."
+    },
+    {
+     "text": "The request had one retry",
+     "why": "Retries aren't recorded in traceparent."
+    },
+    {
+     "text": "It's the first span in the trace",
+     "why": "Span position isn't encoded in the header."
+    }
+   ],
+   "answer": 1,
+   "hint": "The four fields are version, trace ID, parent span ID, and one set of flags.",
+   "explain": "traceparent fields: version (00), 32-hex trace ID, 16-hex parent span ID, and trace flags (01 = sampled).",
+   "origin": "new"
+  },
+  {
+   "id": "lp9m1-009",
    "unit": "U03",
    "pool": "practice",
    "type": "single",
@@ -261,7 +292,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-009",
+   "id": "lp9m1-010",
    "unit": "U03",
    "pool": "practice",
    "type": "single",
@@ -292,7 +323,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-010",
+   "id": "lp9m1-011",
    "unit": "U03",
    "pool": "practice",
    "type": "yesno",
@@ -326,7 +357,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-011",
+   "id": "lp9m1-012",
    "unit": "U03",
    "pool": "practice",
    "type": "single",
@@ -357,7 +388,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-012",
+   "id": "lp9m1-013",
    "unit": "U03",
    "pool": "practice",
    "type": "single",
@@ -388,7 +419,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-013",
+   "id": "lp9m1-014",
    "unit": "U03",
    "pool": "mock",
    "type": "single",
@@ -419,7 +450,7 @@
    "origin": "new"
   },
   {
-   "id": "lp9m1-014",
+   "id": "lp9m1-015",
    "unit": "U03",
    "pool": "mock",
    "type": "single",
@@ -450,7 +481,7 @@
    "origin": "new"
   },
   {
-   "id": "lp9m1-015",
+   "id": "lp9m1-016",
    "unit": "U04",
    "pool": "practice",
    "type": "single",
@@ -481,7 +512,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-016",
+   "id": "lp9m1-017",
    "unit": "U04",
    "pool": "mock",
    "type": "single",
@@ -507,12 +538,12 @@
     }
    ],
    "answer": 1,
-   "hint": "Custom key-value context on a span is searchable later.",
+   "hint": "You want key-value context that you can filter traces by later.",
    "explain": "Use namespaced keys for searchability.",
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-017",
+   "id": "lp9m1-018",
    "unit": "U04",
    "pool": "mock",
    "type": "single",
@@ -543,7 +574,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-018",
+   "id": "lp9m1-019",
    "unit": "U04",
    "pool": "practice",
    "type": "yesno",
@@ -577,7 +608,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-019",
+   "id": "lp9m1-020",
    "unit": "U04",
    "pool": "practice",
    "type": "order",
@@ -595,7 +626,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-020",
+   "id": "lp9m1-021",
    "unit": "U05",
    "pool": "mock",
    "type": "single",
@@ -626,7 +657,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-021",
+   "id": "lp9m1-022",
    "unit": "U05",
    "pool": "practice",
    "type": "single",
@@ -657,7 +688,7 @@
    "origin": "lab500"
   },
   {
-   "id": "lp9m1-022",
+   "id": "lp9m1-023",
    "unit": "U05",
    "pool": "mock",
    "type": "yesno",
@@ -689,37 +720,6 @@
    "hint": "Sampling applies to traces, not custom metrics. Lower ratios make counts less precise. Think about offline caching and the default.",
    "explain": "Sample traces for cost; metrics stay complete; offline storage covers outages.",
    "origin": "lab500"
-  },
-  {
-   "id": "lp9m1-023",
-   "unit": "U05",
-   "pool": "practice",
-   "type": "single",
-   "scenario": false,
-   "difficulty": "medium",
-   "q": "In the traceparent header 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01, what does the final 01 mean?",
-   "options": [
-    {
-     "text": "The trace-context format version",
-     "why": "The version is the first field, 00."
-    },
-    {
-     "text": "The trace is sampled",
-     "why": "Correct. The trace flags field 01 indicates the trace is sampled."
-    },
-    {
-     "text": "The request had one retry",
-     "why": "Retries aren't recorded in traceparent."
-    },
-    {
-     "text": "It's the first span in the trace",
-     "why": "Span position isn't encoded in the header."
-    }
-   ],
-   "answer": 1,
-   "hint": "The four fields are version, trace ID, parent span ID, and one set of flags.",
-   "explain": "traceparent fields: version (00), 32-hex trace ID, 16-hex parent span ID, and trace flags (01 = sampled).",
-   "origin": "new"
   },
   {
    "id": "lp9m1-024",
