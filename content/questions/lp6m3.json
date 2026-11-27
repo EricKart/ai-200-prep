@@ -1,0 +1,708 @@
+{
+ "module": "lp6m3",
+ "title": "Implement vector storage in Azure Managed Redis",
+ "questions": [
+  {
+   "id": "lp6m3-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your app has a 1,536-float NumPy embedding to store in a Redis hash for vector search. How should it be stored?",
+   "options": [
+    {
+     "text": "As a comma-separated string",
+     "why": "A text string isn't the binary format the index expects."
+    },
+    {
+     "text": "As bytes from embedding.tobytes()",
+     "why": "Correct. Redis stores hash vectors as binary blobs for efficiency."
+    },
+    {
+     "text": "As 1,536 separate hash fields",
+     "why": "The vector is one field holding bytes."
+    },
+    {
+     "text": "As a JSON array in a hash field",
+     "why": "JSON arrays are for Redis JSON documents, not hash fields."
+    }
+   ],
+   "answer": 1,
+   "hint": "Redis Hash fields hold strings or bytes. Convert the array to raw bytes.",
+   "explain": "Convert NumPy arrays with tobytes() before storing them in a hash.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which dialect must you set for Redis vector queries?",
+   "options": [
+    {
+     "text": "dialect(1)",
+     "why": "Learn says vector queries need dialect 2."
+    },
+    {
+     "text": "No dialect is needed",
+     "why": "Vector queries require dialect 2."
+    },
+    {
+     "text": "dialect(2)",
+     "why": "Correct. Use .dialect(2) for vector queries."
+    },
+    {
+     "text": "dialect(3)",
+     "why": "Learn specifies dialect 2."
+    }
+   ],
+   "answer": 2,
+   "hint": "Vector queries need a specific query dialect.",
+   "explain": "Query(\"*=>[KNN 5 @embedding $query_vec AS score]\").dialect(2)",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You need the 3 nearest documents to a question, but only within the documentation category. Which query string is correct?",
+   "options": [
+    {
+     "text": "[KNN 3 @embedding $query_vec]=>@category:{documentation}",
+     "why": "The KNN clause belongs after =>."
+    },
+    {
+     "text": "@category:{documentation}=>[KNN 3 @embedding $query_vec AS score]",
+     "why": "Correct. The filter goes before the vector search operator =>."
+    },
+    {
+     "text": "*=>[KNN 3 @embedding $query_vec AS score] @category:{documentation}",
+     "why": "The filter must come before =>, not after the KNN clause."
+    },
+    {
+     "text": "@embedding:[VECTOR_RANGE 3 $query_vec]=>{category: documentation}",
+     "why": "VECTOR_RANGE takes a distance threshold, not a count, and this isn't the filter syntax."
+    }
+   ],
+   "answer": 1,
+   "hint": "Put the filter before the arrow and the KNN clause after it.",
+   "explain": "Hybrid queries filter first, then find the K nearest within the filtered set.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A support bot must return every document within cosine distance 0.2 of the question, however many that is. Which query type fits?",
+   "options": [
+    {
+     "text": "A VECTOR_RANGE query with 0.2",
+     "why": "Correct. Range queries return all vectors within the distance."
+    },
+    {
+     "text": "A KNN query with K set to 100",
+     "why": "KNN returns a fixed number, not everything within a threshold."
+    },
+    {
+     "text": "A FLAT index queried with K = 1",
+     "why": "FLAT is an algorithm; K = 1 returns one result."
+    },
+    {
+     "text": "A query with EF_RUNTIME set to 0.2",
+     "why": "EF_RUNTIME is an exploration count, not a distance threshold."
+    }
+   ],
+   "answer": 0,
+   "hint": "\"However many\" means a distance cut-off, not a fixed count.",
+   "explain": "KNN = fixed count; VECTOR_RANGE = everything within a distance.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An index has `DIM 1536`, `DISTANCE_METRIC COSINE` and prefix `doc:`.",
+   "rows": [
+    {
+     "text": "Adding a hash with key doc:042 and an embedding field indexes it automatically.",
+     "answer": true,
+     "why": "Redis indexes keys with the prefix automatically."
+    },
+    {
+     "text": "A query with a 768-dimension vector returns approximate results.",
+     "answer": false,
+     "why": "Dimension mismatches are rejected with an error."
+    },
+    {
+     "text": "A score of 0.05 means the document is very similar to the query.",
+     "answer": true,
+     "why": "Lower COSINE distance means more similar."
+    },
+    {
+     "text": "Loading 1 million documents with individual hset calls is the fastest way to ingest.",
+     "answer": false,
+     "why": "Pipelines batch commands for 10–100× throughput."
+    }
+   ],
+   "hint": "Prefixed keys are indexed automatically. Query dimensions must match exactly.",
+   "explain": "Match DIM exactly, read scores as distances, and use pipelines for bulk loads.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A team stores image embeddings and uses COSINE because \"it's best for text\". Results look odd. What does Learn recommend for image embeddings and spatial data?",
+   "options": [
+    {
+     "text": "L2",
+     "why": "Correct. L2 suits image embeddings and spatial data where magnitude matters."
+    },
+    {
+     "text": "COSINE with FLAT",
+     "why": "The metric, not the algorithm, is the issue."
+    },
+    {
+     "text": "HNSW with EF_RUNTIME 10",
+     "why": "EF_RUNTIME tunes exploration, not the metric."
+    },
+    {
+     "text": "IP",
+     "why": "IP is only for pre-normalized embeddings."
+    }
+   ],
+   "answer": 0,
+   "hint": "COSINE suits text. Images and spatial data use a different metric.",
+   "explain": "COSINE for text, L2 for images and spatial data, IP for pre-normalized embeddings.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "HNSW queries are fast but sometimes miss clearly relevant documents. What should you adjust first?",
+   "options": [
+    {
+     "text": "Lower DIM to 768 in the index schema",
+     "why": "DIM must match the model exactly."
+    },
+    {
+     "text": "Remove dialect(2) from the vector query",
+     "why": "Vector queries need dialect 2."
+    },
+    {
+     "text": "Switch the DISTANCE_METRIC to IP",
+     "why": "Changing the metric would break semantic results for text."
+    },
+    {
+     "text": "Raise EF_RUNTIME (start near 50, up to 200)",
+     "why": "Correct. Higher EF_RUNTIME explores more of the graph for better accuracy."
+    }
+   ],
+   "answer": 3,
+   "hint": "HNSW explores a limited part of the graph. One runtime setting widens the search.",
+   "explain": "EF_RUNTIME trades speed for accuracy per query.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An ingestion script loads 500,000 documents with one hset call each, and throughput tops out at a few hundred writes per second. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Store the embeddings as JSON text strings instead of bytes",
+     "why": "Text strings are larger and don't fix network round trips."
+    },
+    {
+     "text": "Batch the hset commands in a pipeline and call execute()",
+     "why": "Correct. Pipelines batch commands into one round trip, which removes per-command network overhead."
+    },
+    {
+     "text": "Create a new index for every 10,000 documents",
+     "why": "Many indexes complicate search and don't speed up writes."
+    },
+    {
+     "text": "Switch the index algorithm from HNSW to FLAT",
+     "why": "The algorithm affects search, not how fast you can send writes."
+    }
+   ],
+   "answer": 1,
+   "hint": "Each command waits for a network round trip. How do you send many at once?",
+   "explain": "Individual hset commands are limited by network overhead to a few hundred per second. Pipelines batch many commands and send them in one round trip.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m3-009",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What does the query string *=>[KNN 5 @embedding $query_vec AS score] do?",
+   "options": [
+    {
+     "text": "Searches only documents whose embedding field equals the query vector",
+     "why": "KNN finds the nearest vectors, not exact matches."
+    },
+    {
+     "text": "Returns every document within a distance of 5 from the query vector",
+     "why": "That's a range query. KNN returns a fixed number of results."
+    },
+    {
+     "text": "Searches all documents and returns the 5 nearest neighbors in the embedding field, with a score",
+     "why": "Correct. * means no pre-filter, KNN 5 asks for five neighbors, and AS score names the distance."
+    },
+    {
+     "text": "Returns 5 random documents and scores them against the query",
+     "why": "KNN ranks by distance. It doesn't pick at random."
+    }
+   ],
+   "answer": 2,
+   "hint": "Read it in parts: what the asterisk means, what KNN 5 asks for, and what AS names.",
+   "explain": "*=>[KNN 5 @embedding $query_vec AS score] searches all documents, finds 5 nearest neighbors in @embedding and returns their scores. Use .dialect(2), and pass the query vector as bytes.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m3-010",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Your embedding model outputs pre-normalized vectors, and its documentation asks for inner product scoring. Which DISTANCE_METRIC fits, according to Learn?",
+   "options": [
+    {
+     "text": "COSINE, because IP isn't supported for vectors",
+     "why": "IP is a supported metric. Learn limits it to pre-normalized or specialized models."
+    },
+    {
+     "text": "L2",
+     "why": "L2 is the guidance for image embeddings and spatial data."
+    },
+    {
+     "text": "IP",
+     "why": "Correct. Use IP only with pre-normalized embeddings or models that require it."
+    },
+    {
+     "text": "FLOAT64",
+     "why": "FLOAT64 is a data type, not a distance metric."
+    }
+   ],
+   "answer": 2,
+   "hint": "One metric is reserved for pre-normalized vectors.",
+   "explain": "COSINE: text embeddings. L2: image embeddings and spatial data. IP (inner product): only for pre-normalized embeddings or models that require it.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m3-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "How much memory does one 1,536-dimension FLOAT32 vector need?",
+   "options": [
+    {
+     "text": "About 6 KB",
+     "why": "Correct. 1,536 × 4 bytes ≈ 6 KB."
+    },
+    {
+     "text": "About 1.5 KB",
+     "why": "That's 384 dimensions."
+    },
+    {
+     "text": "About 24 KB",
+     "why": "That's far too large."
+    },
+    {
+     "text": "About 12 KB",
+     "why": "That's FLOAT64 at 8 bytes per dimension."
+    }
+   ],
+   "answer": 0,
+   "hint": "4 bytes per value times 1,536 values.",
+   "explain": "FLOAT32 = 4 bytes per dimension; FLOAT64 = 8.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A prototype searches 3,000 FAQ embeddings and needs exact results. Which algorithm fits?",
+   "options": [
+    {
+     "text": "DiskANN",
+     "why": "DiskANN isn't one of Redis's algorithms here."
+    },
+    {
+     "text": "FLAT",
+     "why": "Correct. FLAT is exact and suits under 10,000 vectors."
+    },
+    {
+     "text": "HNSW",
+     "why": "HNSW is approximate and aimed at larger sets."
+    },
+    {
+     "text": "IVFFlat",
+     "why": "IVFFlat isn't one of Redis's algorithms in this module."
+    }
+   ],
+   "answer": 1,
+   "hint": "A few thousand vectors and exact results: brute force is fine.",
+   "explain": "Redis offers FLAT (exact) and HNSW (approximate).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each workload to Learn's quick configuration guide.",
+   "choices": [
+    "FLOAT32 · COSINE · FLAT",
+    "FLOAT32 · COSINE · HNSW",
+    "FLOAT32 · L2 · HNSW"
+   ],
+   "items": [
+    {
+     "text": "Text search over a few thousand documents",
+     "answer": 0,
+     "why": "Small text search: FLAT."
+    },
+    {
+     "text": "Product recommendations across millions of items",
+     "answer": 1,
+     "why": "Recommendations: COSINE with HNSW."
+    },
+    {
+     "text": "Finding visually similar product images",
+     "answer": 2,
+     "why": "Image similarity: L2 with HNSW."
+    }
+   ],
+   "hint": "Small text, large text, and images each have their own row in the guide.",
+   "explain": "Dataset size picks the algorithm; the embedding type picks the metric.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-014",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team proposes FLOAT64 for 10 million text embeddings \"for better accuracy\".",
+   "rows": [
+    {
+     "text": "FLOAT64 doubles vector memory compared with FLOAT32.",
+     "answer": true,
+     "why": "8 bytes per dimension instead of 4."
+    },
+    {
+     "text": "Learn says FLOAT64 gives meaningfully better accuracy for typical AI embeddings.",
+     "answer": false,
+     "why": "The extra precision provides no meaningful improvement for nearly all AI applications."
+    },
+    {
+     "text": "Larger vectors can also slow distance calculations.",
+     "answer": true,
+     "why": "Larger data means more memory transfer."
+    }
+   ],
+   "hint": "Double the bytes, but no meaningful gain for embeddings.",
+   "explain": "Use FLOAT32 unless you need maximum precision for specialized research.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-015",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "With FLAT indexing, Learn's example gives about 10 ms for 10,000 vectors. Roughly how long might the same search take over 1 million vectors?",
+   "options": [
+    {
+     "text": "About 1,000 ms",
+     "why": "Correct. Learn's example: 1 million vectors could take around 1,000 ms."
+    },
+    {
+     "text": "About 10 ms",
+     "why": "FLAT time grows with dataset size."
+    },
+    {
+     "text": "About 10 seconds",
+     "why": "That's ten times more than linear growth."
+    },
+    {
+     "text": "About 100 ms",
+     "why": "Linear growth from 10,000 to 1M is 100×."
+    }
+   ],
+   "answer": 0,
+   "hint": "Brute force grows in step with the number of vectors.",
+   "explain": "FLAT scales linearly; HNSW keeps queries fast on large datasets.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-016",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A product recommendation engine must return similar items in under 10 milliseconds across several million product embeddings. A slightly imperfect top 10 is acceptable. Which algorithm fits?",
+   "options": [
+    {
+     "text": "HNSW",
+     "why": "Correct. HNSW gives near-instant results on millions of vectors by trading a little accuracy for speed."
+    },
+    {
+     "text": "FLAT",
+     "why": "FLAT compares every vector, which gets too slow at millions of items."
+    },
+    {
+     "text": "KNN with no index",
+     "why": "Searching without an index is brute force, which is the slow path."
+    },
+    {
+     "text": "FLAT with FLOAT64",
+     "why": "A bigger data type makes brute force slower, not faster."
+    }
+   ],
+   "answer": 0,
+   "hint": "Millions of vectors and a strict latency budget call for approximate search.",
+   "explain": "FLAT guarantees exact results but slows linearly with dataset size. HNSW builds a multi-layer graph for near-instant search on millions of vectors with a small accuracy trade-off.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m3-017",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A team switches to an embedding model that outputs 3,072 dimensions, but the Redis index was created with DIM 1536. What happens to similarity search?",
+   "options": [
+    {
+     "text": "The vectors don't match the index, because DIM must equal the model's output exactly",
+     "why": "Correct. Distances compare position by position, so dimensions must match exactly."
+    },
+    {
+     "text": "Redis truncates the vectors to 1,536 values and searches normally",
+     "why": "Redis doesn't adjust dimensions for you. Mismatched vectors don't work."
+    },
+    {
+     "text": "Redis expands the index to 3,072 dimensions on the first insert",
+     "why": "DIM is fixed in the schema. You need a new index for the new model."
+    },
+    {
+     "text": "Search works, but returns approximate results",
+     "why": "A dimension mismatch is a failure, not a lower-accuracy search."
+    }
+   ],
+   "answer": 0,
+   "hint": "Distance calculations line vectors up one position at a time.",
+   "explain": "Embedding models output fixed lengths (384, 768, 1024, 1536, 3072…). The index DIM must match the model's output exactly because distance calculations compare each dimension by position.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m3-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Products have only flat fields (name, price, category) plus one embedding, and memory cost matters most. Which structure should you use?",
+   "options": [
+    {
+     "text": "Redis Stream",
+     "why": "Streams are for task queues."
+    },
+    {
+     "text": "Redis Hash",
+     "why": "Correct. Hash stores vectors as compact bytes with the lowest memory and fastest queries."
+    },
+    {
+     "text": "Redis List",
+     "why": "Lists aren't used for indexed vectors here."
+    },
+    {
+     "text": "Redis JSON",
+     "why": "JSON adds formatting overhead for flexibility you don't need."
+    }
+   ],
+   "answer": 1,
+   "hint": "Flat fields and lowest memory point to the simpler structure.",
+   "explain": "Hash for flat data and maximum performance; JSON when data is nested.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-019",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Each product document has nested specs, several image URLs and two embeddings (title and image). Which structure fits best?",
+   "options": [
+    {
+     "text": "A Redis Hash per spec",
+     "why": "Splitting specs across keys loses the document structure."
+    },
+    {
+     "text": "A Hash with both embeddings concatenated",
+     "why": "Concatenating vectors breaks dimension matching."
+    },
+    {
+     "text": "Redis JSON documents",
+     "why": "Correct. JSON handles nested structures and multiple vectors per item."
+    },
+    {
+     "text": "A Redis String per embedding",
+     "why": "Separate strings lose the link to metadata and the index."
+    }
+   ],
+   "answer": 2,
+   "hint": "Nested specs and several embeddings fit a document structure.",
+   "explain": "Choose JSON for nested data and multiple vectors per item.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-020",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team stores vectors in Redis JSON documents.",
+   "rows": [
+    {
+     "text": "The embedding is stored as a numeric array, produced with tolist().",
+     "answer": true,
+     "why": "JSON stores the vector as a JSON array."
+    },
+    {
+     "text": "Index fields are referenced with JSONPath such as $.name and an as_name alias.",
+     "answer": true,
+     "why": "Use $. paths and as_name."
+    },
+    {
+     "text": "JSON uses less memory than Hash for the same vector.",
+     "answer": false,
+     "why": "JSON adds array formatting overhead; Hash is lower."
+    }
+   ],
+   "hint": "JSON stores vectors as number lists and uses JSONPath. It isn't the smaller option.",
+   "explain": "JSON trades some memory and speed for flexibility.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-021",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You're moving product vectors from Hash to JSON. Put the steps in order.",
+   "steps": [
+    "Read each product from its Hash key",
+    "Convert it to a JSON document with the vector as a list",
+    "Write the JSON document to Redis",
+    "Delete the old index and create a new one with the JSON IndexType"
+   ],
+   "hint": "Read the old data, convert, write, then rebuild the index for the new type.",
+   "explain": "Switching structures means re-ingesting data and recreating the index.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-022",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "1 million flat product records with 1,536-dimension embeddings must give the lowest query latency and memory. A developer wants JSON \"for future flexibility\". What does Learn recommend?",
+   "options": [
+    {
+     "text": "Use both, storing every product twice",
+     "why": "Storing everything twice wastes memory."
+    },
+    {
+     "text": "Use FLOAT64 in JSON to offset the extra overhead",
+     "why": "FLOAT64 doubles memory and doesn't help."
+    },
+    {
+     "text": "Use Hash now; re-ingest into JSON later if needed",
+     "why": "Correct. For simple metadata, Hash gives the best balance; switching later means re-ingesting."
+    },
+    {
+     "text": "Use JSON, because JSON queries vectors faster",
+     "why": "Hash is faster than JSON."
+    }
+   ],
+   "answer": 2,
+   "hint": "Choose for today's needs. Migrating later is possible.",
+   "explain": "Hash saves significant memory and latency at this scale; use JSON when complexity requires it.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m3-023",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You're storing a vector in a Redis Hash with the rest of a document's metadata. How should the embedding field be written, compared with storing it in a JSON document?",
+   "options": [
+    {
+     "text": "In a Hash, as a numeric list; in JSON, as bytes",
+     "why": "That's the wrong way round."
+    },
+    {
+     "text": "In both, as a comma-separated string",
+     "why": "Neither structure expects a text string of numbers."
+    },
+    {
+     "text": "In both, as bytes from tobytes()",
+     "why": "JSON documents store the embedding as a numeric array."
+    },
+    {
+     "text": "In a Hash, as bytes from tobytes(); in JSON, as a numeric list from tolist()",
+     "why": "Correct. Hash fields hold binary bytes, while JSON stores the vector as a numeric array."
+    }
+   ],
+   "answer": 3,
+   "hint": "Hashes store raw bytes, and JSON stores arrays.",
+   "explain": "With Hash, store embeddings as bytes (embedding.tobytes()) together with metadata via hset mapping. With JSON, store embeddings as numeric arrays (embedding.tolist()) and reference fields with JSONPath.",
+   "origin": "new"
+  }
+ ]
+}

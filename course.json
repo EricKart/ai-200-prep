@@ -1,0 +1,1277 @@
+{
+  "title": "AI-200: Microsoft Certified Azure AI Cloud Developer Associate",
+  "site": "https://aryantripathi.dev/ai-200",
+  "repo": "https://github.com/EricKart/ai-200-prep",
+  "studyGuide": "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/ai-200",
+  "skillAreas": [
+    {
+      "n": 1,
+      "title": "Develop and deploy containerized solutions",
+      "weight": "20–25%",
+      "mockTarget": 14
+    },
+    {
+      "n": 2,
+      "title": "Develop AI solutions with Azure data services",
+      "weight": "30–35%",
+      "mockTarget": 19
+    },
+    {
+      "n": 3,
+      "title": "Connect to and consume Azure services",
+      "weight": "20–25%",
+      "mockTarget": 14
+    },
+    {
+      "n": 4,
+      "title": "Secure, monitor and troubleshoot solutions",
+      "weight": "20–25%",
+      "mockTarget": 13
+    }
+  ],
+  "paths": [
+    {
+      "n": 1,
+      "id": "lp1",
+      "short": "Container hosting",
+      "title": "Implement container application hosting on Azure",
+      "skillArea": 1,
+      "minutes": 225,
+      "learnUrl": "https://learn.microsoft.com/en-us/training/paths/implement-container-app-hosting-azure/",
+      "modules": [
+        {
+          "n": 1,
+          "id": "lp1m1",
+          "slug": "store-manage-containers-azure-container-registry",
+          "title": "Store and manage containers in Azure Container Registry",
+          "minutes": 66,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Registries, repositories, and artifacts",
+              "url": "https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/2-image-storage",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Build and run images with ACR Tasks",
+              "url": "https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/3-build-run-acr-tasks",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Tag and version images",
+              "url": "https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/4-tag-version-images",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Exercise - Build and manage a container image with ACR Tasks",
+              "url": "https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/5-exercise-build-manage-acr-tasks",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "id": "lp1m2",
+          "slug": "deploy-containers-azure-app-service",
+          "title": "Deploy containers to Azure App Service",
+          "minutes": 74,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Deploy containers to Azure App Service",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/2-deploy-containers",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Configure container runtime behavior",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/3-configure-runtime",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Configure application settings",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/4-configure-settings",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Observe and troubleshoot containerized apps",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/5-observe-troubleshoot",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Exercise - Deploy a container to Azure App Service",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/6-exercise",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "id": "lp1m3",
+          "slug": "deploy-sidecar-azure-app-service",
+          "title": "Run sidecar-enabled AI applications on Azure App Service",
+          "minutes": 85,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Choose the App Service sidecar pattern",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/2-choose-sidecar-pattern",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Configure main and sidecar containers",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/3-configure-sidecar-containers",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Connect containers and share files",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/4-connect-containers-share-files",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Diagnose sidecar failures",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/5-diagnose-sidecar-failures",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Exercise: Deploy an AI API with a local model-serving sidecar",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/6-exercise-deploy-ai-api-sidecar",
+              "exercise": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 2,
+      "id": "lp2",
+      "short": "Container Apps",
+      "title": "Deploy and manage apps on Azure Container Apps",
+      "skillArea": 1,
+      "minutes": 311,
+      "learnUrl": "https://learn.microsoft.com/en-us/training/paths/deploy-manage-apps-azure-container-apps/",
+      "modules": [
+        {
+          "n": 1,
+          "id": "lp2m1",
+          "slug": "deploy-containers-azure-container-apps",
+          "title": "Deploy containers to Azure Container Apps",
+          "minutes": 72,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Explore Container Apps environments",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/2-container-apps-environments",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Deploy a container app using the Azure CLI and YAML",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/3-deploy-container-app",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Configure runtime settings with environment variables and secrets",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/4-configure-runtime",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Configure image pull authentication for private registries",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/5-connect-to-registries",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Verify deployments with logs and status",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/6-verify-deployment",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Deploy a containerized backend API to Container Apps",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/7-exercise-deploy-backend-api",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "id": "lp2m2",
+          "slug": "manage-containers-azure-container-apps",
+          "title": "Manage containers in Azure Container Apps",
+          "minutes": 68,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Update images and manage revisions safely",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/2-update-images-manage-revisions",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Manage the container app lifecycle",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/3-app-lifecycle-management",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Monitor logs and troubleshoot issues",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/4-monitor-logs-troubleshoot",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Configure health probes and troubleshoot failures",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/5-health-probes",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Optimize container resources and scaling",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/6-optimize-container-settings",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Diagnose and fix a failing deployment",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/7-exercise-diagnose-fix-failing-deployment",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "id": "lp2m3",
+          "slug": "scale-containers-azure-container-apps",
+          "title": "Scale containers in Azure Container Apps",
+          "minutes": 87,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Configure scale rules",
+              "url": "https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/2-configure-scale-rules",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Implement event-driven scaling with KEDA",
+              "url": "https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/3-event-driven-scaling-keda",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Apply KEDA scalers for custom workloads",
+              "url": "https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/4-keda-scalers-custom-workloads",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Select compute resources for performance and cost",
+              "url": "https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/5-compute-resources-performance-cost",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Choose and apply revision modes",
+              "url": "https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/6-revision-modes-traffic-management",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Configure autoscaling using KEDA triggers",
+              "url": "https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/7-exercise-configure-autoscaling-keda",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "id": "lp2m4",
+          "slug": "dynamic-sessions-azure-container-apps",
+          "title": "Run AI-generated code securely in Azure Container Apps dynamic sessions",
+          "minutes": 84,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Choose a dynamic session pool",
+              "url": "https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/2-choose-dynamic-session-pool",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Configure a secure session pool",
+              "url": "https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/3-configure-secure-session-pool",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Execute code and exchange files",
+              "url": "https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/4-execute-code-exchange-files",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Manage lifecycle and execution failures",
+              "url": "https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/5-manage-lifecycle-failures",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Exercise - Execute AI-generated code securely in Azure Container Apps dynamic sessions",
+              "url": "https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/6-exercise-execute-code-dynamic-session",
+              "exercise": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 3,
+      "id": "lp3",
+      "short": "AKS",
+      "title": "Deploy and monitor applications on Azure Kubernetes Service",
+      "skillArea": 1,
+      "minutes": 212,
+      "learnUrl": "https://learn.microsoft.com/en-us/training/paths/deploy-monitor-apps-azure-kubernetes-service/",
+      "modules": [
+        {
+          "n": 1,
+          "id": "lp3m1",
+          "slug": "deploy-apps-azure-kubernetes-service",
+          "title": "Deploy applications to Azure Kubernetes Service",
+          "minutes": 75,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Create Kubernetes deployment manifests",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/2-create-deployment-manifests",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Expose applications in Azure Kubernetes Services",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/3-expose-applications",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Deploy applications to Azure Kubernetes Services",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/4-deploy-verify-results",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Exercise - Deploy an AI inference API to Azure Kubernetes Service",
+              "url": "https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/5-exercise-deploy-ai-api",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "id": "lp3m2",
+          "slug": "configure-apps-azure-kubernetes-service",
+          "title": "Configure applications on Azure Kubernetes Service",
+          "minutes": 72,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Define ConfigMaps for application settings",
+              "url": "https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/2-define-configmaps",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Implement secrets for sensitive data",
+              "url": "https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/3-implement-secrets",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Attach persistent storage to an app",
+              "url": "https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/4-persistent-storage",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Exercise - Configure apps on Azure Kubernetes Service",
+              "url": "https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/5-exercise-configure-apps",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "id": "lp3m3",
+          "slug": "monitor-apps-azure-kubernetes-service",
+          "title": "Monitor and troubleshoot applications on Azure Kubernetes Service",
+          "minutes": 65,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Monitor application logs and metrics",
+              "url": "https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/2-monitor-logs-metrics",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Troubleshoot pods and services",
+              "url": "https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/3-troubleshoot-pods-services",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Verify service connectivity and endpoints",
+              "url": "https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/4-verify-connectivity",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Exercise - Troubleshoot apps on Azure Kubernetes Service",
+              "url": "https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/5-exercise-troubleshoot-apps",
+              "exercise": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 4,
+      "id": "lp4",
+      "short": "Cosmos DB",
+      "title": "Develop AI solutions with Azure Cosmos DB for NoSQL",
+      "skillArea": 2,
+      "minutes": 252,
+      "learnUrl": "https://learn.microsoft.com/en-us/training/paths/develop-ai-solutions-azure-cosmos-db/",
+      "modules": [
+        {
+          "n": 1,
+          "id": "lp4m1",
+          "slug": "build-query-azure-cosmos-db",
+          "title": "Build queries for Azure Cosmos DB for NoSQL",
+          "minutes": 72,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-cosmos-db/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Explore Azure Cosmos DB for NoSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-cosmos-db/2-explore-cosmos-db-nosql",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Implement the Azure Cosmos DB for NoSQL SDK",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-cosmos-db/3-implement-cosmos-db-sdk",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Query Azure Cosmos DB for NoSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-cosmos-db/4-query-cosmos-db-nosql",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Exercise - Build a RAG document store on Azure Cosmos DB for NoSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-cosmos-db/5-exercise-build-rag-document-store",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "id": "lp4m2",
+          "slug": "implement-vector-search-azure-cosmos-db",
+          "title": "Implement vector search on Azure Cosmos DB for NoSQL",
+          "minutes": 84,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-cosmos-db/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Store and retrieve embeddings in Azure Cosmos DB",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-cosmos-db/2-store-retrieve-embeddings",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Execute vector similarity queries for semantic search",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-cosmos-db/3-execute-vector-similarity-queries",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Combine vector similarity results with metadata filtering",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-cosmos-db/4-combine-vector-metadata-filtering",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Use the change feed to trigger embedding refresh",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-cosmos-db/5-change-feed-trigger-embedding-refresh",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Exercise - Build a semantic search application with Azure Cosmos DB for NoSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-cosmos-db/6-exercise-build-semantic-search",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "id": "lp4m3",
+          "slug": "optimize-query-performance-azure-cosmos-db",
+          "title": "Optimize query performance for Azure Cosmos DB for NoSQL",
+          "minutes": 96,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Understand indexes in Azure Cosmos DB",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/2-understand-indexes-cosmos-db",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Configure range and composite indexes",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/3-configure-range-composite-indexes",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Tune vector indexes for embedding workloads",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/4-tune-vector-indexes-embeddings",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Reduce RU costs with strategic indexing",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/5-reduce-ru-costs-strategic-indexing",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Choose consistency levels for optimal performance",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/6-choose-consistency-levels-performance",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Optimize query performance with vector indexes on Azure Cosmos DB for NoSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/7-exercise-optimize-query-performance",
+              "exercise": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 5,
+      "id": "lp5",
+      "short": "PostgreSQL",
+      "title": "Develop AI solutions with Azure Database for PostgreSQL",
+      "skillArea": 2,
+      "minutes": 294,
+      "learnUrl": "https://learn.microsoft.com/en-us/training/paths/develop-ai-solutions-azure-database-postgresql/",
+      "modules": [
+        {
+          "n": 1,
+          "id": "lp5m1",
+          "slug": "build-query-azure-database-postgresql",
+          "title": "Build and query with Azure Database for PostgreSQL",
+          "minutes": 89,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Explore Azure Database for PostgreSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/2-explore-azure-database-postgresql",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Connect to PostgreSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/3-connect-to-postgresql",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Create and manage schemas",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/4-create-manage-schemas",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Query data",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/5-query-data",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Integrate SDKs and applications",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/6-integrate-sdks-apps",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Build an agent tool backend on Azure Database for PostgreSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/7-exercise-build-agent-tool-backend",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "id": "lp5m2",
+          "slug": "implement-vector-search-azure-database-postgresql",
+          "title": "Implement vector search with Azure Database for PostgreSQL",
+          "minutes": 94,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Store and query embeddings with pgvector",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/2-store-query-embeddings-pgvector",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Perform fast vector similarity search",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/3-perform-fast-vector-similarity-search",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Manage index lifecycle and embedding updates",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/4-manage-index-lifecycle-embedding-updates",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Run vector similarity search for semantic retrieval",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/5-run-vector-similarity-search-semantic-retrieval",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Implement retrieval patterns for RAG pipelines",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/6-implement-retrieval-patterns-rag-pipelines",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Implement vector search on Azure Database for PostgreSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/7-exercise-implement-vector-search",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "id": "lp5m3",
+          "slug": "optimize-vector-search-azure-database-postgresql",
+          "title": "Optimize vector search in Azure Database for PostgreSQL",
+          "minutes": 111,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/optimize-vector-search-azure-database-postgresql/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Tune PostgreSQL for pgvector",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-vector-search-azure-database-postgresql/2-tune-postgresql-pgvector",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Choose and configure vector indexes",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-vector-search-azure-database-postgresql/3-choose-configure-vector-indexes",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Optimize data layout",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-vector-search-azure-database-postgresql/4-optimize-data-layout",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Scale for high-volume workloads",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-vector-search-azure-database-postgresql/5-scale-high-volume-workloads",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Connection optimization",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-vector-search-azure-database-postgresql/6-connection-optimization",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Optimize vector search performance in Azure Database for PostgreSQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/optimize-vector-search-azure-database-postgresql/7-exercise-optimize-vector-search",
+              "exercise": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 6,
+      "id": "lp6",
+      "short": "Managed Redis",
+      "title": "Enhance AI solutions with Azure Managed Redis",
+      "skillArea": 2,
+      "minutes": 222,
+      "learnUrl": "https://learn.microsoft.com/en-us/training/paths/enhance-ai-solutions-azure-managed-redis/",
+      "modules": [
+        {
+          "n": 1,
+          "id": "lp6m1",
+          "slug": "implement-data-operations-azure-managed-redis",
+          "title": "Implement data operations in Azure Managed Redis",
+          "minutes": 61,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/implement-data-operations-azure-managed-redis/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Explore Azure Managed Redis",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-data-operations-azure-managed-redis/2-explore-azure-managed-redis",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Client libraries and development best practices",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-data-operations-azure-managed-redis/3-client-libraries-best-practices",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Implement data operations",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-data-operations-azure-managed-redis/4-implement-data-operations",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Exercise - Perform data operations in Azure Managed Redis",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-data-operations-azure-managed-redis/5-exercise-data-operations",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "id": "lp6m2",
+          "slug": "implement-event-messaging-azure-managed-redis",
+          "title": "Implement event messaging with Azure Managed Redis",
+          "minutes": 81,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/implement-event-messaging-azure-managed-redis/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Publish and subscribe to events with Redis pub/sub",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-event-messaging-azure-managed-redis/2-redis-pub-sub",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Implement task queues with Redis Streams",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-event-messaging-azure-managed-redis/3-redis-streams",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Choose between broadcast and coordinated distribution",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-event-messaging-azure-managed-redis/4-coordinate-multiple-subscribers",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Exercise - Publish and subscribe to events in Azure Managed Redis",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-event-messaging-azure-managed-redis/5-exercise-publish-subscribe-events-redis",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "id": "lp6m3",
+          "slug": "implement-vector-storage-azure-managed-redis",
+          "title": "Implement vector storage in Azure Managed Redis",
+          "minutes": 80,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/implement-vector-storage-azure-managed-redis/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Index and query vector data",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-storage-azure-managed-redis/2-index-query-vector-data",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Choose vector types and indexing strategies",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-storage-azure-managed-redis/3-vector-types-index-strategy",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Optimize Redis data structures for vector storage",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-storage-azure-managed-redis/4-optimize-redis-data-structure",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Exercise - Implement semantic search in Azure Managed Redis",
+              "url": "https://learn.microsoft.com/en-us/training/modules/implement-vector-storage-azure-managed-redis/5-exercise-semantic-search-azure-managed-redis",
+              "exercise": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 7,
+      "id": "lp7",
+      "short": "Backend services",
+      "title": "Integrate backend services for AI solutions",
+      "skillArea": 3,
+      "minutes": 444,
+      "learnUrl": "https://learn.microsoft.com/en-us/training/paths/integrate-backend-services-ai-solutions/",
+      "modules": [
+        {
+          "n": 1,
+          "id": "lp7m1",
+          "slug": "queue-process-operations-service-bus",
+          "title": "Queue and process AI operations with Azure Service Bus",
+          "minutes": 81,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/queue-process-operations-service-bus/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Explore Azure Service Bus concepts and messaging in AI architectures",
+              "url": "https://learn.microsoft.com/en-us/training/modules/queue-process-operations-service-bus/2-explore-service-bus-concepts",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Choose between queues and topics with subscriptions",
+              "url": "https://learn.microsoft.com/en-us/training/modules/queue-process-operations-service-bus/3-choose-queues-topics-subscriptions",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Structure messages for AI workloads",
+              "url": "https://learn.microsoft.com/en-us/training/modules/queue-process-operations-service-bus/4-structure-messages-ai-workloads",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Process messages reliably",
+              "url": "https://learn.microsoft.com/en-us/training/modules/queue-process-operations-service-bus/5-process-messages-reliably",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Exercise - Process messages with Azure Service Bus",
+              "url": "https://learn.microsoft.com/en-us/training/modules/queue-process-operations-service-bus/6-exercise-process-messages",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "id": "lp7m2",
+          "slug": "event-driven-workflows-event-grid",
+          "title": "Develop event-driven AI workflows with Azure Event Grid",
+          "minutes": 84,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/event-driven-workflows-event-grid/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Understand Azure Event Grid concepts and event-driven patterns for AI solutions",
+              "url": "https://learn.microsoft.com/en-us/training/modules/event-driven-workflows-event-grid/2-understand-event-grid-concepts",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Work with event schemas and properties",
+              "url": "https://learn.microsoft.com/en-us/training/modules/event-driven-workflows-event-grid/3-event-schemas-properties",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Configure delivery and retry policies for reliable event processing",
+              "url": "https://learn.microsoft.com/en-us/training/modules/event-driven-workflows-event-grid/4-delivery-retry-policies",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Publish custom events from AI applications",
+              "url": "https://learn.microsoft.com/en-us/training/modules/event-driven-workflows-event-grid/5-publish-custom-events",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Exercise - Publish and receive events with Azure Event Grid",
+              "url": "https://learn.microsoft.com/en-us/training/modules/event-driven-workflows-event-grid/6-exercise-publish-receive-events",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 3,
+          "id": "lp7m3",
+          "slug": "build-backends-azure-functions",
+          "title": "Build serverless AI backends with Azure Functions",
+          "minutes": 98,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/build-backends-azure-functions/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Understand Azure Functions hosting and scaling for AI workloads",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-backends-azure-functions/2-understand-hosting-scaling",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Set up the local development environment for Functions",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-backends-azure-functions/3-set-up-local-development-environment",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Create triggers and bindings for AI integration patterns",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-backends-azure-functions/4-create-triggers-bindings-ai-patterns",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Manage secrets and configuration in Functions",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-backends-azure-functions/5-manage-secrets-configuration",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Configure identity and access for Functions",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-backends-azure-functions/6-configure-identity-access",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Create an MCP server with Azure Functions",
+              "url": "https://learn.microsoft.com/en-us/training/modules/build-backends-azure-functions/7-exercise-create-mcp-server",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 4,
+          "id": "lp7m4",
+          "slug": "orchestrate-durable-functions",
+          "title": "Orchestrate durable AI workflows with Azure Durable Functions",
+          "minutes": 77,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/orchestrate-durable-functions/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Separate orchestration logic from activity work",
+              "url": "https://learn.microsoft.com/en-us/training/modules/orchestrate-durable-functions/2-separate-orchestrator-activity-responsibilities",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Process independent work with fan-out/fan-in",
+              "url": "https://learn.microsoft.com/en-us/training/modules/orchestrate-durable-functions/3-apply-fan-out-fan-in",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Coordinate human approval with external events",
+              "url": "https://learn.microsoft.com/en-us/training/modules/orchestrate-durable-functions/4-wait-human-approval-external-events",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Design reliable workflow steps",
+              "url": "https://learn.microsoft.com/en-us/training/modules/orchestrate-durable-functions/5-design-reliable-workflow-steps",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Exercise - Build a durable document-processing workflow",
+              "url": "https://learn.microsoft.com/en-us/training/modules/orchestrate-durable-functions/6-exercise-build-durable-document-processing-workflow",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 5,
+          "id": "lp7m5",
+          "slug": "real-time-ai-web-pubsub",
+          "title": "Deliver real-time AI experiences with Azure Web PubSub",
+          "minutes": 104,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Choose a real-time client delivery approach",
+              "url": "https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/2-choose-real-time-client-delivery",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Separate client delivery from backend coordination",
+              "url": "https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/3-separate-client-delivery-backend-coordination",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Negotiate authenticated client connections",
+              "url": "https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/4-negotiate-authenticated-client-connections",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Publish AI updates to operation groups",
+              "url": "https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/5-publish-ai-updates-operation-groups",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Design reconnection and operation recovery",
+              "url": "https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/6-design-reconnection-operation-recovery",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Batch updates and support slow clients",
+              "url": "https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/7-batch-updates-support-slow-clients",
+              "exercise": false
+            },
+            {
+              "u": "U08",
+              "title": "Exercise - Stream AI investigation updates with Azure Web PubSub",
+              "url": "https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/8-exercise-stream-ai-investigation-updates",
+              "exercise": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 8,
+      "id": "lp8",
+      "short": "Secrets & config",
+      "title": "Manage application secrets and configuration for AI solutions",
+      "skillArea": 4,
+      "minutes": 153,
+      "learnUrl": "https://learn.microsoft.com/en-us/training/paths/manage-app-secrets-configuration/",
+      "modules": [
+        {
+          "n": 1,
+          "id": "lp8m1",
+          "slug": "manage-app-secrets-key-vault",
+          "title": "Manage application secrets with Azure Key Vault",
+          "minutes": 74,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/manage-app-secrets-key-vault/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Store and organize secrets, keys, and certificates",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-secrets-key-vault/2-store-organize-secrets",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Retrieve secrets using Azure SDK client libraries",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-secrets-key-vault/3-retrieve-secrets-sdk",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Handle secret versioning and rotation",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-secrets-key-vault/4-handle-versioning-rotation",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Implement caching strategies to reduce Key Vault calls",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-secrets-key-vault/5-implement-caching-strategies",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Exercise - Manage secrets with Azure Key Vault",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-secrets-key-vault/6-exercise-manage-secrets",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "id": "lp8m2",
+          "slug": "manage-app-settings-app-config",
+          "title": "Manage application settings with Azure App Configuration",
+          "minutes": 79,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/manage-app-settings-app-config/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Connect to App Configuration from application code",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-settings-app-config/2-connect-app-configuration",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Organize settings with labels and feature flags",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-settings-app-config/3-organize-labels-feature-flags",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Reference Key Vault secrets from App Configuration",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-settings-app-config/4-reference-key-vault-secrets",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Decide what to store in App Configuration vs Key Vault",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-settings-app-config/5-decide-app-config-vs-key-vault",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Exercise - Retrieve settings and secrets from Azure App Configuration",
+              "url": "https://learn.microsoft.com/en-us/training/modules/manage-app-settings-app-config/6-exercise-retrieve-settings",
+              "exercise": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "id": "lp9",
+      "short": "Observability",
+      "title": "Observe and troubleshoot apps on Azure",
+      "skillArea": 4,
+      "minutes": 161,
+      "learnUrl": "https://learn.microsoft.com/en-us/training/paths/observe-troubleshoot-apps/",
+      "modules": [
+        {
+          "n": 1,
+          "id": "lp9m1",
+          "slug": "instrument-app-opentelemetry",
+          "title": "Instrument an app with OpenTelemetry",
+          "minutes": 79,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Explore OpenTelemetry and its role in observability",
+              "url": "https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/2-explore-opentelemetry-observability",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Add the OpenTelemetry SDK to an application",
+              "url": "https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/3-add-opentelemetry-sdk",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Configure spans and traces",
+              "url": "https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/4-configure-spans-traces",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Export telemetry to Azure Monitor",
+              "url": "https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/5-export-telemetry-azure-monitor",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Debug distributed flows with trace data",
+              "url": "https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/6-debug-distributed-flows-trace-data",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Instrument an app with the OpenTelemetry SDK",
+              "url": "https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/7-exercise-instrument-app-opentelemetry",
+              "exercise": true
+            }
+          ]
+        },
+        {
+          "n": 2,
+          "id": "lp9m2",
+          "slug": "analyze-telemetry-logs-metrics",
+          "title": "Analyze app telemetry with logs and metrics",
+          "minutes": 82,
+          "learnUrl": "https://learn.microsoft.com/en-us/training/modules/analyze-telemetry-logs-metrics/",
+          "units": [
+            {
+              "u": "U02",
+              "title": "Write basic KQL queries",
+              "url": "https://learn.microsoft.com/en-us/training/modules/analyze-telemetry-logs-metrics/2-write-basic-kql-queries",
+              "exercise": false
+            },
+            {
+              "u": "U03",
+              "title": "Explore logs for errors and performance",
+              "url": "https://learn.microsoft.com/en-us/training/modules/analyze-telemetry-logs-metrics/3-explore-logs-errors-performance",
+              "exercise": false
+            },
+            {
+              "u": "U04",
+              "title": "Build dashboards for app telemetry",
+              "url": "https://learn.microsoft.com/en-us/training/modules/analyze-telemetry-logs-metrics/4-build-dashboards-app-telemetry",
+              "exercise": false
+            },
+            {
+              "u": "U05",
+              "title": "Create workbooks for interactive analysis",
+              "url": "https://learn.microsoft.com/en-us/training/modules/analyze-telemetry-logs-metrics/5-create-workbooks-interactive-analysis",
+              "exercise": false
+            },
+            {
+              "u": "U06",
+              "title": "Set alerts for app failures and anomalies",
+              "url": "https://learn.microsoft.com/en-us/training/modules/analyze-telemetry-logs-metrics/6-set-alerts-app-failures-anomalies",
+              "exercise": false
+            },
+            {
+              "u": "U07",
+              "title": "Exercise - Query logs with KQL",
+              "url": "https://learn.microsoft.com/en-us/training/modules/analyze-telemetry-logs-metrics/7-exercise-query-logs-kql",
+              "exercise": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

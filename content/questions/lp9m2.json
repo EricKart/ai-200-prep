@@ -1,0 +1,814 @@
+{
+ "module": "lp9m2",
+ "title": "Analyze app telemetry with logs and metrics",
+ "questions": [
+  {
+   "id": "lp9m2-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which KQL operator selects specific columns for the output?",
+   "options": [
+    {
+     "text": "render",
+     "why": "render draws a chart."
+    },
+    {
+     "text": "where",
+     "why": "where filters rows."
+    },
+    {
+     "text": "project",
+     "why": "Correct. project picks, renames or computes columns."
+    },
+    {
+     "text": "summarize",
+     "why": "summarize aggregates rows into groups."
+    }
+   ],
+   "answer": 2,
+   "hint": "One operator chooses which columns appear in the output.",
+   "explain": "Filter with where, shape with project.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You open Logs from a Log Analytics workspace rather than from the Application Insights resource. Which table holds incoming requests?",
+   "options": [
+    {
+     "text": "requests",
+     "why": "requests is the name in Application Insights scope."
+    },
+    {
+     "text": "Requests_CL",
+     "why": "That's a custom log table naming pattern, not this table."
+    },
+    {
+     "text": "AzureDiagnostics",
+     "why": "That's a different diagnostics table."
+    },
+    {
+     "text": "AppRequests",
+     "why": "Correct. Workspace scope uses AppRequests, AppExceptions, AppDependencies."
+    }
+   ],
+   "answer": 3,
+   "hint": "Workspace-based tables have App-prefixed names.",
+   "explain": "Query scope decides table and column names.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which function groups timestamps into fixed hourly intervals for trend analysis?",
+   "options": [
+    {
+     "text": "bin(timestamp, 1h)",
+     "why": "Correct. bin rounds each timestamp down into 1-hour buckets."
+    },
+    {
+     "text": "dcount(timestamp)",
+     "why": "dcount estimates distinct values."
+    },
+    {
+     "text": "ago(1h)",
+     "why": "ago(1h) is a point in time used for filtering."
+    },
+    {
+     "text": "percentile(duration, 95)",
+     "why": "percentile calculates a latency percentile."
+    }
+   ],
+   "answer": 0,
+   "hint": "One function rounds timestamps down into fixed-size buckets.",
+   "explain": "Without bin(), each unique timestamp would form its own group.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-004",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You want the 20 slowest failed requests from the last hour, sorted by duration. Which operator should end the query?",
+   "options": [
+    {
+     "text": "take 20",
+     "why": "take returns an arbitrary 20 rows, not the slowest."
+    },
+    {
+     "text": "project 20",
+     "why": "project selects columns; it doesn't limit rows."
+    },
+    {
+     "text": "top 20 by duration desc",
+     "why": "Correct. top returns the first N rows sorted by a column."
+    },
+    {
+     "text": "summarize count() by duration",
+     "why": "That groups by duration rather than listing requests."
+    }
+   ],
+   "answer": 2,
+   "hint": "One operator sorts and limits in a single step.",
+   "explain": "take for a quick look; top for the highest or lowest values.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A query searches a large traces table for the word timeout in the message column.",
+   "rows": [
+    {
+     "text": "The has operator uses the term index and is usually faster than contains.",
+     "answer": true,
+     "why": "has uses term indexing; contains doesn't."
+    },
+    {
+     "text": "dcount() returns an exact distinct count in every case.",
+     "answer": false,
+     "why": "dcount() estimates; count_distinct() is exact but heavier."
+    },
+    {
+     "text": "Adding render timechart needs a datetime column in the results.",
+     "answer": true,
+     "why": "timechart requires a datetime column and numeric columns."
+    },
+    {
+     "text": "The take operator returns rows sorted by the column you name.",
+     "answer": false,
+     "why": "take returns arbitrary rows; top sorts."
+    }
+   ],
+   "hint": "Think about term-indexed search, approximate distinct counts, charts needing time, and whether take sorts.",
+   "explain": "Pick fast operators and remember sampling when counting.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Each option starts with `requests | where timestamp > ago(24h)`. Which one gives request count and average duration per hour for each service?",
+   "options": [
+    {
+     "text": "… | project timestamp, duration, cloud_RoleName | render timechart",
+     "why": "render doesn't aggregate data."
+    },
+    {
+     "text": "… | summarize count(), avg(duration) by bin(timestamp, 1h), cloud_RoleName",
+     "why": "Correct. bin buckets the time and the by clause groups per service."
+    },
+    {
+     "text": "… | take 24 | summarize count(), avg(duration) by cloud_RoleName",
+     "why": "take 24 returns 24 arbitrary rows, not 24 hours."
+    },
+    {
+     "text": "… | summarize count(), avg(duration) by timestamp, cloud_RoleName",
+     "why": "Grouping by raw timestamp creates one group per unique time."
+    }
+   ],
+   "answer": 1,
+   "hint": "Count and average per hour and per service: group by both the time bucket and the role name.",
+   "explain": "summarize … by bin(timestamp, 1h), cloud_RoleName is the standard trend pattern.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your code tracks a custom event, \"document classified\", each time the classifier finishes. In which Application Insights table do these rows appear?",
+   "options": [
+    {
+     "text": "customMetrics",
+     "why": "customMetrics holds numeric measurements such as queue depth."
+    },
+    {
+     "text": "requests",
+     "why": "requests holds incoming HTTP requests."
+    },
+    {
+     "text": "customEvents",
+     "why": "Correct. customEvents stores custom business events that developers track explicitly."
+    },
+    {
+     "text": "traces",
+     "why": "traces holds application log messages."
+    }
+   ],
+   "answer": 2,
+   "hint": "Business events you track yourself have their own table, separate from logs and numbers.",
+   "explain": "Application Insights tables: requests, dependencies, exceptions, traces (logs), customEvents (business events), customMetrics (numeric measures) and performanceCounters (system metrics).",
+   "origin": "new"
+  },
+  {
+   "id": "lp9m2-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Sampling is enabled in Application Insights. Which aggregation gives an accurate exception total?",
+   "options": [
+    {
+     "text": "sum(itemCount)",
+     "why": "Correct. Each sampled record represents itemCount real events."
+    },
+    {
+     "text": "count()",
+     "why": "count() returns only the number of sampled records."
+    },
+    {
+     "text": "dcount(type)",
+     "why": "dcount counts distinct exception types."
+    },
+    {
+     "text": "avg(itemCount)",
+     "why": "An average doesn't give a total."
+    }
+   ],
+   "answer": 0,
+   "hint": "With sampling, each row may stand for several items. Add up the weights.",
+   "explain": "Use sum(itemCount) whenever sampling may be active.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "A failed dependency call to a model inference endpoint shows resultCode 429. What does it indicate?",
+   "options": [
+    {
+     "text": "Rate limiting",
+     "why": "Correct. 429 means the endpoint is rate limiting; adjust throughput or retry policies."
+    },
+    {
+     "text": "A network timeout",
+     "why": "Timeouts often have no result code."
+    },
+    {
+     "text": "A server-side crash",
+     "why": "That's typically a 500."
+    },
+    {
+     "text": "An invalid query",
+     "why": "KQL query errors don't produce dependency result codes."
+    }
+   ],
+   "answer": 0,
+   "hint": "429 is the HTTP code for too many requests.",
+   "explain": "429 = throttled, 500 = server failure, no code = timeout or network.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "After joining exceptions with requests, you see columns named cloud_RoleName and cloud_RoleName1. What does Learn recommend?",
+   "options": [
+    {
+     "text": "Ignore it; the suffix disappears after render",
+     "why": "The suffix is part of the result columns."
+    },
+    {
+     "text": "Drop the join and query each table separately",
+     "why": "You'd lose the correlation."
+    },
+    {
+     "text": "Use union instead of join",
+     "why": "union stacks rows; it doesn't correlate them."
+    },
+    {
+     "text": "Rename the columns inside the subquery before the join",
+     "why": "Correct. Renaming first gives unambiguous names in the final project."
+    }
+   ],
+   "answer": 3,
+   "hint": "A join adds a 1 to duplicate column names. Fix it before joining.",
+   "explain": "KQL adds a numeric suffix to duplicate column names after a join.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A dependency has an average duration of 200 ms.",
+   "rows": [
+    {
+     "text": "This proves that nearly all calls finish in about 200 ms.",
+     "answer": false,
+     "why": "Averages can hide slow tails; check percentiles."
+    },
+    {
+     "text": "Checking the 95th and 99th percentiles can reveal slow outliers.",
+     "answer": true,
+     "why": "Percentiles show the tail behavior."
+    },
+    {
+     "text": "The Performance view's duration distribution can show a bimodal pattern.",
+     "answer": true,
+     "why": "It reveals mostly-fast with a slow subset."
+    }
+   ],
+   "hint": "An average hides the spread. Look at percentiles and the distribution.",
+   "explain": "Use percentiles(duration, 50, 95, 99) for latency analysis.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-012",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An investigator wants the top response codes and exception types for a failing operation, then to open a sample request's full timeline. Where should they start?",
+   "options": [
+    {
+     "text": "A pinned dashboard tile",
+     "why": "Dashboard tiles summarize; they aren't the drill-down tool."
+    },
+    {
+     "text": "The Performance view's duration chart",
+     "why": "Performance shows durations, not failure breakdowns."
+    },
+    {
+     "text": "The Failures view under Investigate",
+     "why": "Correct. It shows top codes, exceptions and failed dependencies, with drill-down to samples."
+    },
+    {
+     "text": "Live Metrics",
+     "why": "Live Metrics is real-time, not a failure breakdown."
+    }
+   ],
+   "answer": 2,
+   "hint": "The Investigate area has a view built for failures, with drill-down to samples.",
+   "explain": "Built-in views first, then KQL for deeper questions.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-013",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A classifier catches an exception, logs it and returns a fallback label. Will the exception appear in the Application Insights exceptions table?",
+   "options": [
+    {
+     "text": "No, only unhandled exceptions are stored",
+     "why": "Handled exceptions can be recorded too."
+    },
+    {
+     "text": "Yes, but only in the dependencies table",
+     "why": "Dependencies are outgoing calls, not exceptions."
+    },
+    {
+     "text": "No, exceptions go to the traces table with the logs",
+     "why": "traces holds log messages. Exceptions have their own table."
+    },
+    {
+     "text": "Yes, if it's recorded; handled ones appear too",
+     "why": "Correct. The exceptions table records both handled and unhandled exceptions with stack traces."
+    }
+   ],
+   "answer": 3,
+   "hint": "The exceptions table isn't only for crashes.",
+   "explain": "The exceptions table records errors with stack traces and severity, and both handled and unhandled exceptions appear there when they're recorded.",
+   "origin": "new"
+  },
+  {
+   "id": "lp9m2-014",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A metrics chart should reveal rare worst-case latency spikes that averages hide. Which aggregation fits?",
+   "options": [
+    {
+     "text": "Count",
+     "why": "Count gives a number of samples, not latency."
+    },
+    {
+     "text": "Average",
+     "why": "Average shows typical behavior and smooths spikes."
+    },
+    {
+     "text": "Sum",
+     "why": "Sum totals events over a period."
+    },
+    {
+     "text": "Max",
+     "why": "Correct. Max shows worst-case values."
+    }
+   ],
+   "answer": 3,
+   "hint": "Rare spikes disappear in an average. Which aggregation keeps the worst value?",
+   "explain": "Average for typical latency, sum for totals, max for spikes.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team publishes an operations dashboard with tiles from Application Insights.",
+   "rows": [
+    {
+     "text": "The tiles show live, real-time data at every moment.",
+     "answer": false,
+     "why": "Tiles refresh on a schedule; use Live Metrics for real time."
+    },
+    {
+     "text": "A teammate with dashboard access but no access to Application Insights sees access errors on those tiles.",
+     "answer": true,
+     "why": "Viewers need read access to data sources too."
+    },
+    {
+     "text": "Learn suggests keeping a dashboard to about 5–10 tiles.",
+     "answer": true,
+     "why": "Too many tiles dilute attention."
+    }
+   ],
+   "hint": "Dashboard tiles refresh periodically, follow the viewer's own access, and work best in small numbers.",
+   "explain": "Dashboards are for at-a-glance health; scope access to data as well.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-016",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A latency tile shows p50 flat at 300 ms while p95 climbs from 1 s to 4 s over a week. What does this indicate?",
+   "options": [
+    {
+     "text": "All requests are getting four times slower",
+     "why": "p50 is flat, so typical requests aren't slower."
+    },
+    {
+     "text": "Sampling is removing slow requests",
+     "why": "Sampling doesn't selectively drop slow requests."
+    },
+    {
+     "text": "Most stay fast; a growing subset degrades",
+     "why": "Correct. A widening p50–p95 gap points to a slow subset, such as one document type."
+    },
+    {
+     "text": "The dashboard's refresh schedule is broken",
+     "why": "The trend is consistent, not a refresh glitch."
+    }
+   ],
+   "answer": 2,
+   "hint": "The median is steady while the tail grows. What does that say about most requests?",
+   "explain": "Watch percentile gaps, not just averages.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-017",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "New team members open the operations dashboard and don't know what the application does or where the runbooks are. Which best practice addresses this?",
+   "options": [
+    {
+     "text": "Merge the business and pipeline dashboards into one",
+     "why": "Learn suggests separating concerns into different dashboards."
+    },
+    {
+     "text": "Add more tiles so that every metric is visible",
+     "why": "Learn suggests 5–10 focused tiles; more tiles add clutter."
+    },
+    {
+     "text": "Name tiles Query 1, Query 2 and so on to keep them short",
+     "why": "Descriptive tile titles are the recommendation."
+    },
+    {
+     "text": "Add a Markdown tile at the top with context, runbook links and on-call contacts",
+     "why": "Correct. A Markdown tile gives viewers the context they need."
+    }
+   ],
+   "answer": 3,
+   "hint": "One tile type is just text.",
+   "explain": "Dashboard best practices: separate concerns, keep 5–10 tiles, use descriptive tile titles, and include a Markdown tile with context, runbook links and on-call information.",
+   "origin": "new"
+  },
+  {
+   "id": "lp9m2-018",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "During an incident, an engineer wants to pick a service and time range and have all charts update together. Which tool fits?",
+   "options": [
+    {
+     "text": "Smart detection on the resource",
+     "why": "Smart detection raises anomaly alerts."
+    },
+    {
+     "text": "A workbook with parameters",
+     "why": "Correct. Parameters such as {TimeRange} and {ServiceName} drive every dependent query."
+    },
+    {
+     "text": "A dashboard with pinned tiles",
+     "why": "Dashboard tiles are relatively static."
+    },
+    {
+     "text": "An action group for the team",
+     "why": "Action groups send notifications."
+    }
+   ],
+   "answer": 1,
+   "hint": "Interactive charts that all respond to the same choices need a tool with parameters.",
+   "explain": "Dashboards for at-a-glance health; workbooks for interactive investigation.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-019",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A workbook dropdown {ServiceName} allows multi-select. How should a query filter on it?",
+   "options": [
+    {
+     "text": "| where cloud_RoleName == {ServiceName}",
+     "why": "== compares to one value."
+    },
+    {
+     "text": "| project {ServiceName}",
+     "why": "project selects columns."
+    },
+    {
+     "text": "| where cloud_RoleName in ({ServiceName})",
+     "why": "Correct. Multi-select becomes a comma-separated list for the in operator."
+    },
+    {
+     "text": "| where cloud_RoleName has {ServiceName}",
+     "why": "has is a term search, not a list match."
+    }
+   ],
+   "answer": 2,
+   "hint": "Multi-select values need a filter that accepts a list.",
+   "explain": "Multi-select parameters compare several services side by side.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-020",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A workbook shows a summary grid of services with error counts. Clicking a service should filter the rest of the workbook to that service. What should you configure?",
+   "options": [
+    {
+     "text": "A second dashboard for each service",
+     "why": "Separate dashboards don't drill down from a click."
+    },
+    {
+     "text": "A resource picker parameter at the top",
+     "why": "A resource picker chooses resources, not a service from a grid row."
+    },
+    {
+     "text": "A grid link that exports a parameter",
+     "why": "Correct. The exported parameter filters the remaining steps."
+    },
+    {
+     "text": "A log search alert for each service",
+     "why": "Alerts notify; they don't filter views."
+    }
+   ],
+   "answer": 2,
+   "hint": "Clicking a grid row should set something the rest of the workbook reads.",
+   "explain": "Combine linked grids with conditional visibility for drill-down.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-021",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which Azure Monitor alert severity is the most urgent?",
+   "options": [
+    {
+     "text": "Sev 3 (Informational)",
+     "why": "3 is for notable events without urgency."
+    },
+    {
+     "text": "Sev 4 (Verbose)",
+     "why": "4 is verbose diagnostic detail."
+    },
+    {
+     "text": "Sev 1 (Error)",
+     "why": "1 is Error, one step lower."
+    },
+    {
+     "text": "Sev 0 (Critical)",
+     "why": "Correct. 0 is Critical, for production-impacting failures."
+    }
+   ],
+   "answer": 3,
+   "hint": "Severities run from 0 to 4. Lower numbers are more urgent.",
+   "explain": "Severity runs from 0 (Critical) to 4 (Verbose).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-022",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You need an alert when the 95th-percentile response time of any service exceeds 3 seconds, computed with KQL. Which alert type fits?",
+   "options": [
+    {
+     "text": "A log search alert",
+     "why": "Correct. Log search alerts run KQL queries, including percentiles per service."
+    },
+    {
+     "text": "Smart detection by itself",
+     "why": "Smart detection learns baselines; it doesn't enforce your 3-second SLA."
+    },
+    {
+     "text": "A dashboard tile",
+     "why": "Tiles don't notify anyone."
+    },
+    {
+     "text": "A metric alert on CPU percentage",
+     "why": "CPU isn't response-time percentile per service."
+    }
+   ],
+   "answer": 0,
+   "hint": "The condition is computed with a KQL query.",
+   "explain": "Log search alerts give the flexibility AI apps usually need.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-023",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A log search alert runs `requests | where success == false | summarize failedCount = count() by cloud_RoleName | where failedCount > 10` every 5 minutes over a 5-minute window, firing when rows > 0.",
+   "rows": [
+    {
+     "text": "Each returned row identifies a service with more than 10 failures in the window.",
+     "answer": true,
+     "why": "Rows represent services over the threshold."
+    },
+    {
+     "text": "One alert rule can reference up to ten action groups.",
+     "answer": false,
+     "why": "The limit is five action groups per rule."
+    },
+    {
+     "text": "Requiring several violations before firing reduces noise from single spikes.",
+     "answer": true,
+     "why": "You can configure the number of violations."
+    },
+    {
+     "text": "Smart detection makes this manual rule unnecessary.",
+     "answer": false,
+     "why": "Manual rules enforce known thresholds; smart detection finds novel anomalies."
+    }
+   ],
+   "hint": "Each result row can be its own alert. Several violations reduce noise.",
+   "explain": "Manual log alerts plus smart detection give the widest coverage.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-024",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "When a critical alert fires, the team wants a ticket created in an external system automatically. Which action group action fits?",
+   "options": [
+    {
+     "text": "An SMS notification",
+     "why": "SMS notifies a person; it doesn't create tickets."
+    },
+    {
+     "text": "A Severity 4 setting",
+     "why": "Severity classifies urgency; it isn't an action."
+    },
+    {
+     "text": "An Azure mobile app push",
+     "why": "Push notifies devices only."
+    },
+    {
+     "text": "A Logic App action",
+     "why": "Correct. Logic Apps can create a ticket in an external system."
+    }
+   ],
+   "answer": 3,
+   "hint": "Creating a ticket elsewhere calls for a workflow automation service.",
+   "explain": "Automated actions: Function, Logic App, webhook, Automation Runbook, Event Hub.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-025",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A dependency has slowed gradually over three weeks, and no fixed threshold has fired. Which feature is designed to catch this?",
+   "options": [
+    {
+     "text": "A dashboard p50 tile",
+     "why": "A tile shows data but doesn't alert."
+    },
+    {
+     "text": "Smart detection performance anomalies",
+     "why": "Correct. Smart detection compares against historical norms and spots gradual degradation."
+    },
+    {
+     "text": "A workbook time-range parameter",
+     "why": "Parameters filter views; they don't alert."
+    },
+    {
+     "text": "A metric alert with a static threshold",
+     "why": "Static thresholds miss values that never cross the line."
+    }
+   ],
+   "answer": 1,
+   "hint": "A slow drift doesn't cross a fixed line. A feature that learns normal behavior can catch it.",
+   "explain": "Smart detection learns a baseline and alerts on deviations.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m2-026",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Five alert rules for the RAG pipeline should all page the same on-call engineer and post to the same team channel. What's the most maintainable setup?",
+   "options": [
+    {
+     "text": "Copy the same notifications into each rule's condition",
+     "why": "Conditions decide when an alert fires. Notifications belong in action groups."
+    },
+    {
+     "text": "One action group with both notifications, referenced by all five rules",
+     "why": "Correct. Action groups are reusable across alert rules."
+    },
+    {
+     "text": "Raise every rule to Sev 0 so that notifications go out automatically",
+     "why": "Severity labels urgency. It doesn't send notifications by itself."
+    },
+    {
+     "text": "Five action groups, one per rule, each with the same settings",
+     "why": "That duplicates configuration that one reusable action group can hold."
+    }
+   ],
+   "answer": 1,
+   "hint": "Alert rules have a scope, a condition, a severity, and something reusable that decides who hears about it.",
+   "explain": "An alert rule has a scope, a condition, an action group and a severity (0 Critical to 4 Verbose). Action groups hold notifications and automated actions, and they're reusable across rules.",
+   "origin": "new"
+  }
+ ]
+}

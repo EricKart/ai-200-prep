@@ -1,0 +1,759 @@
+{
+ "module": "lp6m1",
+ "title": "Implement data operations in Azure Managed Redis",
+ "questions": [
+  {
+   "id": "lp6m1-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "In the cache-aside pattern, what happens on a cache miss?",
+   "options": [
+    {
+     "text": "The app returns an error and retries later",
+     "why": "A miss isn't an error."
+    },
+    {
+     "text": "Redis forwards the request to the database by itself",
+     "why": "The application, not Redis, reads the database."
+    },
+    {
+     "text": "The app reads the database, then caches the result",
+     "why": "Correct. Data is loaded into the cache only when requested."
+    },
+    {
+     "text": "Redis loads the entire database into memory",
+     "why": "Cache-aside avoids preloading whole datasets."
+    }
+   ],
+   "answer": 2,
+   "hint": "Cache-aside loads data into the cache only when it's asked for.",
+   "explain": "Check Redis first; on a miss, fetch from the database and cache it for next time.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An inference API needs the highest Redis throughput and has modest memory needs. Which tier fits?",
+   "options": [
+    {
+     "text": "Balanced (4:1)",
+     "why": "Balanced is for standard workloads."
+    },
+    {
+     "text": "Memory Optimized (8:1)",
+     "why": "Memory Optimized favors memory over throughput."
+    },
+    {
+     "text": "Compute Optimized (2:1)",
+     "why": "Correct. Compute Optimized is for performance-intensive workloads needing maximum throughput."
+    },
+    {
+     "text": "Flash Optimized (preview)",
+     "why": "Flash Optimized trades performance for cheaper large datasets."
+    }
+   ],
+   "answer": 2,
+   "hint": "Highest throughput with modest memory: the tier with the lowest memory-to-vCPU ratio.",
+   "explain": "Match the memory-to-vCPU ratio to the workload.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A web app stores shopping carts and preferences in cookies, and pages have become slow.",
+   "rows": [
+    {
+     "text": "Large cookies are sent with every HTTP request and response, adding bandwidth and latency.",
+     "answer": true,
+     "why": "Storing too much in cookies hurts performance."
+    },
+    {
+     "text": "Keeping only a session id in the cookie and the data in Redis is the typical fix.",
+     "answer": true,
+     "why": "The session id is the key to the session data in Redis."
+    },
+    {
+     "text": "Azure Managed Redis can only be used by applications hosted in Azure.",
+     "answer": false,
+     "why": "It's usable by any application inside or outside Azure."
+    }
+   ],
+   "hint": "Cookies travel with every request. Keep only an id in the cookie.",
+   "explain": "The session store pattern keeps cookies small and session data in memory.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-004",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A team must cache a very large product dataset where most items are rarely read, and cost matters more than peak speed. Which tier fits?",
+   "options": [
+    {
+     "text": "Balanced",
+     "why": "Balanced keeps everything in memory at a higher cost for this size."
+    },
+    {
+     "text": "Compute Optimized",
+     "why": "Compute Optimized has the least memory per vCPU."
+    },
+    {
+     "text": "Flash Optimized (preview)",
+     "why": "Correct. It moves less-used data from RAM to NVMe for cost-effective large caches."
+    },
+    {
+     "text": "Memory Optimized with high availability disabled",
+     "why": "Disabling HA doesn't change where data is stored; Learn says keep HA on in production."
+    }
+   ],
+   "answer": 2,
+   "hint": "Big dataset, mostly cold, cost first: the tier that moves cold data to NVMe.",
+   "explain": "Flash Optimized trades some performance for scaling large datasets cheaply.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-005",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A development team needs a Redis cache for testing with lots of memory, and it doesn't need high throughput. They want the lowest price point. Which tier fits?",
+   "options": [
+    {
+     "text": "Memory Optimized (8:1 memory-to-vCPU)",
+     "why": "Correct. Memory Optimized suits memory-intensive use without top throughput, at a lower price, which is good for dev and test."
+    },
+    {
+     "text": "Compute Optimized (2:1 memory-to-vCPU)",
+     "why": "This is for maximum throughput, which the team doesn't need."
+    },
+    {
+     "text": "Flash Optimized (preview)",
+     "why": "Flash moves cold data to NVMe for very large datasets. It isn't the dev/test default."
+    },
+    {
+     "text": "Balanced (4:1 memory-to-vCPU)",
+     "why": "Balanced is the standard choice for production workloads, not the lowest price for memory."
+    }
+   ],
+   "answer": 0,
+   "hint": "Lots of memory and little compute means a high memory-to-vCPU ratio.",
+   "explain": "Memory Optimized (8:1) suits memory-intensive workloads that don't need top throughput, with a lower price point that's good for dev/test. Balanced (4:1) is for standard workloads; Compute Optimized (2:1) for maximum throughput.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m1-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Every page on a retail site renders the same header, footer, banners and navigation menu from templates, which takes time on each request. Which Redis caching use case fits?",
+   "options": [
+    {
+     "text": "Message queue",
+     "why": "Queues hand work between processes. They don't serve repeated page content."
+    },
+    {
+     "text": "Content cache",
+     "why": "Correct. Static template content such as headers and footers rarely changes, so it's ideal to cache."
+    },
+    {
+     "text": "Rate limiter",
+     "why": "Rate limiting counts requests. It doesn't speed up page rendering."
+    },
+    {
+     "text": "Session store",
+     "why": "A session store holds per-user data such as carts, not shared page fragments."
+    }
+   ],
+   "answer": 1,
+   "hint": "The data is the same for everyone and rarely changes.",
+   "explain": "Content cache: static template content (headers, footers, banners, navigation) rarely changes and is ideal for Redis, giving sub-millisecond access and reducing web server load.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m1-007",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A cleanup job needs to find all keys matching user:42:* in production. Which command should it use?",
+   "options": [
+    {
+     "text": "KEYS user:42:* on the primary",
+     "why": "KEYS is expensive and blocks; don't use it in production."
+    },
+    {
+     "text": "SCAN with a match pattern",
+     "why": "Correct. SCAN iterates keys without blocking the server."
+    },
+    {
+     "text": "FLUSHDB, then reload the data",
+     "why": "FLUSHDB deletes everything."
+    },
+    {
+     "text": "CLUSTER KEYSLOT for each key",
+     "why": "That's blocked and doesn't list keys."
+    }
+   ],
+   "answer": 1,
+   "hint": "One command blocks the server while it walks every key. Use the one that iterates in steps.",
+   "explain": "Avoid expensive operations: use SCAN instead of KEYS.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which Python client library does Learn list for Azure Managed Redis?",
+   "options": [
+    {
+     "text": "Lettuce",
+     "why": "That's the Java client."
+    },
+    {
+     "text": "StackExchange.Redis",
+     "why": "That's the C#/.NET client."
+    },
+    {
+     "text": "redis-py",
+     "why": "Correct. redis-py is the Python client."
+    },
+    {
+     "text": "node_redis",
+     "why": "That's the Node.js client."
+    }
+   ],
+   "answer": 2,
+   "hint": "The Python client's name is redis followed by the language's short name.",
+   "explain": "StackExchange.Redis (.NET), Lettuce (Java), node_redis (Node.js), redis-py (Python).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An app uses MSET across keys in different hash slots and gets CROSSSLOT errors. The instance uses the OSS clustering policy. What's the fix?",
+   "options": [
+    {
+     "text": "Switch the command from MSET to MGET",
+     "why": "MGET is also multi-key and has the same constraint."
+    },
+    {
+     "text": "Make the keys map to the same hash slot",
+     "why": "Correct. With OSS clustering, all keys in a multi-key command must map to the same hash slot."
+    },
+    {
+     "text": "Enable Active-Active geo-replication on it",
+     "why": "Active-Active restricts cross-slot commands further."
+    },
+    {
+     "text": "Run KEYS before MSET to find each key's slot",
+     "why": "KEYS is expensive and doesn't fix slot mapping."
+    }
+   ],
+   "answer": 1,
+   "hint": "With OSS clustering, multi-key commands need every key in the same hash slot.",
+   "explain": "Enterprise clustering allows some multi-key commands across slots; OSS clustering doesn't.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A database uses Enterprise clustering with Active-Active geo-replication.",
+   "rows": [
+    {
+     "text": "MGET works across hash slots.",
+     "answer": true,
+     "why": "In Active-Active databases, MGET, EXISTS and TOUCH work across slots."
+    },
+    {
+     "text": "DEL across hash slots works the same as without geo-replication.",
+     "answer": false,
+     "why": "In Active-Active, only MGET, EXISTS and TOUCH work across slots."
+    },
+    {
+     "text": "FLUSHALL is available to clear the cache quickly.",
+     "answer": false,
+     "why": "FLUSHALL and FLUSHDB are blocked for active geo-replication."
+    }
+   ],
+   "hint": "Active-Active narrows which multi-key commands work across slots and blocks the flush commands.",
+   "explain": "Active-Active narrows which commands you can use.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Which two practices does Learn recommend for connecting to Azure Managed Redis? (Select two.)",
+   "options": [
+    {
+     "text": "Connect with the hostname rather than the public IP",
+     "why": "Correct. IP addresses can change during scale operations."
+    },
+    {
+     "text": "Disable TLS on the connection to reduce latency",
+     "why": "TLS is required by default (1.2 and 1.3)."
+    },
+    {
+     "text": "Connect to the public IP so that DNS isn't needed",
+     "why": "Public IPs can change; use hostnames."
+    },
+    {
+     "text": "Place Redis and the app in the same Azure region",
+     "why": "Correct. Co-locating reduces latency."
+    }
+   ],
+   "answer": [
+    0,
+    3
+   ],
+   "hint": "Keep the app close to the cache, and don't rely on an IP that can change.",
+   "explain": "Co-locate, use hostnames, keep TLS on; scale when metrics stay above 75%.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A database uses the Enterprise clustering policy without geo-replication.",
+   "rows": [
+    {
+     "text": "MSET works across hash slots.",
+     "answer": true,
+     "why": "Enterprise clustering allows DEL, MSET, MGET, EXISTS, UNLINK and TOUCH across slots."
+    },
+    {
+     "text": "CLUSTER NODES can be used to inspect the topology.",
+     "answer": false,
+     "why": "CLUSTER INFO, HELP, KEYSLOT, NODES and SLOTS are blocked with Enterprise clustering."
+    },
+    {
+     "text": "Every client library can connect to this database.",
+     "answer": true,
+     "why": "All client libraries work with the Enterprise clustering policy."
+    }
+   ],
+   "hint": "Enterprise clustering hides the cluster from clients. Think about what that allows and what it blocks.",
+   "explain": "With Enterprise clustering, all client libraries work, and DEL, MSET, MGET, EXISTS, UNLINK and TOUCH work across slots. CLUSTER INFO/HELP/KEYSLOT/NODES/SLOTS are blocked. Active-Active narrows cross-slot commands to MGET, EXISTS and TOUCH.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m1-013",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An app caches each user's full 4 MB recommendation payload under one key, and responses are slow under load. Which best practice does Learn give first?",
+   "options": [
+    {
+     "text": "Turn off TLS to make the payload smaller",
+     "why": "TLS is required, and it doesn't change payload size."
+    },
+    {
+     "text": "Move the cache to a different region from the app",
+     "why": "Placing the cache in the same region as the app is the recommendation."
+    },
+    {
+     "text": "Split the data into several keys with smaller values",
+     "why": "Correct. Use smaller values and divide large chunks across multiple keys."
+    },
+    {
+     "text": "Use KEYS to find and delete the large values",
+     "why": "KEYS is an expensive command that shouldn't be used in production."
+    }
+   ],
+   "answer": 2,
+   "hint": "Redis works best with many small values.",
+   "explain": "Best practices: use smaller values (divide large data into multiple keys), use pipelining, avoid KEYS (use SCAN), co-locate in one region, use hostnames, and keep TLS on.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m1-014",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your production cache's Used Memory Percentage has stayed around 80% for two weeks, and CPU is at 78%. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Disable high availability to free memory",
+     "why": "High availability should stay on in production."
+    },
+    {
+     "text": "Scale the instance, because the metrics consistently exceed 75%",
+     "why": "Correct. Learn says to scale when key metrics consistently exceed 75%."
+    },
+    {
+     "text": "Wait until memory reaches 100%, because eviction handles the rest",
+     "why": "Running near capacity risks evictions and latency. Learn's threshold is 75%."
+    },
+    {
+     "text": "Run FLUSHALL weekly to keep memory low",
+     "why": "Flushing deletes all data, which defeats the cache."
+    }
+   ],
+   "answer": 1,
+   "hint": "Learn gives one percentage threshold for memory, CPU, clients and bandwidth.",
+   "explain": "Monitor Used Memory Percentage, CPU, Connected Clients and Network bandwidth, and scale when they consistently exceed 75%.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m1-015",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "To cut costs, a teammate proposes disabling high availability on the production cache that holds user sessions. What does Learn recommend?",
+   "options": [
+    {
+     "text": "Disable it and enable Flash Optimized instead",
+     "why": "Flash Optimized is about storage cost, not availability."
+    },
+    {
+     "text": "Keep high availability on in production; disable it only for dev or test",
+     "why": "Correct. Use high availability for production workloads."
+    },
+    {
+     "text": "Disable it, because Redis data is always rebuilt from the database",
+     "why": "Sessions may not be in any database, and an outage would log users out."
+    },
+    {
+     "text": "Disable it, but turn on data persistence to replace it",
+     "why": "Persistence helps recovery. It isn't a replacement for high availability."
+    }
+   ],
+   "answer": 1,
+   "hint": "It's production data that users depend on.",
+   "explain": "Enable high availability for production workloads and only disable it for dev/test. For data protection, add data persistence or periodic import/export.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m1-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A Python app connects to Azure Managed Redis with redis-py. Which port should it use?",
+   "options": [
+    {
+     "text": "6379",
+     "why": "Learn doesn't list 6379 for these services."
+    },
+    {
+     "text": "6380",
+     "why": "6380 is for Azure Cache for Redis instances."
+    },
+    {
+     "text": "443",
+     "why": "443 isn't the Redis port here."
+    },
+    {
+     "text": "10000",
+     "why": "Correct. Azure Managed Redis and Enterprise caches use port 10000."
+    }
+   ],
+   "answer": 3,
+   "hint": "Azure Managed Redis listens on a different port from the older Azure Cache for Redis.",
+   "explain": "Azure Managed Redis: 10000; Azure Cache for Redis: 6380.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-017",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A rate limiter counts requests per user across many API instances and must avoid race conditions. Which command fits?",
+   "options": [
+    {
+     "text": "INCR on a per-user key",
+     "why": "Correct. INCR is atomic, so concurrent increments don't conflict."
+    },
+    {
+     "text": "GET then SET with the new value",
+     "why": "Read-then-write can race between instances."
+    },
+    {
+     "text": "HSET on a per-user field",
+     "why": "HSET overwrites a field; it doesn't increment atomically here."
+    },
+    {
+     "text": "LPUSH to a per-user list",
+     "why": "A list grows with entries rather than counting atomically."
+    }
+   ],
+   "answer": 0,
+   "hint": "Counting across many instances needs an atomic operation.",
+   "explain": "INCR, DECR, INCRBY and DECRBY are atomic counters.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. You store a user profile with `r.hset('user:1001', mapping={...})` and want it to expire in one hour.",
+   "rows": [
+    {
+     "text": "SETEX can store the hash and set its expiry in one command.",
+     "answer": false,
+     "why": "SETEX is for string values; for hashes, set the data then use EXPIRE."
+    },
+    {
+     "text": "r.expire('user:1001', 3600) adds the one-hour expiry.",
+     "answer": true,
+     "why": "EXPIRE works on keys of any type."
+    },
+    {
+     "text": "If r.ttl('user:1001') returns -1, the key exists but has no expiry.",
+     "answer": true,
+     "why": "-1 means no expiration; -2 means the key doesn't exist."
+    },
+    {
+     "text": "If r.ttl('user:1001') returns -2, the key exists with no expiry.",
+     "answer": false,
+     "why": "-2 means the key doesn't exist; -1 means no expiry."
+    }
+   ],
+   "hint": "SETEX is for strings. Hashes get their expiry separately. Learn the TTL return codes.",
+   "explain": "Expiry commands operate on keys, so they work with every data type.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-019",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An instance uses the OSS clustering policy, and code built with `redis.Redis(...)` fails on keys in other slots. What should the Python code use?",
+   "options": [
+    {
+     "text": "redis.Redis with port 6380",
+     "why": "6380 is the Azure Cache for Redis port and doesn't address clustering."
+    },
+    {
+     "text": "redis.Redis with decode_responses=False",
+     "why": "decode_responses only changes byte/string handling."
+    },
+    {
+     "text": "redis.cluster.RedisCluster",
+     "why": "Correct. With OSS clustering, connect with redis.cluster.RedisCluster."
+    },
+    {
+     "text": "redis.asyncio.Redis",
+     "why": "The async client doesn't change clustering support."
+    }
+   ],
+   "answer": 2,
+   "hint": "With OSS clustering, the client must understand the cluster.",
+   "explain": "The clustering policy changes how you connect: OSS needs a cluster-aware client.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-020",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Match each cached item to Learn's suggested TTL range.",
+   "choices": [
+    "1–5 minutes",
+    "15–60 minutes",
+    "1–24 hours",
+    "24 hours or more"
+   ],
+   "items": [
+    {
+     "text": "Live stock levels that change constantly",
+     "answer": 0,
+     "why": "Frequently changing data: 1–5 minutes."
+    },
+    {
+     "text": "Product recommendations that change a few times a day",
+     "answer": 1,
+     "why": "Moderate change rate: 15–60 minutes."
+    },
+    {
+     "text": "A user's profile details",
+     "answer": 2,
+     "why": "Relatively stable data: 1–24 hours."
+    },
+    {
+     "text": "A list of country codes",
+     "answer": 3,
+     "why": "Static reference data: 24+ hours."
+    }
+   ],
+   "hint": "The more often data changes, the shorter its TTL.",
+   "explain": "Balance data freshness against cache hit rate when choosing TTLs.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m1-021",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An app caches pickled Python objects in Redis. After the connection is created with decode_responses=True, reading them back fails. What should you change?",
+   "options": [
+    {
+     "text": "Use decode_responses=False for binary data such as pickled objects",
+     "why": "Correct. decode_responses=True converts responses to strings, which breaks binary data."
+    },
+    {
+     "text": "Connect on port 6380 instead of 10000",
+     "why": "The port is about which service you connect to, not decoding."
+    },
+    {
+     "text": "Store the objects with HSET instead of SET",
+     "why": "The data type doesn't fix the decoding of binary values."
+    },
+    {
+     "text": "Add an expiry to each key",
+     "why": "Expiry controls lifetime, not how values are decoded."
+    }
+   ],
+   "answer": 0,
+   "hint": "One connection option turns bytes into text automatically.",
+   "explain": "decode_responses=True converts byte responses to strings, which suits text. For binary data such as images or pickled objects, use decode_responses=False.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m1-022",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A production app should stop using an access key and connect to Azure Managed Redis with Microsoft Entra ID. What does Learn point to for redis-py?",
+   "options": [
+    {
+     "text": "redis.cluster.RedisCluster, which handles authentication",
+     "why": "RedisCluster is for OSS clustering. It doesn't add Entra ID authentication."
+    },
+    {
+     "text": "The redis-entraid package, with a token for https://redis.azure.com/.default",
+     "why": "Correct. redis-entraid adds Entra ID authentication to redis-py."
+    },
+    {
+     "text": "Port 6380 with TLS turned off",
+     "why": "Azure Managed Redis uses port 10000, and TLS is required."
+    },
+    {
+     "text": "A password set to the app's client ID",
+     "why": "A client ID isn't a credential, and Entra ID authentication uses tokens."
+    }
+   ],
+   "answer": 1,
+   "hint": "There's a companion package for Entra ID, and tokens are requested for a Redis-specific scope.",
+   "explain": "For production, use Microsoft Entra ID authentication with the redis-entraid package, requesting tokens for https://redis.azure.com/.default.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m1-023",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Background workers must process inference jobs in the order they were submitted (first in, first out). Which Redis data type and commands fit?",
+   "options": [
+    {
+     "text": "A List, adding with LPUSH and taking with RPOP",
+     "why": "Correct. Lists are ordered, and pushing on one end while popping from the other gives a FIFO queue."
+    },
+    {
+     "text": "A List, adding with LPUSH and taking with LPOP",
+     "why": "Pushing and popping on the same end gives LIFO (a stack), not FIFO."
+    },
+    {
+     "text": "A Hash, adding with HSET and reading with HGETALL",
+     "why": "Hashes hold field-value pairs with no order for processing."
+    },
+    {
+     "text": "A String counter, using INCR for each job",
+     "why": "A counter tracks a number. It doesn't hold the jobs."
+    }
+   ],
+   "answer": 0,
+   "hint": "Lists can act as a stack or a queue, depending on which ends you use.",
+   "explain": "Redis Lists are ordered collections. LPUSH/RPUSH add to either end and LPOP/RPOP remove; using opposite ends gives a FIFO queue, the same end gives LIFO.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m1-024",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A team stores each field of a product (name, price, category, rating) as a separate key, such as product:42:name. Memory use is higher than expected. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Serialize every product into one giant string key",
+     "why": "Very large values are discouraged, and you'd lose per-field access."
+    },
+    {
+     "text": "Use MSET so that the separate keys take less space",
+     "why": "MSET writes several keys at once, but it doesn't make them smaller."
+    },
+    {
+     "text": "Store each product as one Hash with HSET",
+     "why": "Correct. Hashes keep field-value pairs in one key and are more memory-efficient than separate keys."
+    },
+    {
+     "text": "Store each field as a List element",
+     "why": "Lists are for ordered collections, not named fields."
+    }
+   ],
+   "answer": 2,
+   "hint": "One data type holds an object's fields under a single key.",
+   "explain": "Hashes store objects as field-value pairs within a single key (HSET, HGET, HGETALL) and are more memory-efficient than storing each field as a separate key.",
+   "origin": "new"
+  }
+ ]
+}

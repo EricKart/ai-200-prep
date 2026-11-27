@@ -1,0 +1,1025 @@
+{
+ "module": "lp1m1",
+ "title": "Store and manage containers in Azure Container Registry",
+ "questions": [
+  {
+   "id": "lp1m1-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your team creates a registry named `contosoinference`. Which login server do developers use to push images to it?",
+   "options": [
+    {
+     "text": "contosoinference.registry.azure.com",
+     "why": "ACR login servers use the azurecr.io domain."
+    },
+    {
+     "text": "contosoinference.azurewebsites.net",
+     "why": "azurewebsites.net is the App Service domain, not a registry login server."
+    },
+    {
+     "text": "contosoinference.azurecr.io",
+     "why": "Correct. Each registry has a login server in the format <registry-name>.azurecr.io."
+    },
+    {
+     "text": "azurecr.io/contosoinference",
+     "why": "The registry name comes first, as a subdomain, not as a path."
+    }
+   ],
+   "answer": 2,
+   "hint": "Every registry gets its own login server. Think about which Azure domain is reserved for container registries.",
+   "explain": "The registry name becomes part of its unique login server URL: <registry-name>.azurecr.io.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "In Azure Container Registry, what is a repository?",
+   "options": [
+    {
+     "text": "A collection of images with the same name but different tags",
+     "why": "Correct. A repository such as inference-api holds every version (tag) of that image."
+    },
+    {
+     "text": "A single image layer created by one Dockerfile instruction",
+     "why": "That is a layer, which is part of an artifact."
+    },
+    {
+     "text": "The SHA-256 manifest that lists an image's layers",
+     "why": "That is the manifest, identified by a digest."
+    },
+    {
+     "text": "The top-level resource that hosts all of the registry content",
+     "why": "That describes the registry, the top level of the hierarchy."
+    }
+   ],
+   "answer": 0,
+   "hint": "Picture the three levels: registry, then repository, then artifact. Which level holds every tag of one image name?",
+   "explain": "Registry → repository → artifact. A repository groups all tagged versions of one image name.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The ML team must be able to push images to their own area of the registry, but must not push to the production images. How should you organize the repositories?",
+   "options": [
+    {
+     "text": "Create a second registry for the ML team in the Basic tier",
+     "why": "Learn recommends namespaces inside a registry for this; a second registry isn't needed."
+    },
+    {
+     "text": "Use namespaces such as ml-team/model-server and production/inference-api",
+     "why": "Correct. Forward-slash namespaces group images, and you can grant a team push rights to only its namespace."
+    },
+    {
+     "text": "Give every ML image a tag starting with ml- inside the shared production repository",
+     "why": "Tags label versions; they don't separate permissions between teams."
+    },
+    {
+     "text": "Store the ML team's images as Helm charts instead of Docker images",
+     "why": "The artifact format doesn't control who can push."
+    }
+   ],
+   "answer": 1,
+   "hint": "You can grant push rights to part of a registry. What groups repositories by a prefix with a forward slash?",
+   "explain": "Namespaces (team/image) help with access control: a team can push only to its namespace while production stays restricted.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Inference nodes in five regions pull a 6 GB model-serving image, and pulls from far-away regions are slow. Which ACR capability addresses this, and which tier provides it?",
+   "options": [
+    {
+     "text": "Content trust, in the Standard tier",
+     "why": "Content trust is about image signing, not pull latency, and it's a Premium feature."
+    },
+    {
+     "text": "Layer sharing, in the Standard tier",
+     "why": "Layer sharing saves storage in every tier; it doesn't move images closer to regions."
+    },
+    {
+     "text": "Geo-replication, in the Premium tier",
+     "why": "Correct. Geo-replication puts images close to deployment regions, and it's a Premium feature."
+    },
+    {
+     "text": "Private endpoints, in the Basic tier",
+     "why": "Private endpoints control network access, and they need Premium."
+    }
+   ],
+   "answer": 2,
+   "hint": "Slow pulls from far regions are a distance problem. Which feature puts copies of images near each region, and which tier has it?",
+   "explain": "Geo-replication distributes images close to deployment regions for faster pulls; it's part of the Premium tier.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Production pods pulled `inference-api:stable` at different times and now run two different images. You need every node to run exactly the image that passed testing, even if someone pushes to that tag again. What should the deployment reference?",
+   "options": [
+    {
+     "text": "Its digest: inference-api@sha256:<hash>",
+     "why": "Correct. Digests are immutable, so pulling by digest always returns the same image."
+    },
+    {
+     "text": "inference-api:latest, because it resolves to a single image",
+     "why": "latest is a mutable tag and is the default; it causes this exact problem."
+    },
+    {
+     "text": "The repository name alone, so ACR picks the newest manifest",
+     "why": "Without a tag, Docker uses latest, which is still a moving tag."
+    },
+    {
+     "text": "The same tag, with the image locked by write-enabled false",
+     "why": "Locking stops overwrites from now on, but Learn's answer for guaranteed reproducibility is the digest."
+    }
+   ],
+   "answer": 0,
+   "hint": "Tags can move after a push. Which way of naming an image can never change?",
+   "explain": "Tags are mutable and can move; a SHA-256 digest never changes. Pull by digest when consistency across nodes is critical.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. Your registry holds `inference-api:v1.2.0`, which is also tagged `inference-api:stable`.",
+   "rows": [
+    {
+     "text": "Both tags reference the same underlying image.",
+     "answer": true,
+     "why": "A single artifact can have multiple tags pointing to it."
+    },
+    {
+     "text": "Pushing a new image as inference-api:stable moves that tag to the new image.",
+     "answer": true,
+     "why": "Tags are mutable: pushing an existing tag moves it."
+    },
+    {
+     "text": "Pushing a new image as inference-api:stable changes the digest of the v1.2.0 image.",
+     "answer": false,
+     "why": "Digests are immutable; the v1.2.0 image keeps its digest."
+    },
+    {
+     "text": "Running docker pull without a tag pulls inference-api:stable.",
+     "answer": false,
+     "why": "With no tag, Docker uses latest by default."
+    }
+   ],
+   "hint": "Two tags can point to the same image. Pushing to a tag moves only that tag, and a digest never changes.",
+   "explain": "Several tags can point at one artifact. Tags move when you push; digests never change; the default tag is latest.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-007",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your inference images must be replicated to the regions where you deploy, and the registry must be reachable only through a private endpoint. Which ACR tier do you need?",
+   "options": [
+    {
+     "text": "Basic",
+     "why": "Basic is meant for development and learning. It has no geo-replication or private endpoints."
+    },
+    {
+     "text": "Any tier, because all features are shared",
+     "why": "Most developer workflows are the same on every tier, but these features are Premium-only."
+    },
+    {
+     "text": "Premium",
+     "why": "Correct. Premium adds geo-replication, private endpoints and content trust."
+    },
+    {
+     "text": "Standard",
+     "why": "Standard adds storage and throughput for production, but not geo-replication or private endpoints."
+    }
+   ],
+   "answer": 2,
+   "hint": "You need copies in several regions and private network access. Both features sit in the same tier.",
+   "explain": "Premium adds geo-replication, private endpoints and content trust.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-008",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "For each statement about ACR artifacts, select Yes if it's true. Otherwise, select No.",
+   "rows": [
+    {
+     "text": "One artifact can have more than one tag pointing to it.",
+     "answer": true,
+     "why": "For example, inference-api:v1.2.0 and inference-api:stable can point to the same image."
+    },
+    {
+     "text": "Pushing an image with a tag that already exists fails by default.",
+     "answer": false,
+     "why": "Tags are mutable. The push succeeds and the tag moves to the new image. Only a locked image rejects it."
+    },
+    {
+     "text": "When several images share a base layer such as python:3.11, the registry keeps one copy of that layer.",
+     "answer": true,
+     "why": "ACR shares common layers across images, which cuts storage and speeds up pulls."
+    }
+   ],
+   "hint": "Think about tags as movable labels, and about how a registry stores layers that many images share.",
+   "explain": "An artifact can carry many tags, tags are mutable (a push to an existing tag moves it), and shared layers are stored once.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-009",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your AI platform ships both Docker images and Helm charts. You want them in one private registry. What does ACR support?",
+   "options": [
+    {
+     "text": "Docker images, Helm charts and OCI artifacts in one registry",
+     "why": "Correct. One registry can hold all three content formats."
+    },
+    {
+     "text": "Docker images; Helm charts need a separate storage account",
+     "why": "ACR also stores Helm charts and other OCI artifacts."
+    },
+    {
+     "text": "Helm charts on the Premium tier but not on Basic",
+     "why": "Content formats don't depend on the tier. The Premium-only features are geo-replication, private endpoints and content trust."
+    },
+    {
+     "text": "Helm charts if they're pushed with az acr build",
+     "why": "How content is pushed doesn't limit what ACR can store."
+    }
+   ],
+   "answer": 0,
+   "hint": "ACR stores more than Docker images. Think about the OCI standard.",
+   "explain": "One registry can hold all three content formats.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-010",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "One image is tagged both inference-api:v1.2.0 and inference-api:stable. A colleague then pushes a new image tagged stable. What does each tag point to now?",
+   "options": [
+    {
+     "text": "The original image is deleted and v1.2.0 is removed",
+     "why": "The previous image stays in the registry. Nothing is deleted by a push."
+    },
+    {
+     "text": "Only stable moves; v1.2.0 keeps the original",
+     "why": "Correct. Tags are mutable: stable moves, and v1.2.0 keeps referencing the original."
+    },
+    {
+     "text": "Both tags point to the new image",
+     "why": "Only the tag that was pushed moves. v1.2.0 wasn't part of the new push."
+    },
+    {
+     "text": "The push fails because stable is already in use",
+     "why": "Pushing an existing tag succeeds unless the image is locked. The tag simply moves."
+    }
+   ],
+   "answer": 1,
+   "hint": "A push moves only the tag it names. What happens to the other tag?",
+   "explain": "Tags are mutable: stable moves, and v1.2.0 keeps referencing the original.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-011",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which statement correctly describes a manifest digest in ACR?",
+   "options": [
+    {
+     "text": "An identifier for one layer rather than for the whole artifact",
+     "why": "The manifest lists the artifact's layers and configuration. Its digest identifies the whole artifact."
+    },
+    {
+     "text": "A human-readable name that can be moved to a newer image",
+     "why": "That describes a tag, not a digest."
+    },
+    {
+     "text": "An immutable SHA-256 identifier for the whole image",
+     "why": "Correct. Digests are immutable, unlike tags."
+    },
+    {
+     "text": "A value generated again each time the image is pulled",
+     "why": "The digest identifies the content and stays the same on every pull."
+    }
+   ],
+   "answer": 2,
+   "hint": "A digest is a hash of the manifest. Can a hash of fixed content change?",
+   "explain": "Digests are immutable, unlike tags.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A data scientist needs to build an image from the Dockerfile in the current folder and push it to the registry, but Docker isn't installed on their laptop. Which command should they run?",
+   "options": [
+    {
+     "text": "az acr run --registry myregistry --cmd 'inference-api:v1.0.0' /dev/null",
+     "why": "az acr run runs a command in an existing image; it doesn't build from source."
+    },
+    {
+     "text": "az acr repository update --name myregistry --image inference-api:v1.0.0",
+     "why": "repository update changes attributes such as write-enabled; it doesn't build."
+    },
+    {
+     "text": "az acr build --registry myregistry --image inference-api:v1.0.0 .",
+     "why": "Correct. A quick task uploads the context (.), builds in Azure and pushes the image."
+    },
+    {
+     "text": "docker push myregistry.azurecr.io/inference-api:v1.0.0",
+     "why": "docker push needs a locally built image and Docker installed."
+    }
+   ],
+   "answer": 2,
+   "hint": "There's no local Docker, so the build has to happen in Azure. Which az acr command sends the build context to the registry?",
+   "explain": "az acr build is a quick task: like docker build + docker push, but done in Azure.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Every commit to the main branch of a GitHub repo must produce a new image with a tag no previous build has used. Which tag value should the task use?",
+   "options": [
+    {
+     "text": "inference-api:stable",
+     "why": "stable is reused, so it moves each time."
+    },
+    {
+     "text": "inference-api:latest",
+     "why": "latest is reused on every push, so each build overwrites the last."
+    },
+    {
+     "text": "inference-api:{{.Run.ID}}",
+     "why": "Correct. {{.Run.ID}} is the task run id, so each triggered build gets a distinct tag."
+    },
+    {
+     "text": "inference-api:main-branch",
+     "why": "A branch-name tag is reused by every build, so it moves."
+    }
+   ],
+   "answer": 2,
+   "hint": "The tag must be different for every run. Which built-in task variable changes on every run?",
+   "explain": "Run variables such as {{.Run.ID}} and {{.Run.Date}} create unique, traceable tags per build.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-014",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your app images use a custom PyTorch base image. When the base image is patched, every app image must rebuild automatically. Where should the base image be stored so ACR detects the update?",
+   "options": [
+    {
+     "text": "In Docker Hub, as a private repository",
+     "why": "Learn says private base images should be in the same registry as the app images."
+    },
+    {
+     "text": "In a separate registry in another region",
+     "why": "A separate registry breaks automatic detection for private base images."
+    },
+    {
+     "text": "In a remote tarball referenced by URL",
+     "why": "A tarball is a build context location, not a base image store."
+    },
+    {
+     "text": "In the same registry as the app images",
+     "why": "Correct. For private base images, keep the base and the app images in the same registry."
+    }
+   ],
+   "answer": 3,
+   "hint": "Automatic rebuilds after a base-image update need ACR to see that update. Where can it see a private base image?",
+   "explain": "Base image triggers work for base images in the same registry, or public ones such as Docker Hub. Private base images belong in the same registry as the app images.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-015",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A multi-step task must build the image, store it in the registry, and then run the test suite inside it. Put the YAML steps in order.",
+   "steps": [
+    "build: -t {{.Run.Registry}}/inference-api:{{.Run.ID}} .",
+    "push: {{.Run.Registry}}/inference-api:{{.Run.ID}}",
+    "cmd: {{.Run.Registry}}/inference-api:{{.Run.ID}} python -m pytest tests/"
+   ],
+   "hint": "You can't test an image that doesn't exist yet, and the test step runs the image from the registry.",
+   "explain": "The Learn example builds, pushes, then runs the container with cmd to execute pytest. If tests fail, you know before deployment.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-016",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Builds of your inference image are slow because the context upload is large and every build reinstalls all packages. Which two changes does Learn recommend? (Select two.)",
+   "options": [
+    {
+     "text": "Move the registry from Standard to the Premium tier",
+     "why": "The tier doesn't change context size or layer caching."
+    },
+    {
+     "text": "Add a .dockerignore file to exclude unneeded files",
+     "why": "Correct. .dockerignore keeps the context small, which speeds the upload."
+    },
+    {
+     "text": "Build from a remote tarball instead of a Git repository",
+     "why": "Changing the context location doesn't shrink it or improve caching."
+    },
+    {
+     "text": "Put frequently changing instructions late in the Dockerfile",
+     "why": "Correct. ACR Tasks caches layers, and late changing instructions keep earlier layers cached."
+    }
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "hint": "One fix shrinks what gets uploaded. The other keeps more Dockerfile layers cached between builds.",
+   "explain": "Optimize the build context with .dockerignore, and order Dockerfile instructions to maximize layer cache hits.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-017",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "One teammate builds from a folder on their laptop. A legacy pipeline drops a compressed source archive on an internal web server reachable by URL. Which two can ACR Tasks use directly as a build context? Each correct answer is a complete solution.",
+   "options": [
+    {
+     "text": "The remote tarball, by its URL",
+     "why": "Correct. A compressed archive on a reachable web server is a supported context."
+    },
+    {
+     "text": "The file system of a running App Service container",
+     "why": "A running container isn't a supported build context."
+    },
+    {
+     "text": "A file share mounted only inside another container",
+     "why": "That isn't one of the supported context locations (local directory, Git repository, remote tarball)."
+    },
+    {
+     "text": "The local directory on the laptop",
+     "why": "Correct. ACR compresses and uploads a local directory."
+    }
+   ],
+   "answer": [
+    0,
+    3
+   ],
+   "hint": "ACR Tasks accepts several kinds of build context. Which of these can it reach without your help?",
+   "explain": "ACR compresses and uploads a local directory.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-018",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You want ACR to build an image, push it, then run the test suite inside it with pytest, all as one workflow in the registry. What should you use?",
+   "options": [
+    {
+     "text": "A quick task started with az acr build",
+     "why": "A quick task builds and pushes one image. It doesn't chain a test step after the push."
+    },
+    {
+     "text": "A base image trigger on the python:3.11 image",
+     "why": "This decides when a rebuild happens. It doesn't define build, push and test steps."
+    },
+    {
+     "text": "A source code trigger on the main branch",
+     "why": "This starts builds on commits, but on its own it doesn't run tests."
+    },
+    {
+     "text": "A multi-step task defined in a YAML file",
+     "why": "Correct. YAML steps can build, push and then cmd to run tests in the new image."
+    }
+   ],
+   "answer": 3,
+   "hint": "Build, push and test as one workflow means several steps. Which ACR Tasks feature is defined in YAML?",
+   "explain": "YAML steps can build, push and then cmd to run tests in the new image.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-019",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "medium",
+   "q": "In the command below, what does /dev/null tell ACR?",
+   "code": "az acr run --registry myregistry \\\n  --cmd 'inference-api:v1.0.0 python --version' /dev/null",
+   "options": [
+    {
+     "text": "Nothing needs uploading, because only an existing image runs",
+     "why": "Correct. /dev/null is the context: nothing to upload when you only run an image."
+    },
+    {
+     "text": "The command output should be thrown away rather than logged",
+     "why": "/dev/null sits in the context position here. Task logs are still kept."
+    },
+    {
+     "text": "The run should use a Linux image rather than a Windows one",
+     "why": "/dev/null has nothing to do with the target platform."
+    },
+    {
+     "text": "The image should be deleted after the run completes",
+     "why": "az acr run doesn't delete images. Cleanup is done with acr purge."
+    }
+   ],
+   "answer": 0,
+   "hint": "az acr run can run an image that already exists. What would it need to upload in that case?",
+   "explain": "/dev/null is the context: nothing to upload when you only run an image.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-020",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You create an ACR task with a GitHub context and a personal access token so that commits to main start a build. What does ACR set up in the GitHub repository to make this work?",
+   "options": [
+    {
+     "text": "A repository webhook that fires on commits and pull requests",
+     "why": "Correct. The PAT lets ACR create a webhook that triggers a build on each commit."
+    },
+    {
+     "text": "A GitHub Actions workflow file that calls az acr build",
+     "why": "ACR doesn't add workflow files. It uses a webhook."
+    },
+    {
+     "text": "A scheduled job that polls the repository every hour",
+     "why": "Source code triggers are event-driven through a webhook, not polling."
+    },
+    {
+     "text": "A branch protection rule that blocks unbuilt commits",
+     "why": "ACR doesn't change branch protection."
+    }
+   ],
+   "answer": 0,
+   "hint": "Commits must start builds automatically. What does GitHub send to another service when something changes?",
+   "explain": "The PAT lets ACR create a webhook that triggers a build on each commit.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-021",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You want a build every night that picks up the latest dependencies, even when no code has changed. Which ACR Tasks trigger fits?",
+   "options": [
+    {
+     "text": "Scheduled trigger",
+     "why": "Correct. A schedule such as \"0 0 * * *\" runs the task nightly."
+    },
+    {
+     "text": "Base image trigger",
+     "why": "This fires only when the base image changes."
+    },
+    {
+     "text": "Quick task with az acr build",
+     "why": "A quick task runs once, when you start it."
+    },
+    {
+     "text": "Source code trigger",
+     "why": "This needs a commit or pull request. Nights without commits wouldn't build."
+    }
+   ],
+   "answer": 0,
+   "hint": "Nothing in the code changes, but you still want a build every night. Which trigger runs on the clock?",
+   "explain": "A schedule such as \"0 0 * * *\" runs the task nightly.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-022",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A source-triggered ACR task needs a GitHub personal access token. Where does the guidance say to keep the token?",
+   "options": [
+    {
+     "text": "In the Dockerfile as a build argument",
+     "why": "That would place the secret in build files and possibly in image history."
+    },
+    {
+     "text": "In a .env file committed with the code",
+     "why": "Committing tokens to repositories is exactly what the guidance warns against."
+    },
+    {
+     "text": "Hardcoded in the az acr task create script",
+     "why": "The guidance says not to hardcode tokens in scripts."
+    },
+    {
+     "text": "In Azure Key Vault, not in scripts or repositories",
+     "why": "Correct. Store tokens in Key Vault rather than in scripts or repositories."
+    }
+   ],
+   "answer": 3,
+   "hint": "A personal access token is a secret. Where do Azure apps keep secrets?",
+   "explain": "Store tokens in Key Vault rather than in scripts or repositories.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-023",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Two developers build the same Dockerfile on their laptops and get images that behave differently in production. The team lead wants every build to run on the same infrastructure, whoever starts it. What should the team do?",
+   "options": [
+    {
+     "text": "Pin every developer to the same Docker Desktop version and share one daemon.json",
+     "why": "Matching tool versions helps a little, but builds still run on different machines with different local state."
+    },
+    {
+     "text": "Have developers push with the :latest tag so that production always pulls one image",
+     "why": "A moving tag makes deployments less predictable. It does nothing to make builds consistent."
+    },
+    {
+     "text": "Move the registry to the Premium tier so that builds use dedicated agents",
+     "why": "The tier changes storage, geo-replication and network features. It doesn't change where builds run."
+    },
+    {
+     "text": "Build with ACR Tasks so that every build runs in the registry's cloud environment",
+     "why": "Correct. ACR Tasks builds in a controlled cloud environment, so every build uses the same infrastructure. That removes \"works on my machine\" differences."
+    }
+   ],
+   "answer": 3,
+   "hint": "The problem is the build machines, not the registry. Which ACR feature builds images in Azure instead of on laptops?",
+   "explain": "ACR Tasks builds images in a controlled cloud environment. Every build uses the same infrastructure regardless of which developer starts it, which removes \"works on my machine\" problems.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp1m1-024",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. Your app images are built FROM a CUDA base image, and you configure ACR Tasks base image triggers.",
+   "rows": [
+    {
+     "text": "A base image trigger can detect updates to a base image pulled from Docker Hub.",
+     "answer": true,
+     "why": "Base image triggers work for base images in the same registry, or in Docker Hub and other public registries."
+    },
+    {
+     "text": "A private base image in a different registry from the app images is detected automatically.",
+     "answer": false,
+     "why": "For private base images, both images should be in the same registry for automatic detection."
+    },
+    {
+     "text": "When the base image is patched, the trigger rebuilds the app image without anyone pushing code.",
+     "answer": true,
+     "why": "That's the purpose of the trigger: framework and driver patches flow into app images automatically."
+    }
+   ],
+   "hint": "Base image triggers can watch public registries. Private base images have one placement rule.",
+   "explain": "Base image triggers rebuild app images when the base updates. They work with base images in the same registry or in public registries such as Docker Hub. Private base images must be in the same registry as the app images.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp1m1-025",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "match",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Match each version change of an inference API to the semantic version part you increment.",
+   "choices": [
+    "MAJOR",
+    "MINOR",
+    "PATCH"
+   ],
+   "items": [
+    {
+     "text": "A breaking change to the API request format",
+     "answer": 0,
+     "why": "Breaking changes that require consumer updates increment MAJOR."
+    },
+    {
+     "text": "A new model endpoint that is backward compatible",
+     "answer": 1,
+     "why": "New backward-compatible features increment MINOR."
+    },
+    {
+     "text": "A bug fix in preprocessing",
+     "answer": 2,
+     "why": "Bug fixes and security patches increment PATCH."
+    }
+   ],
+   "hint": "MAJOR.MINOR.PATCH: which part signals a breaking change, a new compatible feature, or a fix?",
+   "explain": "MAJOR.MINOR.PATCH communicates compatibility: breaking, feature, fix.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-026",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which is an example of a unique tag?",
+   "options": [
+    {
+     "text": "inference-api:latest",
+     "why": "latest is the default stable tag and moves on every push."
+    },
+    {
+     "text": "inference-api:v1.2.0-build456",
+     "why": "Correct. A build-specific tag is never reused."
+    },
+    {
+     "text": "inference-api:production-current",
+     "why": "A 'current' tag is reused for each new image, so it moves."
+    },
+    {
+     "text": "inference-api:v1.2",
+     "why": "v1.2 is a stable tag that moves to each new 1.2.x image."
+    }
+   ],
+   "answer": 1,
+   "hint": "A unique tag is never reused for a different image. Which value is specific to one build?",
+   "explain": "Unique tags such as v1.2.0-build456 or 20260102-abc123 are never reused.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-027",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "During an incident, the on-call engineer must find the exact source code that produced the running image, without access to the CI/CD system. Which tag pattern helps most?",
+   "options": [
+    {
+     "text": "A stable major version such as v1",
+     "why": "A stable tag moves and doesn't point to one code state."
+    },
+    {
+     "text": "The Git commit SHA, such as abc123f",
+     "why": "Correct. Anyone with repository access can look up the code state from the commit hash."
+    },
+    {
+     "text": "A timestamp such as 20260102-143022",
+     "why": "A timestamp shows image age, not which code state built it."
+    },
+    {
+     "text": "A build ID such as build-4567",
+     "why": "A build ID needs access to the CI/CD system to trace."
+    }
+   ],
+   "answer": 1,
+   "hint": "The engineer has source-control access but no CI access. Which identifier lives in source control?",
+   "explain": "Git SHA tags link the image directly to its source code; build IDs link to the pipeline run instead.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-028",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. You run `az acr repository update --name myregistry --image inference-api:v1.2.0 --write-enabled false`.",
+   "rows": [
+    {
+     "text": "The image can no longer be deleted, even by an administrator.",
+     "answer": true,
+     "why": "Locked images can't be deleted."
+    },
+    {
+     "text": "Pushing another image tagged inference-api:v1.2.0 now fails.",
+     "answer": true,
+     "why": "Locked images can't be overwritten."
+    },
+    {
+     "text": "A retention policy for untagged manifests can still remove this image.",
+     "answer": false,
+     "why": "Locked images survive retention policies."
+    },
+    {
+     "text": "To unlock the image later, you must delete it and push it again.",
+     "answer": false,
+     "why": "You unlock it by running the same command with --write-enabled true."
+    }
+   ],
+   "hint": "Locking makes an image read-only. Think about delete, overwrite, cleanup policies, and how to undo it.",
+   "explain": "Locking (write-enabled false) prevents deletion and overwrite and protects the image from cleanup rules.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-029",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A Standard-tier registry keeps growing because each push to `:stable` leaves the previous image untagged. You need untagged images older than seven days removed every week, across all repositories. What should you configure?",
+   "options": [
+    {
+     "text": "A scheduled ACR task that runs acr purge --untagged --ago 7d",
+     "why": "Correct. A scheduled task (for example --schedule \"0 0 * * 0\") can run acr purge on all repositories."
+    },
+    {
+     "text": "A base image trigger that rebuilds the stable tag",
+     "why": "A rebuild would create even more untagged images."
+    },
+    {
+     "text": "A lock on every production image using --write-enabled false",
+     "why": "Locks stop deletion, which is the opposite of what you need."
+    },
+    {
+     "text": "A registry-level retention policy that deletes untagged manifests after seven days",
+     "why": "Retention policies are a Premium tier feature, so they aren't available here."
+    }
+   ],
+   "answer": 0,
+   "hint": "Untagged images pile up after pushes. Which ACR command deletes images by age, and how do you run it every week?",
+   "explain": "In Standard, schedule acr purge as an ACR task. Retention policies are the simpler Premium alternative.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m1-030",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Inference nodes pulled inference-api:1 at different times and ended up serving different model versions. What should production deployments reference instead?",
+   "options": [
+    {
+     "text": "A unique, never-reused tag such as v1.2.0-build456",
+     "why": "Correct. A unique tag is never reused, so every node pulls the same image."
+    },
+    {
+     "text": "The inference-api:1.1 tag, which narrows updates to one minor version",
+     "why": "1.1 is still a stable tag that moves with each 1.1.x patch."
+    },
+    {
+     "text": "A repository in the staging/ namespace",
+     "why": "Namespaces organize repositories. They don't stop a tag from moving."
+    },
+    {
+     "text": "The latest tag, so that every node follows the newest build",
+     "why": "latest is a stable tag too. Nodes that pull at different times can still get different images."
+    }
+   ],
+   "answer": 0,
+   "hint": "A tag like :1 moves with every 1.x push. Which kind of tag never moves?",
+   "explain": "A unique tag is never reused, so every node pulls the same image.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-031",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "The inference API is at version 1.1.0. You fix a preprocessing bug, and the API itself doesn't change. Following semantic versioning, what is the next version?",
+   "options": [
+    {
+     "text": "2.1.1",
+     "why": "This would also bump MAJOR, which is only for breaking changes."
+    },
+    {
+     "text": "1.1.1",
+     "why": "Correct. PATCH increments for bug fixes and security patches that don't change the API."
+    },
+    {
+     "text": "2.0.0",
+     "why": "MAJOR increments for breaking changes."
+    },
+    {
+     "text": "1.2.0",
+     "why": "MINOR increments for new backward-compatible features, not bug fixes."
+    }
+   ],
+   "answer": 1,
+   "hint": "A bug fix that doesn't change the API is the smallest kind of change. Which number goes up?",
+   "explain": "PATCH increments for bug fixes and security patches that don't change the API.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-032",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your team debates using the latest tag. For each statement, select Yes if it's true. Otherwise, select No.",
+   "rows": [
+    {
+     "text": "If you push or pull without naming a tag, Docker uses latest.",
+     "answer": true,
+     "why": "latest is Docker's default tag."
+    },
+    {
+     "text": "Referencing :latest in Kubernetes manifests makes every node run the same image.",
+     "answer": false,
+     "why": "Nodes can pull latest at different times and get different images."
+    },
+    {
+     "text": "The guidance suggests limiting latest to development environments.",
+     "answer": true,
+     "why": "That's where convenience outweighs the need for consistency."
+    }
+   ],
+   "hint": "Think about what Docker does when you leave out the tag, and why a moving tag is risky across many nodes.",
+   "explain": "Docker uses latest when no tag is given. Different nodes may pull latest at different times and get different images, so the guidance limits latest to development.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m1-033",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The platform team maintains a base image that receives regular security patches. Dependent images should pick up those patches automatically through base image triggers. Which tagging approach fits the base image?",
+   "options": [
+    {
+     "text": "Stable tags",
+     "why": "Correct. Stable tags let security updates flow to dependent images automatically."
+    },
+    {
+     "text": "Build ID tags",
+     "why": "Build IDs are unique tags for traceability, not for automatic updates."
+    },
+    {
+     "text": "A unique tag for each patch",
+     "why": "Unique tags are for production consistency. Dependents would need config changes to pick up each patch."
+    },
+    {
+     "text": "Digest references in FROM",
+     "why": "A digest pins one exact image, so patches would never flow through."
+    }
+   ],
+   "answer": 0,
+   "hint": "This image should pass patches on to the images built from it. Which kind of tag is meant to move?",
+   "explain": "Stable tags let security updates flow to dependent images automatically.",
+   "origin": "site"
+  }
+ ]
+}

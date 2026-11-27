@@ -1,0 +1,795 @@
+{
+ "module": "lp7m3",
+ "title": "Build serverless AI backends with Azure Functions",
+ "questions": [
+  {
+   "id": "lp7m3-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A new serverless AI backend should scale to zero for most functions but keep the chat endpoint warm. Which plan does Learn recommend?",
+   "options": [
+    {
+     "text": "Legacy Consumption on Linux",
+     "why": "Legacy Linux Consumption retires after September 2028."
+    },
+    {
+     "text": "Flex Consumption with always-ready instances",
+     "why": "Correct. Always-ready keeps chosen functions warm while others scale to zero."
+    },
+    {
+     "text": "Premium with one pre-warmed worker for every function",
+     "why": "Premium keeps workers always running; you pay the always-on cost."
+    },
+    {
+     "text": "Dedicated App Service plan",
+     "why": "Dedicated makes sense when spare App Service capacity exists."
+    }
+   ],
+   "answer": 1,
+   "hint": "The recommended default plan for new apps can also keep some instances ready.",
+   "explain": "Flex Consumption is the recommended default for new serverless apps.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What is the HTTP trigger timeout imposed by the Azure Load Balancer?",
+   "options": [
+    {
+     "text": "10 minutes",
+     "why": "functionTimeout can't extend the load balancer limit."
+    },
+    {
+     "text": "230 seconds",
+     "why": "Correct. HTTP-triggered functions time out after 230 seconds."
+    },
+    {
+     "text": "Unbounded",
+     "why": "Service Bus triggers can be unbounded on Flex and Premium; HTTP can't."
+    },
+    {
+     "text": "30 seconds",
+     "why": "30 seconds is Event Grid's response wait."
+    }
+   ],
+   "answer": 1,
+   "hint": "The load balancer cuts HTTP calls off after a fixed time, whatever the plan.",
+   "explain": "Long work → async request-reply with a Service Bus-triggered function.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Document extraction takes 6–8 minutes per file and is started by an HTTP call. Which design does Learn recommend?",
+   "options": [
+    {
+     "text": "Return 200 after 220 seconds and keep working in the same call",
+     "why": "The client never gets the result, and the work isn't decoupled."
+    },
+    {
+     "text": "Queue it to Service Bus, return 202, process in a queue-triggered function",
+     "why": "Correct. Async request-reply avoids the 230-second HTTP limit."
+    },
+    {
+     "text": "Raise functionTimeout in host.json to 10 minutes for the app",
+     "why": "The load balancer limit applies regardless of functionTimeout."
+    },
+    {
+     "text": "Move to Premium so that HTTP calls can run for 10 minutes",
+     "why": "The 230-second limit applies on every plan."
+    }
+   ],
+   "answer": 1,
+   "hint": "Long work started over HTTP: accept, queue, return, process elsewhere.",
+   "explain": "Decouple ingestion from processing so each scales on its own.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A Flex Consumption app has two HTTP functions, a Service Bus trigger and a timer trigger.",
+   "rows": [
+    {
+     "text": "The two HTTP functions scale together on the same instances.",
+     "answer": true,
+     "why": "All HTTP triggers scale together as a group."
+    },
+    {
+     "text": "A surge of Service Bus messages competes with HTTP requests on the same instances.",
+     "answer": false,
+     "why": "Non-HTTP triggers scale on their own independent instances."
+    },
+    {
+     "text": "Choosing 4,096 MB instances gives each instance 2 vCPUs.",
+     "answer": true,
+     "why": "CPU scales with memory: 4,096 MB = 2 vCPU."
+    },
+    {
+     "text": "The app can run on Windows if needed.",
+     "answer": false,
+     "why": "Flex Consumption is Linux-only."
+    }
+   ],
+   "hint": "Per-function scaling groups HTTP triggers together. Memory size sets the vCPUs.",
+   "explain": "Per-function scaling isolates trigger types; instance size sets memory and CPU.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Inference functions need a GPU and custom OS-level packages, and must run next to other containerized microservices. Which hosting option fits?",
+   "options": [
+    {
+     "text": "Flex Consumption with 4,096 MB instances",
+     "why": "Flex Consumption doesn't provide GPUs."
+    },
+    {
+     "text": "Dedicated App Service plan",
+     "why": "Dedicated is for reusing spare App Service capacity."
+    },
+    {
+     "text": "Azure Container Apps hosting",
+     "why": "Correct. Container Apps hosting suits GPU access, custom OS packages and side-by-side containers."
+    },
+    {
+     "text": "Premium plan with pre-warmed workers",
+     "why": "Premium supports custom images but Learn points to Container Apps for GPU."
+    }
+   ],
+   "answer": 2,
+   "hint": "GPU and custom OS packages next to other containers.",
+   "explain": "Pick Container Apps when functions need GPU or custom OS packages.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A Flex Consumption function loads a large model and needs two vCPUs and stable per-call performance. What should you choose?",
+   "options": [
+    {
+     "text": "2,048 MB instances with always-ready instances set",
+     "why": "Always-ready avoids cold starts, but each instance still has 1 vCPU."
+    },
+    {
+     "text": "512 MB instances with many more instances",
+     "why": "Small instances don't give two vCPUs to one invocation."
+    },
+    {
+     "text": "4,096 MB instances, lower concurrency",
+     "why": "Correct. 4,096 MB gives 2 vCPUs, and lower concurrency gives each invocation more dedicated resources."
+    },
+    {
+     "text": "2,048 MB instances with higher concurrency",
+     "why": "2,048 MB gives 1 vCPU, and higher concurrency makes invocations share it."
+    }
+   ],
+   "answer": 2,
+   "hint": "CPU grows with instance memory, and concurrency decides how many calls share an instance.",
+   "explain": "Flex Consumption instance sizes are 512, 2,048 and 4,096 MB; CPU scales with memory (4,096 MB = 2 vCPUs). Lower concurrency spreads load across more instances and isolates resources per invocation.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m3-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A team is starting a new Linux function app and plans to use the Consumption plan because their older apps use it. What should you tell them?",
+   "options": [
+    {
+     "text": "Linux Consumption is still the recommended default for new apps",
+     "why": "Flex Consumption is the recommended default for new serverless apps."
+    },
+    {
+     "text": "It's a legacy plan retiring in 2028; use Flex Consumption",
+     "why": "Correct. New projects should use Flex Consumption."
+    },
+    {
+     "text": "Linux Consumption is fine, because it now supports always-ready instances",
+     "why": "Always-ready instances are a Flex Consumption feature."
+    },
+    {
+     "text": "Use the Dedicated plan, because serverless plans don't run Python",
+     "why": "Serverless plans run Python. The issue is the legacy plan."
+    }
+   ],
+   "answer": 1,
+   "hint": "One of the serverless plans is being retired.",
+   "explain": "The Linux Consumption plan is legacy; running function apps on Linux in a Consumption plan retires after September 2028. New projects should use Flex Consumption.",
+   "origin": "new"
+  },
+  {
+   "id": "lp7m3-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You run a function app locally with Core Tools. At which address are HTTP triggers exposed by default?",
+   "options": [
+    {
+     "text": "http://localhost:7071",
+     "why": "Correct. Core Tools exposes HTTP endpoints on port 7071 by default."
+    },
+    {
+     "text": "http://localhost:5000",
+     "why": "5000 isn't the Functions default."
+    },
+    {
+     "text": "https://localhost:443",
+     "why": "443 isn't used locally by Core Tools."
+    },
+    {
+     "text": "http://localhost:10000",
+     "why": "10000 is the Azure Managed Redis port."
+    }
+   ],
+   "answer": 0,
+   "hint": "Core Tools runs the host on localhost with a default port.",
+   "explain": "func start or F5 launches the host on localhost:7071.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-009",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Locally, HTTP functions work but a queue trigger and a timer trigger never fire. AzureWebJobsStorage is empty. What should you set?",
+   "options": [
+    {
+     "text": "UseDevelopmentStorage=true, with Azurite",
+     "why": "Correct. The runtime needs storage for non-HTTP triggers; Azurite emulates it locally."
+    },
+    {
+     "text": "A Cosmos DB emulator connection string",
+     "why": "Cosmos DB isn't the runtime's storage dependency."
+    },
+    {
+     "text": "FUNCTIONS_WORKER_RUNTIME set to python",
+     "why": "The worker runtime isn't the missing piece here."
+    },
+    {
+     "text": "A longer functionTimeout in host.json",
+     "why": "Timeouts don't make triggers fire."
+    }
+   ],
+   "answer": 0,
+   "hint": "Non-HTTP triggers need a storage connection, even locally.",
+   "explain": "Without a valid storage connection, non-HTTP triggers don't work.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team sets up a Python Functions project in VS Code.",
+   "rows": [
+    {
+     "text": "local.settings.json should be committed so teammates get the same secrets.",
+     "answer": false,
+     "why": "Never commit it; it often contains secrets."
+    },
+    {
+     "text": "The .vscode folder should be committed for a consistent F5 experience.",
+     "answer": true,
+     "why": "Learn says to commit these files."
+    },
+    {
+     "text": "func init and func new also generate the .vscode configuration files.",
+     "answer": false,
+     "why": "They don't; use Create Function... or add them manually."
+    },
+    {
+     "text": "Changes in host.json affect every function in the app.",
+     "answer": true,
+     "why": "host.json is shared runtime configuration."
+    }
+   ],
+   "hint": "Commit code and editor config. Keep local secrets out of Git.",
+   "explain": "Commit code and editor config; keep local secrets out of source control.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-011",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You fetched production settings into local.settings.json with Core Tools and now worry about secrets on your laptop. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Run func settings encrypt",
+     "why": "Correct. Core Tools encrypts the file; only Core Tools on the same machine can decrypt it."
+    },
+    {
+     "text": "Rename the file to .env",
+     "why": "Renaming doesn't protect the values."
+    },
+    {
+     "text": "Set IsEncrypted to true by hand",
+     "why": "Editing the flag doesn't encrypt the values."
+    },
+    {
+     "text": "Commit the file to a private repository",
+     "why": "Committing secrets is exactly what to avoid."
+    }
+   ],
+   "answer": 0,
+   "hint": "Core Tools can encrypt the local settings file.",
+   "explain": "func azure functionapp fetch-app-settings downloads; func settings encrypt protects.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-012",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "How many triggers can an Azure Function have?",
+   "options": [
+    {
+     "text": "Exactly one",
+     "why": "Correct. Every function has exactly one trigger."
+    },
+    {
+     "text": "Any number",
+     "why": "Bindings can be many; triggers can't."
+    },
+    {
+     "text": "Zero or one",
+     "why": "Every function has a trigger."
+    },
+    {
+     "text": "Up to two",
+     "why": "Learn says exactly one."
+    }
+   ],
+   "answer": 0,
+   "hint": "Bindings can be many. Triggers can't.",
+   "explain": "One trigger; zero or more input and output bindings.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-013",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Each Service Bus message triggers memory-heavy inference, and processing can take 4 minutes. Which host.json settings does Learn recommend tuning?",
+   "options": [
+    {
+     "text": "maxDeliveryCount 1 and functionTimeout 230 s",
+     "why": "maxDeliveryCount is set on the queue resource; 230 s is the HTTP limit."
+    },
+    {
+     "text": "authLevel function and concurrency set to 0",
+     "why": "Auth level applies to HTTP triggers."
+    },
+    {
+     "text": "maxConcurrentCalls 1; lock renewal over 4 min",
+     "why": "Correct. One message per instance gets full resources, and lock renewal covers the long call."
+    },
+    {
+     "text": "prefetchCount 0 and maxConcurrentCalls 100",
+     "why": "High concurrency shares resources across messages."
+    }
+   ],
+   "answer": 2,
+   "hint": "Heavy messages: process fewer at once, and keep the lock longer than the work.",
+   "explain": "Tune concurrency and lock renewal for resource-heavy AI processing.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-014",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A function calls Azure AI Document Intelligence on every Service Bus message.",
+   "rows": [
+    {
+     "text": "There's a dedicated Functions binding for Document Intelligence.",
+     "answer": false,
+     "why": "Services without bindings need SDK clients in code."
+    },
+    {
+     "text": "Creating the client at module level lets it persist across invocations.",
+     "answer": true,
+     "why": "Initialize clients outside the handler."
+    },
+    {
+     "text": "DefaultAzureCredential uses the app's managed identity in Azure and developer credentials locally.",
+     "answer": true,
+     "why": "Same code in both environments."
+    }
+   ],
+   "hint": "No binding exists for every service. Create SDK clients once, outside the handler.",
+   "explain": "Bindings for supported services; module-level SDK clients for the rest.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-015",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A production inference endpoint must not be callable anonymously, but full identity checks are handled later by API Management. Which HTTP auth level is the recommended baseline?",
+   "options": [
+    {
+     "text": "system",
+     "why": "System isn't an HTTP auth level; system keys are for extensions."
+    },
+    {
+     "text": "anonymous",
+     "why": "Anonymous requires no key."
+    },
+    {
+     "text": "function",
+     "why": "Correct. Function-level keys are the recommended production baseline."
+    },
+    {
+     "text": "admin",
+     "why": "Admin needs the master key and is for administrative operations."
+    }
+   ],
+   "answer": 2,
+   "hint": "Keys are a basic barrier. Identity checks come from another layer.",
+   "explain": "Keys are a basic barrier; layer API Management or Easy Auth for identity.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-016",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A function app setting uses a Key Vault reference but resolves to an error. The app has a managed identity. What's most likely missing?",
+   "options": [
+    {
+     "text": "Key Vault Secrets User on the vault",
+     "why": "Correct. Without the role, the runtime can't retrieve the secret."
+    },
+    {
+     "text": "A Key Vault binding in function_app.py",
+     "why": "References are resolved by the platform; no binding is needed."
+    },
+    {
+     "text": "An App Configuration store for the app",
+     "why": "App Configuration isn't required for Key Vault references."
+    },
+    {
+     "text": "A value for the AzureWebJobsStorage setting",
+     "why": "Storage is unrelated to Key Vault resolution."
+    }
+   ],
+   "answer": 0,
+   "hint": "Key Vault references are resolved by the app's identity, which needs a secrets role.",
+   "explain": "Key Vault references need a managed identity with Key Vault Secrets User.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-017",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Ten function apps and microservices share the same inference threshold and feature flags, which change weekly. Where should these non-secret values live?",
+   "options": [
+    {
+     "text": "Azure App Configuration",
+     "why": "Correct. Change once, and all connected apps get the update."
+    },
+    {
+     "text": "Each app's local.settings.json",
+     "why": "local.settings.json is for local development only."
+    },
+    {
+     "text": "host.json in each app",
+     "why": "host.json is runtime configuration, not shared app settings."
+    },
+    {
+     "text": "A Key Vault secret per app",
+     "why": "Key Vault is for secrets."
+    }
+   ],
+   "answer": 0,
+   "hint": "Shared, non-secret settings that change often belong in a central store.",
+   "explain": "App Configuration for shared non-secret settings; Key Vault for secrets.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-018",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A setting is `@Microsoft.KeyVault(SecretUri=https://myvault.vault.azure.net/secrets/AiServiceKey/)`, with no version.",
+   "rows": [
+    {
+     "text": "After the secret rotates, the app uses the new version within 24 hours.",
+     "answer": true,
+     "why": "Versionless URIs pick up new versions within 24 hours."
+    },
+    {
+     "text": "Changing any other app setting forces an immediate refetch.",
+     "answer": true,
+     "why": "Configuration changes trigger an immediate refetch."
+    },
+    {
+     "text": "The function code must call the Key Vault SDK to read the value.",
+     "answer": false,
+     "why": "Code reads os.environ as usual."
+    }
+   ],
+   "hint": "Versionless URIs follow rotation, and config changes force a refresh.",
+   "explain": "Use versionless URIs for secrets that rotate on a schedule.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-019",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A Service Bus trigger uses an identity-based connection named ServiceBusConnection. Which app setting should exist?",
+   "options": [
+    {
+     "text": "ServiceBusConnection__fullyQualifiedNamespace",
+     "why": "Correct. Messaging services use __fullyQualifiedNamespace, e.g. mynamespace.servicebus.windows.net."
+    },
+    {
+     "text": "ServiceBusConnection__accountEndpoint set to its URL",
+     "why": "__accountEndpoint is the Cosmos DB suffix."
+    },
+    {
+     "text": "ServiceBusConnection holding a full SAS connection string",
+     "why": "That's a connection string, which identity-based connections replace."
+    },
+    {
+     "text": "ServiceBusConnection__accountName set to the namespace",
+     "why": "__accountName is the storage suffix."
+    }
+   ],
+   "answer": 0,
+   "hint": "Identity-based connections replace the connection string with the namespace address.",
+   "explain": "Assign Azure Service Bus Data Receiver to the app's identity.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-020",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each identity-based connection to the role the function app's identity needs.",
+   "choices": [
+    "Storage Blob Data Owner",
+    "Azure Service Bus Data Receiver",
+    "Azure Service Bus Data Sender",
+    "Cosmos DB Built-in Data Contributor"
+   ],
+   "items": [
+    {
+     "text": "AzureWebJobsStorage__accountName for the runtime",
+     "answer": 0,
+     "why": "Minimum role for host-level coordination."
+    },
+    {
+     "text": "Service Bus queue trigger",
+     "answer": 1,
+     "why": "Triggers receive messages."
+    },
+    {
+     "text": "Service Bus output binding",
+     "answer": 2,
+     "why": "Output bindings send messages."
+    },
+    {
+     "text": "Cosmos DB output binding",
+     "answer": 3,
+     "why": "Writes items to the container."
+    }
+   ],
+   "hint": "Each connection needs its own data-plane role.",
+   "explain": "Each binding extension documents its identity properties and roles.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-021",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A function app with identity-based storage uses a **blob trigger** and calls Azure OpenAI.",
+   "rows": [
+    {
+     "text": "Storage Blob Data Owner alone is enough for the blob trigger.",
+     "answer": false,
+     "why": "Blob triggers also need Storage Queue Data Contributor and Storage Account Contributor."
+    },
+    {
+     "text": "The identity needs Cognitive Services OpenAI User to call Azure OpenAI.",
+     "answer": true,
+     "why": "That's the least-privilege role Learn names."
+    },
+    {
+     "text": "Host keys grant access to every HTTP-triggered function in the app.",
+     "answer": true,
+     "why": "Host keys are scoped to all functions."
+    },
+    {
+     "text": "Function keys verify the caller's Entra ID identity.",
+     "answer": false,
+     "why": "Keys are a basic barrier; use API Management or Easy Auth for identity."
+    }
+   ],
+   "hint": "Blob triggers need more than host storage roles. Keys aren't identity.",
+   "explain": "Assign least-privilege roles per service; keys aren't identity.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-022",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A monitoring tool must call every HTTP function in one app, and you want to avoid handing out the master key. Which key type fits?",
+   "options": [
+    {
+     "text": "Anonymous auth level on every function",
+     "why": "Anonymous removes the key barrier for every caller, not just the tool."
+    },
+    {
+     "text": "A host key",
+     "why": "Correct. Host keys cover all functions in the app and suit monitoring agents."
+    },
+    {
+     "text": "The master key",
+     "why": "The master key is highly sensitive and grants admin access."
+    },
+    {
+     "text": "A system key",
+     "why": "System keys are for extensions, not shared tools."
+    }
+   ],
+   "answer": 1,
+   "hint": "One key type opens every function in the app without being the master key.",
+   "explain": "Function keys: one function. Host keys: all functions. Master: admin.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m3-023",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A function app uses identity-based AzureWebJobsStorage__accountName and has a blob trigger. Which roles does the app identity need on the storage account?",
+   "options": [
+    {
+     "text": "Storage Blob Data Reader and Storage Queue Data Reader",
+     "why": "Reader roles can't write the receipts and state the trigger needs."
+    },
+    {
+     "text": "Storage Account Contributor alone, at subscription scope",
+     "why": "That's a management role. It doesn't give data access, and the scope is too broad."
+    },
+    {
+     "text": "Storage Blob Data Owner only, as for host coordination",
+     "why": "That's the minimum for the host. Blob triggers need more."
+    },
+    {
+     "text": "Blob Data Owner, Queue Data Contributor, Account Contributor",
+     "why": "Correct. Blob triggers use queues for blob receipts, so they need more than the host's minimum role."
+    }
+   ],
+   "answer": 3,
+   "hint": "The host needs one role. Blob triggers also use storage queues behind the scenes.",
+   "explain": "With identity-based AzureWebJobsStorage, the minimum is Storage Blob Data Owner. Blob triggers also need Storage Queue Data Contributor and Storage Account Contributor.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m3-024",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your function app hosts an MCP server through the MCP extension. Which kind of key does the extension use to authenticate MCP client connections?",
+   "options": [
+    {
+     "text": "The mcp_extension system key that the extension manages",
+     "why": "Correct. Extensions use system keys for internal operations."
+    },
+    {
+     "text": "An Entra ID token for each client's user",
+     "why": "Learn names the mcp_extension system key for MCP client connections."
+    },
+    {
+     "text": "The master key, shared with every client",
+     "why": "The master key is for administration and should never be handed to clients."
+    },
+    {
+     "text": "A function key on each MCP tool function",
+     "why": "Function keys cover one HTTP function. The extension uses its own system key."
+    }
+   ],
+   "answer": 0,
+   "hint": "Some extensions get their own key type for internal operations.",
+   "explain": "Key types: function keys (one function), host keys (all functions), the master key (admin), and system keys used by extensions, for example the MCP extension's mcp_extension key.",
+   "origin": "new"
+  },
+  {
+   "id": "lp7m3-025",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A production inference endpoint must verify each caller's Microsoft Entra identity, not just check for a key. What does Learn recommend layering on top of function keys?",
+   "options": [
+    {
+     "text": "The admin authorization level",
+     "why": "Admin needs the master key, which is meant for administration."
+    },
+    {
+     "text": "An anonymous authorization level with an IP allow list",
+     "why": "Anonymous removes the key barrier, and IP lists don't identify callers."
+    },
+    {
+     "text": "A second function key that only trusted callers receive",
+     "why": "More keys are still shared secrets, not identity."
+    },
+    {
+     "text": "Azure API Management or Easy Auth",
+     "why": "Correct. Keys are a basic barrier; these add caller identity verification."
+    }
+   ],
+   "answer": 3,
+   "hint": "Keys say \"has the secret\". You need \"who is calling\".",
+   "explain": "Access keys provide a basic access barrier but don't replace authentication. For caller identity verification, layer Azure API Management or App Service Authentication (Easy Auth).",
+   "origin": "new"
+  }
+ ]
+}

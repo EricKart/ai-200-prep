@@ -1,0 +1,1045 @@
+{
+ "module": "lp1m3",
+ "title": "Run sidecar-enabled AI applications on Azure App Service",
+ "questions": [
+  {
+   "id": "lp1m3-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "In a sidecar-enabled App Service app, which container receives external HTTP traffic?",
+   "options": [
+    {
+     "text": "Only the container with isMain set to true",
+     "why": "Correct. App Service sends external HTTP traffic only to the main container."
+    },
+    {
+     "text": "Each sidecar, through its own public endpoint",
+     "why": "Sidecars aren't published as separate public endpoints."
+    },
+    {
+     "text": "The container that was created first in the app",
+     "why": "Creation order doesn't decide routing."
+    },
+    {
+     "text": "Every container whose target port is 80 or 8080",
+     "why": "Target port is metadata; routing depends on the main role."
+    }
+   ],
+   "answer": 0,
+   "hint": "Only one container in the app is marked as the main one. Which container gets the public traffic?",
+   "explain": "Roles decide routing: isMain: true receives external traffic; sidecars are reachable only inside the shared network namespace.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "How many sidecar containers can a sidecar-enabled App Service app have alongside its main container?",
+   "options": [
+    {
+     "text": "Up to nine",
+     "why": "Correct. One main container and up to nine sidecars."
+    },
+    {
+     "text": "Up to three",
+     "why": "Learn gives a higher limit."
+    },
+    {
+     "text": "Up to twenty",
+     "why": "Learn's limit is nine sidecars."
+    },
+    {
+     "text": "Up to five",
+     "why": "Learn gives a higher limit."
+    }
+   ],
+   "answer": 0,
+   "hint": "There's a fixed limit of sidecars next to the one main container. It's a single digit.",
+   "explain": "A sidecar-enabled app has one main container and can have up to nine sidecar containers.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An internal API sends prompts to a compact model server. Every API instance needs its own local model endpoint, the two must scale together, and the team wants to update the model image without rebuilding the API image. What should you use?",
+   "options": [
+    {
+     "text": "Build the model server into the API image",
+     "why": "Then any model update would mean rebuilding the API image."
+    },
+    {
+     "text": "Host the model on a shared inference service used by all apps",
+     "why": "A shared service fits when several apps share a model. Here each API instance needs its own local endpoint."
+    },
+    {
+     "text": "Run the model server as an App Service sidecar",
+     "why": "Correct. Separate images, one lifecycle, scaled as a set, with calls over localhost."
+    },
+    {
+     "text": "Run the model server in a second web app in the same plan",
+     "why": "A separate app scales on its own and needs a network endpoint, which the scenario wants to avoid."
+    }
+   ],
+   "answer": 2,
+   "hint": "One endpoint per API instance, scaling together, and separate images. Which App Service pattern runs containers side by side?",
+   "explain": "Separate images, one lifecycle, scaled as a set, with calls over localhost.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Five different apps will share one large language model, and model serving needs GPU hardware with its own scaling rule. Where should you run the model?",
+   "options": [
+    {
+     "text": "In the /home volume shared by all the apps",
+     "why": "/home is file storage, not a model hosting option."
+    },
+    {
+     "text": "As the main container of one sidecar-enabled app",
+     "why": "Making it the main container doesn't give it independent scaling or sharing."
+    },
+    {
+     "text": "In a separately deployed inference service",
+     "why": "Correct. Shared endpoints, GPU needs and different scaling favor a separate service."
+    },
+    {
+     "text": "As a sidecar in each of the five apps",
+     "why": "Sidecars suit one helper per instance with the same scaling, not a shared GPU model."
+    }
+   ],
+   "answer": 2,
+   "hint": "Many callers, special hardware and an independent scaling rule all point away from one app's instances.",
+   "explain": "Learn lists shared endpoints, GPU hardware and a different scaling policy as reasons for a separately deployed service.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An API runs with a model-server sidecar, and the app scales from two to four instances.",
+   "rows": [
+    {
+     "text": "Each of the two new instances gets its own model-server sidecar.",
+     "answer": true,
+     "why": "Scale out adds the main container and all configured sidecars to each new instance."
+    },
+    {
+     "text": "The model server can scale on its own rule while the API stays at four.",
+     "answer": false,
+     "why": "The plan doesn't scale the model server independently from the API."
+    },
+    {
+     "text": "The sidecar's memory use comes out of the same App Service plan as the API.",
+     "answer": true,
+     "why": "All containers on an instance consume capacity from the same plan."
+    },
+    {
+     "text": "The sidecar can run any public image, because it's isolated from the main app.",
+     "answer": false,
+     "why": "Containers share a trust boundary, so run only trusted images."
+    }
+   ],
+   "hint": "Sidecars are part of each instance. Do they scale on their own, and whose resources do they use?",
+   "explain": "Sidecars share lifecycle, scale, capacity and trust boundary with the main app.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "For each statement about App Service sidecars, select Yes if it's true. Otherwise, select No.",
+   "rows": [
+    {
+     "text": "An app can have one main container and up to nine sidecar containers.",
+     "answer": true,
+     "why": "That's the documented limit."
+    },
+    {
+     "text": "External HTTP traffic is routed to any container that declares a target port.",
+     "answer": false,
+     "why": "External HTTP traffic goes only to the container with isMain: true."
+    },
+    {
+     "text": "When the app scales in, App Service removes the main container and its sidecars together.",
+     "answer": true,
+     "why": "Scale-in removes the complete set of containers on an instance."
+    }
+   ],
+   "hint": "Count the containers, check which one gets external traffic, and think about how scaling treats the group.",
+   "explain": "An app has one main container and up to nine sidecars. Only the main container (isMain) receives external HTTP traffic, and the main container and its sidecars scale in and out together.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-007",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You convert a classic Linux custom-container app that uses WEBSITES_PORT=8000 and DOCKER_REGISTRY_SERVER_PASSWORD to the sitecontainers model. What should you plan for?",
+   "options": [
+    {
+     "text": "Both settings keep working unchanged after the conversion",
+     "why": "Learn says these classic settings don't configure sidecar-enabled containers."
+    },
+    {
+     "text": "WEBSITES_PORT carries over, but the registry settings need replacing",
+     "why": "Neither setting configures sidecar-enabled containers."
+    },
+    {
+     "text": "Conversion moves both values into a Docker Compose file for you",
+     "why": "Sitecontainers replaces Docker Compose; it doesn't generate one."
+    },
+    {
+     "text": "Both settings no longer configure the containers, so replace them",
+     "why": "Correct. Plan replacement settings (target ports, image authentication) before converting production."
+    }
+   ],
+   "answer": 3,
+   "hint": "The sitecontainers model configures each container explicitly. Do the classic single-container settings still apply?",
+   "explain": "Sitecontainers apps define ports, roles and image authentication in container resources; WEBSITES_PORT and DOCKER_REGISTRY_SERVER_* don't apply.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The model sidecar uses most of the instance's memory. The API slows down even though the API itself uses little memory. Why?",
+   "options": [
+    {
+     "text": "The sidecar takes the API's external traffic",
+     "why": "External traffic goes only to the main container."
+    },
+    {
+     "text": "The API's image is pulled again whenever the sidecar uses memory",
+     "why": "Memory use doesn't trigger image pulls."
+    },
+    {
+     "text": "The containers share the plan's CPU and memory",
+     "why": "Correct. The plan doesn't scale the model server separately from the API."
+    },
+    {
+     "text": "Sidecars run on a lower-priority CPU tier",
+     "why": "There's no separate tier. They share the instance's resources."
+    }
+   ],
+   "answer": 2,
+   "hint": "The containers run on the same instance. What do they share?",
+   "explain": "The plan doesn't scale the model server separately from the API.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-009",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "medium",
+   "q": "Which LinuxFxVersion value does a sidecar-enabled app use?",
+   "options": [
+    {
+     "text": "DOCKER|<image>",
+     "why": "That's the classic single-container value."
+    },
+    {
+     "text": "sidecar",
+     "why": "That isn't the value App Service uses."
+    },
+    {
+     "text": "sitecontainers",
+     "why": "Correct. Each container is then a Microsoft.Web/sites/sitecontainers resource."
+    },
+    {
+     "text": "isMain",
+     "why": "isMain is a property of a container, not a LinuxFxVersion value."
+    }
+   ],
+   "answer": 2,
+   "hint": "A sidecar-enabled app has a special LinuxFxVersion value. It names the feature.",
+   "explain": "Each container is then a Microsoft.Web/sites/sitecontainers resource.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-010",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You're choosing an App Service plan for a sidecar-enabled AI app. What should the capacity estimate be based on?",
+   "options": [
+    {
+     "text": "Combined peak of all containers, plus startup overlap",
+     "why": "Correct. Include model-load memory, peak concurrency and overlap during deployment or scale-out."
+    },
+    {
+     "text": "The sidecar's image size",
+     "why": "Image size affects pull time, not runtime CPU and memory."
+    },
+    {
+     "text": "The main API's steady-state usage only",
+     "why": "The model sidecar shares the same instance, and peaks matter."
+    },
+    {
+     "text": "The number of sidecars times a fixed per-container quota",
+     "why": "There's no fixed quota. You measure real usage."
+    }
+   ],
+   "answer": 0,
+   "hint": "All the containers run at once on each instance, and a restart can briefly overlap old and new.",
+   "explain": "Include model-load memory, peak concurrency and overlap during deployment or scale-out.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You create the main API container for a sidecar-enabled app. On which port must the main process listen?",
+   "options": [
+    {
+     "text": "Port 2222, so SSH and HTTP share it",
+     "why": "2222 is the App Service SSH port for custom containers."
+    },
+    {
+     "text": "Port 11434, the model-server default",
+     "why": "That's the sidecar port in the Learn example, not the main container's."
+    },
+    {
+     "text": "Any port, as long as WEBSITES_PORT matches it",
+     "why": "WEBSITES_PORT doesn't configure sidecar-enabled containers."
+    },
+    {
+     "text": "Port 80 or 8080 for external HTTP traffic",
+     "why": "Correct. App Service supports only 80 or 8080 for external HTTP traffic to the main container."
+    }
+   ],
+   "answer": 3,
+   "hint": "External HTTP traffic reaches the main container only on certain default ports.",
+   "explain": "Exactly one container is main, and its process must listen on port 80 or 8080.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The main container's API listens on port 5000. After you create it with --is-main and --target-port 5000, external requests never reach it. What should you change?",
+   "options": [
+    {
+     "text": "Mark the model-server container as main instead",
+     "why": "Only the API should take external traffic. Moving the main role doesn't fix the port."
+    },
+    {
+     "text": "Remove the target port from the main container",
+     "why": "The target port is metadata, and the process still listens on an unsupported port."
+    },
+    {
+     "text": "Add the app setting WEBSITES_PORT=5000",
+     "why": "Classic WEBSITES_PORT doesn't configure sidecar-enabled containers."
+    },
+    {
+     "text": "Make the API process listen on port 8080 instead",
+     "why": "Correct. The main container must listen on 80 or 8080 for external HTTP."
+    }
+   ],
+   "answer": 3,
+   "hint": "Target port is a setting, not the port the process uses. Which ports does App Service route external traffic to?",
+   "explain": "The main container must listen on 80 or 8080 for external HTTP.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Both the main API and the model server need MODEL_NAME. In the site container JSON, what goes in environmentVariables[].value?",
+   "options": [
+    {
+     "text": "The name of an App Setting, such as MODEL_NAME_VALUE",
+     "why": "Correct. The value identifies an App Setting by name; create that setting first."
+    },
+    {
+     "text": "A Key Vault secret URI copied from the vault",
+     "why": "Learn's pattern maps App Settings, not raw secret URIs, into container variables."
+    },
+    {
+     "text": "The client ID of the user-assigned identity",
+     "why": "The client ID is used for image pull authentication."
+    },
+    {
+     "text": "The literal model name, such as support-model, typed into the JSON",
+     "why": "Site container variables reference App Settings by name rather than holding literal values."
+    }
+   ],
+   "answer": 0,
+   "hint": "Values in the container JSON don't hold the secret itself. They point to something defined elsewhere on the app.",
+   "explain": "In a site container resource, each environmentVariables[].value names an App Setting that holds the actual value.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-014",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A sidecar pull with a user-assigned identity fails with `UNAUTHORIZED: token validation failed`. The identity has AcrPull and has had it for a day. What should you check next?",
+   "options": [
+    {
+     "text": "Whether the registry accepts ARM audience tokens",
+     "why": "Correct. Learn says this error can mean the registry doesn't accept ARM audience tokens (az acr config authentication-as-arm show)."
+    },
+    {
+     "text": "Whether WEBSITES_PORT is set to the sidecar's target port",
+     "why": "WEBSITES_PORT doesn't apply to sidecar-enabled apps and isn't related to pull auth."
+    },
+    {
+     "text": "Whether the image tag is latest rather than an immutable tag",
+     "why": "Tag choice affects reproducibility, not token validation."
+    },
+    {
+     "text": "Whether the sidecar container has isMain set to true",
+     "why": "The role flag doesn't affect registry authentication."
+    }
+   ],
+   "answer": 0,
+   "hint": "The role is correct and old enough. Pull tokens can be refused because of what they were issued for.",
+   "explain": "Managed-identity pulls need the registry to accept ARM audience tokens. Propagation delay is ruled out because the role is a day old.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-015",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A registry uses **RBAC Registry + ABAC Repository Permissions**. You're configuring the model-server sidecar.",
+   "rows": [
+    {
+     "text": "Granting the identity Container Registry Repository Reader can give it pull access.",
+     "answer": true,
+     "why": "In the ABAC repository mode, Learn names Container Registry Repository Reader, optionally with a repository condition."
+    },
+    {
+     "text": "Changing the targetPort metadata to 9000 makes the process inside the image listen on 9000.",
+     "answer": false,
+     "why": "Target port is metadata; it doesn't reconfigure the process."
+    },
+    {
+     "text": "When you pass --sitecontainers-spec-file, other site container input arguments are ignored.",
+     "answer": true,
+     "why": "Learn says the command ignores other input arguments with a spec file."
+    },
+    {
+     "text": "Putting the registry password in the spec file is the recommended way to authenticate.",
+     "answer": false,
+     "why": "Don't place credentials in the spec file; use managed identity."
+    }
+   ],
+   "hint": "ABAC mode uses repository-level roles. Target port is only metadata, and a spec file overrides other arguments.",
+   "explain": "Pick the pull role that matches the registry's permissions mode; target port is only metadata; keep credentials out of the spec.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-016",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your registry's role assignment permissions mode is RBAC Registry + ABAC Repository Permissions. Which role should the app's managed identity get so it can pull the sidecar image?",
+   "options": [
+    {
+     "text": "AcrPull",
+     "why": "AcrPull applies when the registry uses RBAC Registry Permissions."
+    },
+    {
+     "text": "AcrPush",
+     "why": "Push rights are more than the app needs, and the mode calls for a repository role."
+    },
+    {
+     "text": "Container Registry Repository Reader",
+     "why": "Correct. Use it for the ABAC repository mode, optionally with a repository condition."
+    },
+    {
+     "text": "Contributor on the registry",
+     "why": "Far broader than the pull permission needed."
+    }
+   ],
+   "answer": 2,
+   "hint": "In ABAC mode, registry-wide roles don't grant repository permissions. Which role is about reading repositories?",
+   "explain": "Use it for the ABAC repository mode, optionally with a repository condition.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-017",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You change the model-server definition's --target-port from 11434 to 9000. The image is unchanged, and the API now calls localhost:9000 and gets connection refused. Why?",
+   "options": [
+    {
+     "text": "Sidecars can't declare a target port",
+     "why": "A networked sidecar should declare its listener port as metadata."
+    },
+    {
+     "text": "The API must call model-server:9000 instead of localhost",
+     "why": "Containers reach each other through localhost, not container names."
+    },
+    {
+     "text": "Target port is metadata; the process didn't change",
+     "why": "Correct. Changing the metadata doesn't reconfigure the process inside the image."
+    },
+    {
+     "text": "Ports above 8080 are blocked between containers",
+     "why": "Internal communication can use any available unique port."
+    }
+   ],
+   "answer": 2,
+   "hint": "Changing a setting in App Service doesn't change what the process inside the image does.",
+   "explain": "Changing the metadata doesn't reconfigure the process inside the image.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-018",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You're creating a new Linux web app that will host a main container and a sidecar. Which az webapp create option prepares it for site containers?",
+   "options": [
+    {
+     "text": "--sitecontainers-app",
+     "why": "Correct. It configures the app to use site container resources."
+    },
+    {
+     "text": "--multicontainer-config-type compose",
+     "why": "Docker Compose is the older multi-container model."
+    },
+    {
+     "text": "--is-main",
+     "why": "--is-main belongs to az webapp sitecontainers create."
+    },
+    {
+     "text": "--container-image-name",
+     "why": "This sets a classic single container image."
+    }
+   ],
+   "answer": 0,
+   "hint": "A new web app needs an option at creation time that says it will host site containers.",
+   "explain": "It configures the app to use site container resources.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-019",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Both the main API and a telemetry sidecar are configured to listen on port 8080. What goes wrong?",
+   "options": [
+    {
+     "text": "The second process can't bind 8080 on the shared network",
+     "why": "Correct. Each listening process needs a unique port."
+    },
+    {
+     "text": "App Service splits external traffic across both containers",
+     "why": "External traffic goes only to the main container."
+    },
+    {
+     "text": "Nothing, because each container has its own network",
+     "why": "All containers share one network namespace."
+    },
+    {
+     "text": "The telemetry sidecar becomes the main container",
+     "why": "isMain decides the role, not the port."
+    }
+   ],
+   "answer": 0,
+   "hint": "All the containers share one network namespace. What happens when two processes want the same port?",
+   "explain": "Each listening process needs a unique port.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-020",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "The main API must call the model-server sidecar, which listens on port 11434. Which URL should the API use?",
+   "options": [
+    {
+     "text": "https://<app-name>.azurewebsites.net:11434",
+     "why": "Sidecars aren't published on the public hostname."
+    },
+    {
+     "text": "http://model-server:11434",
+     "why": "Containers don't reach each other by container name in App Service sidecars."
+    },
+    {
+     "text": "http://<app-name>.scm.azurewebsites.net:11434",
+     "why": "The SCM site is the Kudu diagnostic site, not the sidecar."
+    },
+    {
+     "text": "http://localhost:11434",
+     "why": "Correct. Containers share a network namespace and use localhost:<port>."
+    }
+   ],
+   "answer": 3,
+   "hint": "The containers share a network. What host name reaches a process on the same instance?",
+   "explain": "All containers share one network namespace, so each instance's main API calls its own sidecar on localhost.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-021",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The main API calls a local model server that sometimes restarts while loading. Which two practices does Learn recommend for these calls? (Select two.)",
+   "options": [
+    {
+     "text": "Retry every failed request until the model server answers",
+     "why": "Retrying everything can duplicate work and add pressure during a sidecar failure."
+    },
+    {
+     "text": "Use a short connection timeout and an overall request deadline",
+     "why": "Correct. A short connect timeout detects a missing listener; a deadline fits the client latency target."
+    },
+    {
+     "text": "Retry only transient errors, and only for idempotent operations",
+     "why": "Correct. A small retry budget for transient errors on idempotent operations avoids duplicate work."
+    },
+    {
+     "text": "Expose a generic proxy so clients can call the sidecar directly",
+     "why": "Learn says to avoid a generic proxy; the main API stays the security boundary."
+    }
+   ],
+   "answer": [
+    1,
+    2
+   ],
+   "hint": "Fail fast on connection, cap the total time, and retry only when trying again is safe.",
+   "explain": "Treat the local call as a fallible dependency: timeouts, deadlines, cancellation, limited retries and clear error mapping.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-022",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The model server writes /home/models/manifest.json, and the API sometimes reads a half-written file. What should the model server do?",
+   "options": [
+    {
+     "text": "Add a volumeMounts entry for /home/models to both container definitions",
+     "why": "Explicit mounts aren't needed and can stop the app or SCM site from starting."
+    },
+    {
+     "text": "Write manifest.json.tmp first, then rename it to manifest.json",
+     "why": "Correct. Writing to a temporary name and renaming prevents partial reads."
+    },
+    {
+     "text": "Set WEBSITES_ENABLE_APP_SERVICE_STORAGE to false for the app",
+     "why": "That removes the shared /home mount the containers rely on."
+    },
+    {
+     "text": "Write the manifest to /tmp in its own container instead",
+     "why": "Another container can't read a file in the writer's own /tmp."
+    }
+   ],
+   "answer": 1,
+   "hint": "A reader can see a file while it's still being written. How do you make the file appear all at once?",
+   "explain": "Learn's ownership protocol: write to a temporary name, then rename, or publish a manifest only when all artifacts are ready.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-023",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. The API and model server exchange files through `/home/models`, with default settings.",
+   "rows": [
+    {
+     "text": "Both containers see the same /home volume without any volumeMounts entries.",
+     "answer": true,
+     "why": "App Service mounts the same /home volume into the main container and every sidecar by default."
+    },
+    {
+     "text": "/home/models is a good place for the audit store of every model answer.",
+     "answer": false,
+     "why": "Learn says not to treat /home as an audit store or durable system of record."
+    },
+    {
+     "text": "Adding explicit volumeMounts can prevent the app or SCM endpoint from starting.",
+     "answer": true,
+     "why": "Explicit mounts change the file-system view and can conflict with the runtime."
+    },
+    {
+     "text": "Files that must outlive the app are best kept in /home rather than in Blob Storage.",
+     "answer": false,
+     "why": "Use Azure Blob Storage or Azure Files when data needs a durable storage boundary outside the web app."
+    }
+   ],
+   "hint": "/home is shared by default. Think about what extra mounts can break and what belongs in durable storage.",
+   "explain": "Use /home for recreatable, operational files; move durable artifacts to Azure Storage.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-024",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A developer wants to add an endpoint to the main API that forwards any request straight to the model sidecar, for debugging. What does the guidance advise?",
+   "options": [
+    {
+     "text": "Expose only narrow health or inference operations",
+     "why": "Correct. This keeps the main API as the external security boundary."
+    },
+    {
+     "text": "Add it, since the sidecar is only reachable on localhost anyway",
+     "why": "A generic proxy would turn the main API into an open door to the sidecar."
+    },
+    {
+     "text": "Mark the sidecar isMain: true while debugging",
+     "why": "That would route external traffic away from the API."
+    },
+    {
+     "text": "Publish the sidecar's target port externally",
+     "why": "A sidecar target port isn't published as a public endpoint."
+    }
+   ],
+   "answer": 0,
+   "hint": "A generic pass-through endpoint widens what the model server exposes. What does the guidance prefer?",
+   "explain": "This keeps the main API as the external security boundary.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-025",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "After you add volumeMounts entries to both site container definitions, the app and its SCM endpoint stop starting. What should you do first?",
+   "options": [
+    {
+     "text": "Add a third container to own the mount",
+     "why": "More containers don't fix a conflicting mount."
+    },
+    {
+     "text": "Set WEBSITES_ENABLE_APP_SERVICE_STORAGE=false",
+     "why": "That would remove the built-in shared /home mount."
+    },
+    {
+     "text": "Scale the plan up to a larger tier",
+     "why": "This is a configuration conflict, not a capacity problem."
+    },
+    {
+     "text": "Remove volumeMounts and restore the working definitions",
+     "why": "Correct. Explicit mounts can conflict with the runtime. /home already provides file exchange."
+    }
+   ],
+   "answer": 3,
+   "hint": "The app worked before you changed the mounts. What's the quickest way back to a working state?",
+   "explain": "Explicit mounts can conflict with the runtime. /home already provides file exchange.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-026",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "match",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "The main API calls its model sidecar. Match each result to what it tells you.",
+   "choices": [
+    "No process accepted on that port",
+    "Connection worked; check the request",
+    "Slow startup, pressure or long work"
+   ],
+   "items": [
+    {
+     "text": "Connection refused",
+     "answer": 0,
+     "why": "Refused means nothing was listening on the requested local port."
+    },
+    {
+     "text": "HTTP 400 returned by the model server",
+     "answer": 1,
+     "why": "An HTTP error means the network connection succeeded."
+    },
+    {
+     "text": "Request timed out",
+     "answer": 2,
+     "why": "A timeout can mean slow startup, resource pressure, blocked work or a long request."
+    }
+   ],
+   "hint": "Each error tells you how far the request got: no listener, a reply, or no reply in time.",
+   "explain": "Separate the failure categories before changing ports, capacity or the request.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-027",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A health call from the API to the sidecar returns HTTP 400. What does this tell you?",
+   "options": [
+    {
+     "text": "No process is listening on the sidecar port",
+     "why": "That would be a connection refusal, not an HTTP response."
+    },
+    {
+     "text": "The request ran past the timeout budget",
+     "why": "A timeout raises a timeout error, not a 400 status."
+    },
+    {
+     "text": "The connection worked; check the request",
+     "why": "Correct. An HTTP error status means the network connection succeeded."
+    },
+    {
+     "text": "The registry rejected the image pull",
+     "why": "A running sidecar that answers has already pulled its image."
+    }
+   ],
+   "answer": 2,
+   "hint": "A 400 is an HTTP response. What does getting any HTTP response prove?",
+   "explain": "An HTTP error status means the network connection succeeded.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-028",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Users get errors from the API. You suspect the model-server sidecar never received the new image tag in the last release. Which command checks this first?",
+   "options": [
+    {
+     "text": "az acr task logs to read the output of the last build",
+     "why": "Build logs show the image was built, not what the app is configured to run."
+    },
+    {
+     "text": "az webapp sitecontainers show for model-server",
+     "why": "Correct. show returns the deployed definition, including its image, so you can compare it with the release."
+    },
+    {
+     "text": "az webapp config appsettings list for the app settings",
+     "why": "App settings don't hold the site container image."
+    },
+    {
+     "text": "az webapp log tail to stream output for the whole app",
+     "why": "The app log stream mixes containers and can't show a setting that never reached the resource."
+    }
+   ],
+   "answer": 1,
+   "hint": "Before reading logs, confirm App Service actually has the configuration you think you released.",
+   "explain": "Inspect configuration first: a runtime log can't show a setting that never reached the resource.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-029",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Users report errors from a sidecar-enabled app. Following the symptom-first workflow, what do you confirm first?",
+   "options": [
+    {
+     "text": "That the API can reach localhost",
+     "why": "Connectivity comes after confirming the configuration, pull and process state."
+    },
+    {
+     "text": "That the definitions reached App Service",
+     "why": "Correct. Use list and show to spot a missing sidecar, a wrong tag or two main containers."
+    },
+    {
+     "text": "That the plan has enough CPU and memory",
+     "why": "Resource pressure comes later in the sequence."
+    },
+    {
+     "text": "That the model returns sensible answers",
+     "why": "App-layer validation is the last step."
+    }
+   ],
+   "answer": 1,
+   "hint": "Symptom-first: rule out the simplest explanation, which is that the configuration didn't arrive.",
+   "explain": "Use list and show to spot a missing sidecar, a wrong tag or two main containers.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-030",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "The sidecar restarts every few minutes while loading the model. Its log shows no stack trace or exit error, and memory spikes at each start. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Scale the app out to more instances so that each instance carries less load",
+     "why": "Each new instance adds another model server, so per-instance memory pressure stays the same."
+    },
+    {
+     "text": "Add a volumeMounts entry for the model files to fix permissions",
+     "why": "Explicit mounts aren't needed here and can cause new failures."
+    },
+    {
+     "text": "Switch the image pull to registry admin credentials, then redeploy",
+     "why": "Image auth doesn't cause restarts after a successful pull."
+    },
+    {
+     "text": "Measure memory, then reduce load, use a smaller model or scale the plan",
+     "why": "Correct. Repeated starts without an app error can indicate memory pressure during model loading."
+    }
+   ],
+   "answer": 3,
+   "hint": "No crash message, but memory spikes at startup. Measure first, then reduce what loads or add capacity.",
+   "explain": "Align memory metrics with sidecar logs. If demand exceeds safe capacity, reduce concurrency, use a smaller model, scale the plan or host inference separately.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-031",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. The model-server image pull fails for an ACR registry that sits behind a private endpoint, using VNet integration.",
+   "rows": [
+    {
+     "text": "The Pull image over VNet option should be enabled for this setup.",
+     "answer": true,
+     "why": "Enable Pull image over VNet when the image must be pulled through VNet integration."
+    },
+    {
+     "text": "Because the pull failed, the sidecar's application logs will show the cause.",
+     "answer": false,
+     "why": "Pull failures happen before the process starts, so look at pull and container logs, not app output."
+    },
+    {
+     "text": "If you granted the pull role five minutes ago, waiting and retrying is reasonable.",
+     "answer": true,
+     "why": "Role assignments take time to propagate; retry before replacing correct identity settings."
+    },
+    {
+     "text": "Scaling the App Service plan up is a good fix for a pull failure.",
+     "answer": false,
+     "why": "Don't use scaling to hide a configuration problem."
+    }
+   ],
+   "hint": "A private endpoint needs pulls to go through the VNet. Pull failures happen before the app writes any logs.",
+   "explain": "For pull failures check image reference, identity and role, ARM tokens, and network path (firewall or private endpoint, DNS, VNet integration, Pull image over VNet).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m3-032",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You granted the web app's managed identity AcrPull two minutes ago, and the sidecar pull still fails. The identity settings in the container definition are correct. What should you do?",
+   "options": [
+    {
+     "text": "Switch the container to stored registry credentials",
+     "why": "The guidance says not to replace correct identity settings with stored credentials."
+    },
+    {
+     "text": "Delete the identity and create a new one",
+     "why": "A new identity would need the same role and the same propagation time."
+    },
+    {
+     "text": "Wait for the role to propagate, then retry",
+     "why": "Correct. Role assignments can take time to propagate."
+    },
+    {
+     "text": "Mark the sidecar as the main container",
+     "why": "The role doesn't affect image pulls."
+    }
+   ],
+   "answer": 2,
+   "hint": "Role assignments take a little time to apply. The configuration is already correct.",
+   "explain": "Role assignments can take time to propagate.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m3-033",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "ACR is reachable only through a private endpoint, and the web app uses virtual network integration. Sidecar image pulls fail even though DNS and the identity's pull role are correct. Which App Service option should you check?",
+   "options": [
+    {
+     "text": "Pull image over VNet",
+     "why": "Correct. It must be enabled when the image is pulled through VNet integration."
+    },
+    {
+     "text": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+     "why": "That controls /home storage."
+    },
+    {
+     "text": "Always On",
+     "why": "Always On keeps the app warm. It doesn't affect the pull path."
+    },
+    {
+     "text": "The target port of the main container",
+     "why": "Ports don't affect image pulls."
+    }
+   ],
+   "answer": 0,
+   "hint": "The registry is only reachable privately. Which App Service option sends image pulls through the VNet?",
+   "explain": "It must be enabled when the image is pulled through VNet integration.",
+   "origin": "site"
+  }
+ ]
+}

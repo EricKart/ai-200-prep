@@ -1,0 +1,734 @@
+{
+ "module": "lp3m1",
+ "title": "Deploy applications to Azure Kubernetes Service",
+ "questions": [
+  {
+   "id": "lp3m1-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "In a Deployment manifest, which field sets how many copies of the Pod run at the same time?",
+   "options": [
+    {
+     "text": "replicas",
+     "why": "Correct. replicas determines how many copies run simultaneously."
+    },
+    {
+     "text": "selector",
+     "why": "selector matches Pods by label; it doesn't set a count."
+    },
+    {
+     "text": "resources",
+     "why": "resources sets CPU and memory per container."
+    },
+    {
+     "text": "containers",
+     "why": "containers lists the containers in each Pod."
+    }
+   ],
+   "answer": 0,
+   "hint": "One field in the Deployment spec says how many copies of the Pod should run at the same time.",
+   "explain": "spec.replicas sets the number of Pods the Deployment maintains.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "How many replicas does Learn recommend for a production AI inference API that serves external users?",
+   "options": [
+    {
+     "text": "1",
+     "why": "One Pod means downtime whenever it crashes."
+    },
+    {
+     "text": "2",
+     "why": "Two give basic resilience, suited to development and noncritical services."
+    },
+    {
+     "text": "10",
+     "why": "Learn suggests 4+ only for high traffic, balancing resilience with cost."
+    },
+    {
+     "text": "3",
+     "why": "Correct. Three replicas are recommended for production APIs."
+    }
+   ],
+   "answer": 3,
+   "hint": "Learn gives 2 for basic resilience and a higher number for production APIs with external users.",
+   "explain": "2 replicas = basic resilience; 3 = recommended for production; 4+ only for high traffic.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A model's documentation says it needs 4 GB of memory. Following Learn's guidance, roughly what memory should you start with for the Pod?",
+   "options": [
+    {
+     "text": "About 4.8 GB, the documented 4 GB plus 20%",
+     "why": "Correct. Start with the documented requirement plus 20% for overhead."
+    },
+    {
+     "text": "About 16 GB, to be safe from OOMKill",
+     "why": "Over-allocating wastes cluster resources and money."
+    },
+    {
+     "text": "About 2 GB, then raise it if needed",
+     "why": "Starting below the documented need invites OOMKills."
+    },
+    {
+     "text": "Exactly 4 GB, with no overhead",
+     "why": "Learn adds overhead on top of the documented requirement."
+    }
+   ],
+   "answer": 0,
+   "hint": "Start from the documented need, then add a fixed percentage for overhead.",
+   "explain": "Start with the model's documented requirement plus 20%, then refine from observed usage.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A Pod spec has `requests: memory 2Gi` and `limits: memory 4Gi`.",
+   "rows": [
+    {
+     "text": "Kubernetes uses the 2Gi request to decide which node can run the Pod.",
+     "answer": true,
+     "why": "Requests are used for scheduling."
+    },
+    {
+     "text": "If every node has only 1Gi free, the Pod stays Pending.",
+     "answer": true,
+     "why": "A Pod requesting more than any node has free stays Pending."
+    },
+    {
+     "text": "If the container uses 5Gi, it keeps running but is slowed down.",
+     "answer": false,
+     "why": "Exceeding the memory limit gets the container terminated and restarted (OOMKill)."
+    }
+   ],
+   "hint": "Requests decide scheduling. Going over the memory limit doesn't just slow a container down.",
+   "explain": "Requests drive scheduling; limits are the ceiling, and going over the memory limit means OOMKill.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A manifest stored in Git sets `env: - name: API_KEY value: \"sk-123…\"`. What should you do?",
+   "options": [
+    {
+     "text": "Move the value to a second env entry named API_KEY_B64",
+     "why": "Encoding the value in another env entry still puts it in Git."
+    },
+    {
+     "text": "Keep it, because env values are encrypted by Kubernetes",
+     "why": "Learn says never hardcode secrets in manifests."
+    },
+    {
+     "text": "Put the key in the image tag so it stays out of the manifest",
+     "why": "Image tags are visible and aren't a place for secrets."
+    },
+    {
+     "text": "Create a Secret with kubectl and reference it with valueFrom",
+     "why": "Correct. Create the Secret separately and reference it, so the key stays out of source control."
+    }
+   ],
+   "answer": 3,
+   "hint": "Never keep a secret value in a manifest that's in source control.",
+   "explain": "Use env for non-sensitive values and Secrets (valueFrom) for API keys and credentials.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A Deployment sets replicas: 3. One of the three inference Pods crashes with an out-of-memory error. You don't run any command. What happens?",
+   "options": [
+    {
+     "text": "The controller replaces it to get back to 3",
+     "why": "Correct. A manifest declares desired state, and the controller keeps working toward it."
+    },
+    {
+     "text": "The other two Pods also restart so that all replicas run the same version",
+     "why": "Healthy replicas keep serving. Only the failed Pod is replaced."
+    },
+    {
+     "text": "The Deployment stays at 2 Pods until someone runs kubectl apply again",
+     "why": "You don't need to reapply. The controller reconciles toward the declared state on its own."
+    },
+    {
+     "text": "AKS removes the Deployment because one of its Pods failed",
+     "why": "One failed Pod doesn't remove a Deployment. Its controller replaces the Pod."
+    }
+   ],
+   "answer": 0,
+   "hint": "A manifest describes the state you want. Who keeps the cluster in that state?",
+   "explain": "You describe desired state in the manifest. The Deployment controller monitors Pod health and restarts crashed Pods so that the running replicas match the replicas field.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp3m1-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A Deployment's spec.selector.matchLabels is app: inference-api, but its Pod template's labels say app: inference. What's wrong?",
+   "options": [
+    {
+     "text": "Nothing, because the Deployment manages Pods by their image name",
+     "why": "Deployments find their Pods by label, not by image."
+    },
+    {
+     "text": "The labels can differ until the first Pod has started",
+     "why": "The selector has to match the template's labels from the start."
+    },
+    {
+     "text": "The selector doesn't match the template labels",
+     "why": "Correct. The selector tells the Deployment which Pods it manages, so it has to match the template labels."
+    },
+    {
+     "text": "Nothing, because label selectors are a Service feature",
+     "why": "Deployments use a label selector too (spec.selector.matchLabels)."
+    }
+   ],
+   "answer": 2,
+   "hint": "matchLabels says which Pods the Deployment manages. Where do those Pods get their labels from?",
+   "explain": "spec.selector.matchLabels must match spec.template.metadata.labels. The Deployment manages the Pods that carry those labels.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp3m1-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You're sizing CPU for a Pod that serves inference from a small language model. Which starting point does Learn give?",
+   "options": [
+    {
+     "text": "0.1 CPU cores, because inference is mostly memory-bound",
+     "why": "Inference uses CPU too. Too little causes slow responses."
+    },
+    {
+     "text": "8 CPU cores per Pod so that requests don't queue",
+     "why": "Over-sizing wastes cluster resources and money. Learn suggests starting smaller and adjusting."
+    },
+    {
+     "text": "No CPU request, so that Kubernetes decides at run time",
+     "why": "Without a request, the scheduler can't place the Pod based on what it needs."
+    },
+    {
+     "text": "1–2 cores per Pod, adjusted for throughput",
+     "why": "Correct. For inference, 1–2 cores per Pod is typically enough, then you adjust for throughput."
+    }
+   ],
+   "answer": 3,
+   "hint": "Learn gives a small range of cores for inference, then says to tune it.",
+   "explain": "For an AI inference Pod, typically 1–2 CPU cores per Pod is sufficient. Adjust based on expected throughput and observed usage.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m1-009",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which image reference follows the format Learn uses for a Deployment that pulls from Azure Container Registry?",
+   "options": [
+    {
+     "text": "myregistry.azurecr.io/inference-api:v1.0",
+     "why": "Correct. registryname.azurecr.io/imagename:tag."
+    },
+    {
+     "text": "myregistry/inference-api.azurecr.io:v1.0",
+     "why": "The host is myregistry.azurecr.io, and the image name follows the slash."
+    },
+    {
+     "text": "azurecr.io/myregistry/inference-api:v1.0",
+     "why": "The registry name is a subdomain of azurecr.io, not a path."
+    },
+    {
+     "text": "myregistry.azurecr.io:v1.0/inference-api",
+     "why": "The tag goes after the image name, not after the registry host."
+    }
+   ],
+   "answer": 0,
+   "hint": "Registry host first, then a slash, the image name, a colon, and the tag.",
+   "explain": "The image path format is registryname.azurecr.io/imagename:tag, for example myregistry.azurecr.io/inference-api:v1.0.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m1-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "match",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Match each need to the Kubernetes Service type.",
+   "choices": [
+    "ClusterIP",
+    "NodePort",
+    "LoadBalancer",
+    "ExternalName"
+   ],
+   "items": [
+    {
+     "text": "A vector search service called only by other Pods",
+     "answer": 0,
+     "why": "ClusterIP is internal to the cluster."
+    },
+    {
+     "text": "Quick external access during development through a node's IP",
+     "answer": 1,
+     "why": "NodePort exposes a port on every node."
+    },
+    {
+     "text": "A production AI API that internet users call",
+     "answer": 2,
+     "why": "LoadBalancer creates an Azure Load Balancer with a public IP."
+    },
+    {
+     "text": "Represent a service outside the cluster by its DNS name",
+     "answer": 3,
+     "why": "ExternalName maps to an external DNS name."
+    }
+   ],
+   "hint": "Internal only, node IP for dev, managed public IP, or a name for something outside the cluster.",
+   "explain": "Choose the Service type by who needs to reach the application.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Clients connect to the Service on port 80, and the FastAPI container listens on 8080. How should the Service ports be set?",
+   "options": [
+    {
+     "text": "port: 80, targetPort: 8080",
+     "why": "Correct. port is what clients use; targetPort is where the container listens."
+    },
+    {
+     "text": "port: 80, nodePort: 8080",
+     "why": "nodePort is for NodePort services, not the container port."
+    },
+    {
+     "text": "port: 8080, targetPort: 8080",
+     "why": "Clients would then have to connect on 8080."
+    },
+    {
+     "text": "port: 8080, targetPort: 80",
+     "why": "That's reversed: clients would need port 8080."
+    }
+   ],
+   "answer": 0,
+   "hint": "port is what clients use. targetPort is where the app listens.",
+   "explain": "The Service forwards connections from its port to the Pod's targetPort.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Another Pod in the default namespace must call inference-api-service on port 8080. Which address should it use?",
+   "options": [
+    {
+     "text": "http://inference-api-service.azurecr.io:8080",
+     "why": "azurecr.io is the registry domain."
+    },
+    {
+     "text": "http://inference-api-service.default.svc.cluster.local:8080",
+     "why": "Correct. ClusterIP services use servicename.namespace.svc.cluster.local."
+    },
+    {
+     "text": "The EXTERNAL-IP shown for the Service",
+     "why": "A ClusterIP service has no external IP."
+    },
+    {
+     "text": "http://localhost:8080",
+     "why": "localhost reaches the calling Pod itself."
+    }
+   ],
+   "answer": 1,
+   "hint": "Service DNS names follow service.namespace.svc.cluster.local.",
+   "explain": "Inside the cluster, call the Service by its DNS name.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A Service has `selector: app: inference-api`, and the Deployment's Pod template uses the label `app: inference`.",
+   "rows": [
+    {
+     "text": "The Service routes traffic to the Deployment's Pods.",
+     "answer": false,
+     "why": "The labels don't match, so the Service has no Pods to route to."
+    },
+    {
+     "text": "kubectl describe svc shows Endpoints: <none>.",
+     "answer": true,
+     "why": "No matching Pods means no endpoints."
+    },
+    {
+     "text": "Changing the Service type to LoadBalancer fixes the problem.",
+     "answer": false,
+     "why": "The type doesn't matter if the selector matches no Pods."
+    }
+   ],
+   "hint": "The selector must match the Pod labels exactly. Changing the Service type doesn't change matching.",
+   "explain": "Selectors connect Services to Pods; a mismatch leaves the Service without endpoints.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-014",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A worker calls an inference Pod directly by its IP address. Every time the Pod restarts, the worker breaks. What should the worker call instead?",
+   "options": [
+    {
+     "text": "A second Pod that records the first Pod's IP address",
+     "why": "That just moves the problem. A Service is the built-in stable endpoint."
+    },
+    {
+     "text": "A Service, which has a stable IP and DNS name",
+     "why": "Correct. A Service abstracts the changing Pod IPs behind a persistent endpoint."
+    },
+    {
+     "text": "The Deployment's name, which Kubernetes resolves to the newest Pod",
+     "why": "Deployments don't provide DNS names for routing traffic. Services do."
+    },
+    {
+     "text": "The node's IP address, because nodes don't restart",
+     "why": "Pods can move between nodes, so a node IP isn't a stable way to reach one app."
+    }
+   ],
+   "answer": 1,
+   "hint": "Pod IPs change on restart. Which Kubernetes object gives you an address that doesn't?",
+   "explain": "Pods get new internal IPs when they restart. A Service gives a persistent IP and DNS name and routes traffic to Pods whose labels match its selector.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m1-015",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You apply a Service manifest that has no type field. Other Pods can reach it, but nothing outside the cluster can. Which type did Kubernetes use?",
+   "options": [
+    {
+     "text": "LoadBalancer",
+     "why": "LoadBalancer isn't the default. It provisions a public IP."
+    },
+    {
+     "text": "NodePort",
+     "why": "NodePort isn't the default. It opens a port on each node."
+    },
+    {
+     "text": "ClusterIP",
+     "why": "Correct. ClusterIP is the default type: an internal IP reachable only from within the cluster."
+    },
+    {
+     "text": "ExternalName",
+     "why": "ExternalName isn't the default. It maps the Service to an outside DNS name."
+    }
+   ],
+   "answer": 2,
+   "hint": "The default type keeps the Service internal to the cluster.",
+   "explain": "ClusterIP is the default Service type. It gives an internal IP that Pods can reach by the Service's DNS name, with no external access.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m1-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A Pod shows STATUS CrashLoopBackOff. Which command should you run first to see why?",
+   "options": [
+    {
+     "text": "kubectl get svc",
+     "why": "Service status doesn't explain an application crash."
+    },
+    {
+     "text": "kubectl logs <pod-name>",
+     "why": "Correct. The application's logs show why it crashes on startup."
+    },
+    {
+     "text": "az acr repository list",
+     "why": "That checks images exist, which matters for ImagePullBackOff."
+    },
+    {
+     "text": "az aks scale --node-count 3",
+     "why": "Adding nodes fixes Pending Pods, not crashing apps."
+    }
+   ],
+   "answer": 1,
+   "hint": "The Pod keeps restarting. What the app printed before it exited is the quickest clue.",
+   "explain": "CrashLoopBackOff means the app keeps exiting; read its logs (use --previous for earlier crashes).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-017",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Right after creating a LoadBalancer Service, `kubectl get svc` shows EXTERNAL-IP as <pending>. What does this mean?",
+   "options": [
+    {
+     "text": "The Service selector doesn't match any Pods",
+     "why": "That shows as no endpoints, not a pending external IP."
+    },
+    {
+     "text": "The Pods are waiting for more CPU on the nodes",
+     "why": "Scheduling problems show up as Pending Pods."
+    },
+    {
+     "text": "The image couldn't be pulled from the registry",
+     "why": "Image pull problems show up in the Pod status."
+    },
+    {
+     "text": "The load balancer is still being provisioned",
+     "why": "Correct. Wait a moment and check again."
+    }
+   ],
+   "answer": 3,
+   "hint": "Azure is still creating something for this Service.",
+   "explain": "<pending> means Azure is still creating the load balancer and public IP.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Match each symptom to its most likely cause.",
+   "choices": [
+    "Image path or tag is wrong",
+    "Nodes lack the requested memory",
+    "Pod labels don't match the selector",
+    "The app exits at startup"
+   ],
+   "items": [
+    {
+     "text": "Events show: Failed to pull image … image not found",
+     "answer": 0,
+     "why": "ImagePullBackOff: verify image path, tag and that it was pushed."
+    },
+    {
+     "text": "Pods stay Pending; events show Insufficient memory",
+     "answer": 1,
+     "why": "Requests are too large for the free capacity on nodes."
+    },
+    {
+     "text": "The Service shows Endpoints: <none>",
+     "answer": 2,
+     "why": "No Pods match the Service selector."
+    },
+    {
+     "text": "CrashLoopBackOff with a missing environment variable error in the logs",
+     "answer": 3,
+     "why": "The application crashes on startup."
+    }
+   ],
+   "hint": "Each event points to a different layer: image, capacity, labels, or the app itself.",
+   "explain": "Each status points to a different layer: registry, scheduling, service routing or the app.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-019",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. Two Pods requesting 6Gi of memory each stay Pending, and the nodes have 4Gi free each.",
+   "rows": [
+    {
+     "text": "Running az aks scale with more nodes can let the Pods schedule.",
+     "answer": true,
+     "why": "Adding nodes adds capacity if it's exhausted."
+    },
+    {
+     "text": "Reviewing whether the 6Gi request is larger than the app needs is a valid fix.",
+     "answer": true,
+     "why": "Requests that are too large for nodes keep Pods Pending."
+    },
+    {
+     "text": "kubectl apply failed, because it would have reported the scheduling error.",
+     "answer": false,
+     "why": "kubectl apply is asynchronous and returns immediately."
+    },
+    {
+     "text": "Reading kubectl logs is the best way to see the cause, because the app has started.",
+     "answer": false,
+     "why": "A Pending Pod hasn't started; use kubectl describe pod for the events."
+    }
+   ],
+   "hint": "Pending with not enough memory is a scheduling problem. Add capacity or request less.",
+   "explain": "Pending = can't schedule: describe the Pod, then lower requests or add nodes.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m1-020",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A new Pod shows STATUS ImagePullBackOff. Which check does Learn list first?",
+   "options": [
+    {
+     "text": "Read kubectl logs for the application's stack trace",
+     "why": "No container started, so there are no application logs to read yet."
+    },
+    {
+     "text": "Raise the memory limit so that the container can start",
+     "why": "Memory affects running containers. The image never got pulled."
+    },
+    {
+     "text": "Verify the image path, tag and registry in the manifest",
+     "why": "Correct. ImagePullBackOff means Kubernetes can't pull the image, so start with the image reference."
+    },
+    {
+     "text": "Change the Service selector to match the Pod's labels",
+     "why": "Selectors affect routing to running Pods, not pulling images."
+    }
+   ],
+   "answer": 2,
+   "hint": "The container never started. What does Kubernetes need before it can start one?",
+   "explain": "ImagePullBackOff means Kubernetes can't pull the image. Check the image path, tag and registry, confirm the image was pushed (az acr repository list), and check the cluster can pull from the registry.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp3m1-021",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A Pod is in CrashLoopBackOff, and the current container exits before writing anything useful. You want the output of the container instance that crashed just before. Which command shows it?",
+   "options": [
+    {
+     "text": "kubectl describe svc <service-name>",
+     "why": "Services don't hold container output."
+    },
+    {
+     "text": "kubectl top pods",
+     "why": "This shows resource usage, not logs."
+    },
+    {
+     "text": "kubectl logs <pod-name> --previous",
+     "why": "Correct. --previous shows logs from the previous container instance, which is the one that crashed."
+    },
+    {
+     "text": "kubectl get pods -w",
+     "why": "This watches status changes. It doesn't show what the crashed container printed."
+    }
+   ],
+   "answer": 2,
+   "hint": "kubectl logs shows the current container by default. One flag looks one restart back.",
+   "explain": "CrashLoopBackOff means the image pulled but the container keeps exiting. Use kubectl logs <pod> --previous to read the crashed instance's output, and kubectl describe pod for events.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp3m1-022",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The inference API's Service is ClusterIP. You want to check from inside the cluster that it answers on its DNS name. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Run kubectl logs -l app=inference-api",
+     "why": "Logs show what the app printed. They don't test whether the Service answers."
+    },
+    {
+     "text": "Run curl against the Service's CLUSTER-IP from your laptop",
+     "why": "A cluster IP is only reachable from inside the cluster."
+    },
+    {
+     "text": "Change the Service to LoadBalancer and call EXTERNAL-IP",
+     "why": "That exposes the API publicly just to test it, which isn't needed."
+    },
+    {
+     "text": "Run a temporary debug Pod and wget the Service name",
+     "why": "Correct. A throwaway debug Pod can reach a ClusterIP Service by its DNS name."
+    }
+   ],
+   "answer": 3,
+   "hint": "ClusterIP is only reachable from inside the cluster. How can you get a shell in there briefly?",
+   "explain": "For ClusterIP Services, run a test Pod (kubectl run -it --rm debug --image=alpine:latest --restart=Never -- sh) and call the Service's DNS name. For LoadBalancer Services, use the public IP from your machine.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m1-023",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. You run kubectl apply -f . in a folder that holds deployment.yaml and service.yaml.",
+   "rows": [
+    {
+     "text": "kubectl apply waits until every Pod is Running before it returns.",
+     "answer": false,
+     "why": "Deployment is asynchronous: apply returns immediately while images pull and containers start."
+    },
+    {
+     "text": "kubectl logs -l app=inference-api shows logs from every Pod with that label.",
+     "answer": true,
+     "why": "The -l flag selects Pods by label, so you see all replicas."
+    },
+    {
+     "text": "A READY value of 2/2 for the Deployment means both replicas are running.",
+     "answer": true,
+     "why": "READY shows how many replicas are ready out of the desired count."
+    }
+   ],
+   "hint": "Think about whether apply is synchronous, how -l selects Pods, and what READY counts.",
+   "explain": "kubectl apply returns immediately and Kubernetes reconciles in the background. kubectl get pods/deployment show READY and STATUS; kubectl logs -l <label> reads all matching Pods.",
+   "origin": "new"
+  }
+ ]
+}

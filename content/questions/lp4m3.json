@@ -1,0 +1,805 @@
+{
+ "module": "lp4m3",
+ "title": "Optimize query performance for Azure Cosmos DB for NoSQL",
+ "questions": [
+  {
+   "id": "lp4m3-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which index type does a query that uses ST_DISTANCE to find nearby points of interest need?",
+   "options": [
+    {
+     "text": "Spatial index",
+     "why": "Correct. Spatial indexes support ST_DISTANCE, ST_WITHIN and ST_INTERSECTS."
+    },
+    {
+     "text": "Composite index",
+     "why": "Composite indexes handle multi-property sorting and filters."
+    },
+    {
+     "text": "Range index",
+     "why": "Range indexes handle equality, ranges and single-property ORDER BY."
+    },
+    {
+     "text": "Vector index",
+     "why": "Vector indexes support VectorDistance."
+    }
+   ],
+   "answer": 0,
+   "hint": "Distance between coordinates needs a geography-aware index.",
+   "explain": "Pick the index type by the query function: spatial for geo, vector for similarity.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What is the default indexing mode for a new Cosmos DB container?",
+   "options": [
+    {
+     "text": "lazy",
+     "why": "Lazy is deprecated and new containers can't use it."
+    },
+    {
+     "text": "consistent",
+     "why": "Correct. Consistent updates indexes synchronously with each write and is the default."
+    },
+    {
+     "text": "none",
+     "why": "None disables indexing."
+    },
+    {
+     "text": "eventual",
+     "why": "Eventual is a consistency level, not an indexing mode."
+    }
+   ],
+   "answer": 1,
+   "hint": "The default mode updates indexes in step with every write.",
+   "explain": "Consistent mode keeps queries in step with committed writes.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Which path indexes only the scalar value of a top-level property named title?",
+   "options": [
+    {
+     "text": "/title/[]",
+     "why": "/[] indexes array elements."
+    },
+    {
+     "text": "/*/title",
+     "why": "That isn't valid index path syntax."
+    },
+    {
+     "text": "/title/*",
+     "why": "/* indexes everything under the path."
+    },
+    {
+     "text": "/title/?",
+     "why": "Correct. /? indexes the scalar value at the property."
+    }
+   ],
+   "answer": 3,
+   "hint": "A path ending in /? means just this value. /* means everything below it.",
+   "explain": "/? = scalar, /[] = array elements, /* = everything under the path.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A container uses partition key `/tenantId` and a selective policy with `/*` in excludedPaths.",
+   "rows": [
+    {
+     "text": "The tenantId path is indexed automatically anyway.",
+     "answer": false,
+     "why": "The partition key isn't indexed automatically unless it's /id; include it explicitly."
+    },
+    {
+     "text": "id and _ts remain indexed even though /* is excluded.",
+     "answer": true,
+     "why": "id and _ts are always indexed in consistent mode."
+    },
+    {
+     "text": "With /* excluded, every property is still range-indexed by default.",
+     "answer": false,
+     "why": "Excluding /* means only explicitly included paths (plus id and _ts) are indexed."
+    },
+    {
+     "text": "If /* is excluded and /title/? is included, title is indexed because the more specific path wins.",
+     "answer": true,
+     "why": "The more specific path takes precedence."
+    }
+   ],
+   "hint": "id and _ts are always indexed. Excluding /* means you must opt in to everything else.",
+   "explain": "Selective policies must explicitly include every queried property, including the partition key.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-005",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A container is used only as a key-value store: items are read by id and partition key, and bulk writes must be as fast as possible. Which indexing mode fits?",
+   "options": [
+    {
+     "text": "consistent",
+     "why": "Consistent adds index work to each write you don't need here."
+    },
+    {
+     "text": "lazy",
+     "why": "Lazy is deprecated and unavailable for new containers."
+    },
+    {
+     "text": "consistent, with just /_ts in includedPaths",
+     "why": "id and _ts are always indexed in consistent mode anyway, so this still maintains indexes."
+    },
+    {
+     "text": "none",
+     "why": "Correct. None treats the container as a pure key-value store and can speed up bulk writes."
+    }
+   ],
+   "answer": 3,
+   "hint": "No queries except point reads, and writes must be fast. Indexing can be switched off entirely.",
+   "explain": "Use none only when you never query by secondary properties; queries would otherwise do full scans.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An old container still uses the lazy indexing mode, and a teammate wants to create a new container with the same setting. What should you tell them?",
+   "options": [
+    {
+     "text": "Lazy indexing works only with shared database throughput",
+     "why": "Throughput mode isn't the issue. Lazy indexing is deprecated."
+    },
+    {
+     "text": "Lazy indexing is deprecated: new containers can't use it, and existing ones should move to consistent",
+     "why": "Correct. Lazy mode is deprecated, so migrate existing containers to consistent."
+    },
+    {
+     "text": "Lazy indexing is the recommended mode for AI workloads with heavy writes",
+     "why": "Lazy mode is deprecated. For write-heavy key-value use, Learn discusses the none mode."
+    },
+    {
+     "text": "Lazy indexing is the default for containers created from the portal",
+     "why": "The default indexing mode is consistent."
+    }
+   ],
+   "answer": 1,
+   "hint": "One of the indexing modes is no longer offered.",
+   "explain": "Azure Cosmos DB previously supported lazy indexing. It's deprecated: new containers can't use it, and existing containers with lazy indexing should migrate to consistent mode.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m3-007",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A query runs `ORDER BY c.relevanceScore DESC, c.uploadDate DESC` and fails with an error. What does it need?",
+   "options": [
+    {
+     "text": "A range index on relevanceScore and another on uploadDate",
+     "why": "ORDER BY on two properties needs a composite index, not a single range index."
+    },
+    {
+     "text": "A composite index (relevanceScore DESC, uploadDate DESC)",
+     "why": "Correct. The composite index must match the property sequence and directions."
+    },
+    {
+     "text": "A tuple index covering both of the sorted properties",
+     "why": "Tuple indexes are for properties inside array elements."
+    },
+    {
+     "text": "A spatial index on uploadDate for the date sort",
+     "why": "Spatial indexes are for geospatial functions."
+    }
+   ],
+   "answer": 1,
+   "hint": "Sorting on two properties needs one index that covers both, in that order.",
+   "explain": "Multi-property ORDER BY requires a matching composite index.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A container has one composite index: `(relevanceScore DESC, uploadDate DESC)`.",
+   "rows": [
+    {
+     "text": "It serves ORDER BY c.relevanceScore ASC, c.uploadDate ASC.",
+     "answer": true,
+     "why": "Composite indexes support the exact opposite order on all paths."
+    },
+    {
+     "text": "It serves ORDER BY c.relevanceScore DESC, c.uploadDate ASC.",
+     "answer": false,
+     "why": "Mixed orders need a separate composite index."
+    },
+    {
+     "text": "It serves ORDER BY c.uploadDate DESC, c.relevanceScore DESC.",
+     "answer": false,
+     "why": "The property sequence must match."
+    }
+   ],
+   "hint": "A composite index serves its exact order and the full reverse, and nothing else.",
+   "explain": "Same sequence; same directions or the exact reverse.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A query filters `category = 'reports' AND department = 'finance' AND createdDate > '2024-06-01'`. How should the composite index be ordered?",
+   "options": [
+    {
+     "text": "category, department, createdDate",
+     "why": "Correct. Equality filters first, the single range filter last."
+    },
+    {
+     "text": "createdDate, category, department",
+     "why": "The range filter must be last."
+    },
+    {
+     "text": "department, createdDate, category",
+     "why": "The range filter can't be in the middle."
+    },
+    {
+     "text": "A single range index on createdDate",
+     "why": "A single range index doesn't optimize the combined filter as well."
+    }
+   ],
+   "answer": 0,
+   "hint": "Equality filters first, the range filter last.",
+   "explain": "Place equality filters first; each composite index supports one range filter, and it goes last.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You're replacing composite index X with a better composite index Y on a busy container with millions of items. What order of steps keeps queries supported?",
+   "options": [
+    {
+     "text": "Switch indexing mode to none, then add Y afterward",
+     "why": "Mode none disables indexing entirely."
+    },
+    {
+     "text": "Add Y and remove X together in one policy update",
+     "why": "X would stop being used immediately while Y is still being built."
+    },
+    {
+     "text": "Remove X first, then add Y in a second update",
+     "why": "Removing X takes effect immediately, so queries scan until Y is built."
+    },
+    {
+     "text": "Add Y, wait for the transformation, then remove X",
+     "why": "Correct. Add the new index first, wait, then remove the old one."
+    }
+   ],
+   "answer": 3,
+   "hint": "Removing an index takes effect at once. Adding one takes effect only after the transformation.",
+   "explain": "Added indexes help only after transformation; removed ones stop being used right away.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-011",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Documents store chunks as an array of objects with position and tokens. Queries filter on both properties within the same chunk. Which path improves this?",
+   "options": [
+    {
+     "text": "/chunks/position/? and /chunks/tokens/?",
+     "why": "Those paths aren't array-element paths."
+    },
+    {
+     "text": "/chunks/[]/{position, tokens}/?",
+     "why": "Correct. A tuple index indexes the property combination within each array element."
+    },
+    {
+     "text": "/chunks/*",
+     "why": "/chunks/* indexes everything separately, not the combination per element."
+    },
+    {
+     "text": "A composite index on (/position, /tokens)",
+     "why": "Composite indexes on top-level paths don't index combinations inside array elements."
+    }
+   ],
+   "answer": 1,
+   "hint": "Indexing several properties of the same array element uses a special path syntax.",
+   "explain": "Tuple indexes suit chunked documents filtered on chunk position, size or other metadata.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-012",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You added a composite index to a container with millions of items an hour ago, but the slow query costs the same RUs. Nothing else changed. What's the most likely reason?",
+   "options": [
+    {
+     "text": "Composite indexes don't reduce RU cost",
+     "why": "They do once they're built and match the query."
+    },
+    {
+     "text": "The index transformation hasn't finished, so queries can't use the new index yet",
+     "why": "Correct. Index changes apply asynchronously, and new indexes help only after the transformation completes."
+    },
+    {
+     "text": "The query must name the index in a hint",
+     "why": "Cosmos DB picks indexes automatically. There's no index hint to add."
+    },
+    {
+     "text": "The container needs a restart before new indexes load",
+     "why": "Cosmos DB containers aren't restarted. The transformation runs in the background."
+    }
+   ],
+   "answer": 1,
+   "hint": "Changing an indexing policy starts background work. Can large containers take hours?",
+   "explain": "Index changes run as an asynchronous transformation. New indexes don't improve queries until it completes, which can take hours on large containers. Track progress in the portal or CLI.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m3-013",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You upgrade from a 1,536-dimension embedding model to text-embedding-3-large (3,072 dimensions). What must you do in Cosmos DB?",
+   "options": [
+    {
+     "text": "Create a new container with an updated vector policy and migrate",
+     "why": "Correct. Different dimensions require a new container and data migration."
+    },
+    {
+     "text": "Increase quantizationByteSize to 512",
+     "why": "Index tuning doesn't change the policy's dimensions."
+    },
+    {
+     "text": "Edit the dimensions in the existing vector policy",
+     "why": "Vector policies can't be modified after creation."
+    },
+    {
+     "text": "Change the vector index type to flat",
+     "why": "flat supports at most 505 dimensions."
+    }
+   ],
+   "answer": 0,
+   "hint": "The vector embedding policy can't change after the container is created.",
+   "explain": "Plan dimensions, data type and distance function up front; vector policies are immutable.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-014",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Users always filter by category first, and each category holds a few hundred 384-dimension vectors. They want exact results. Which vector index fits?",
+   "options": [
+    {
+     "text": "flat",
+     "why": "Correct. Flat gives exact results and works well when filters shrink the candidate set (and 384 ≤ 505 dims)."
+    },
+    {
+     "text": "diskANN",
+     "why": "diskANN is approximate and aimed at large datasets."
+    },
+    {
+     "text": "quantizedFlat",
+     "why": "quantizedFlat trades slight accuracy for speed."
+    },
+    {
+     "text": "none",
+     "why": "Without a vector index, similarity queries scan everything; flat is the right index here."
+    }
+   ],
+   "answer": 0,
+   "hint": "Small, pre-filtered sets and exact results: brute force over few vectors is fine.",
+   "explain": "Flat indexes suit small candidate sets and exact-accuracy needs.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team tunes a diskANN index on a large embedding collection.",
+   "rows": [
+    {
+     "text": "Raising indexingSearchListSize can improve index quality but slows index builds.",
+     "answer": true,
+     "why": "Higher values improve quality and accuracy but take longer to build."
+    },
+    {
+     "text": "indexingSearchListSize also applies to quantizedFlat indexes.",
+     "answer": false,
+     "why": "It's a diskANN-only parameter."
+    },
+    {
+     "text": "Most applications perform well with the default parameters.",
+     "answer": true,
+     "why": "Tune only if you observe accuracy issues or need specific latency targets."
+    },
+    {
+     "text": "indexingSearchListSize can be set as high as 5,000.",
+     "answer": false,
+     "why": "Valid values range from 10 to 500 (default 100)."
+    }
+   ],
+   "hint": "Most apps need no tuning. A bigger search list means better quality but slower builds, and it applies to diskANN.",
+   "explain": "Defaults are usually fine; quantizationByteSize applies to both, indexingSearchListSize only to diskANN.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-016",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Search quality on a quantizedFlat index is slightly below target, and the team can accept more storage. Which vector index setting should they raise?",
+   "options": [
+    {
+     "text": "The policy's dimensions, above the model's output size",
+     "why": "Dimensions must match the embedding model."
+    },
+    {
+     "text": "The container's partition count",
+     "why": "Partitions don't control how much vectors are compressed."
+    },
+    {
+     "text": "indexingSearchListSize on the quantizedFlat index",
+     "why": "indexingSearchListSize is a diskANN setting."
+    },
+    {
+     "text": "quantizationByteSize",
+     "why": "Correct. Larger values keep more information, which improves accuracy at the cost of storage and possibly throughput."
+    }
+   ],
+   "answer": 3,
+   "hint": "Quantization compresses vectors. Which setting controls how much is kept?",
+   "explain": "quantizationByteSize controls how much compression is applied. Larger values preserve more information and improve accuracy, with more storage and possibly lower throughput. The default is chosen dynamically.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m3-017",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Query metrics show 48,000 retrieved documents and 25 output documents for a frequent query. What does this suggest?",
+   "options": [
+    {
+     "text": "Filtering is inefficient, so an index is likely missing",
+     "why": "Correct. A high retrieved-to-output ratio points to inefficient filtering; check indexes."
+    },
+    {
+     "text": "The container has too many vector indexes",
+     "why": "Vector indexes don't cause scans of metadata filters."
+    },
+    {
+     "text": "The query uses too strong a consistency level",
+     "why": "Consistency affects replica reads, not this ratio."
+    },
+    {
+     "text": "The partition key has too many distinct values",
+     "why": "High cardinality is good for partition keys."
+    }
+   ],
+   "answer": 0,
+   "hint": "Many documents read but few returned means the filter isn't using an index.",
+   "explain": "Use index utilization and retrieved vs output counts to find missing indexes.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-018",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An IoT ingestion pipeline writes thousands of documents per second and queries them once a day for a report. What indexing strategy fits?",
+   "options": [
+    {
+     "text": "Index every property with /* and add many composite indexes",
+     "why": "Every index raises write latency and RUs."
+    },
+    {
+     "text": "Index minimally: only the few properties the daily query needs",
+     "why": "Correct. Write-heavy workloads benefit from minimal indexing."
+    },
+    {
+     "text": "Switch to bounded staleness to reduce write cost",
+     "why": "Consistency doesn't change write RU cost per operation."
+    },
+    {
+     "text": "Use comprehensive composite indexes because AI apps are read-heavy",
+     "why": "This workload is write-heavy, not read-heavy."
+    }
+   ],
+   "answer": 1,
+   "hint": "Heavy writes and rare reads: every indexed path costs on each write.",
+   "explain": "Write-heavy → minimal indexes; read-heavy → comprehensive indexes.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-019",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A document has title, documentType, category, uploadDate, a large content field, summary and an embedding. Queries filter on documentType, category and uploadDate and show content and summary. Which two belong in the indexing policy? (Select two.)",
+   "options": [
+    {
+     "text": "/content/? in includedPaths",
+     "why": "content is only displayed; don't index it."
+    },
+    {
+     "text": "/documentType/? in includedPaths",
+     "why": "Correct. documentType is filtered, so index it."
+    },
+    {
+     "text": "/summary/? in includedPaths",
+     "why": "summary is only displayed; don't index it."
+    },
+    {
+     "text": "A vector index on /embedding",
+     "why": "Correct. Embedding search uses a vector index, not a range index."
+    }
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "hint": "Index what you filter on, exclude what you only display, and give the embedding a vector index.",
+   "explain": "Index the properties used in queries plus a vector index; exclude display-only fields.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-020",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Query metrics show a high ratio of retrieved to output documents for a frequent query. You add the missing index. What should you do next, following Learn's workflow?",
+   "options": [
+    {
+     "text": "Immediately remove the old indexes to save write RUs",
+     "why": "Removing indexes too early can make other queries fall back to scans."
+    },
+    {
+     "text": "Wait for the transformation to complete, then measure the query's RU cost again",
+     "why": "Correct. Create the index, wait for the transformation, then measure again to confirm the improvement."
+    },
+    {
+     "text": "Switch the account to strong consistency to make the index take effect",
+     "why": "Consistency doesn't control when indexes take effect."
+    },
+    {
+     "text": "Recreate the container so that the index applies to existing items",
+     "why": "Policy changes transform existing data in the background. You don't need a new container."
+    }
+   ],
+   "answer": 1,
+   "hint": "An index change isn't instant. What proves it worked?",
+   "explain": "When metrics show low index utilization or high retrieved-to-output ratios, add or modify indexes, wait for the transformation to complete, and measure query costs again.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m3-021",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A user uploads a document and immediately searches for it in the same app. Which consistency level does Learn recommend for this read-your-writes need?",
+   "options": [
+    {
+     "text": "Session",
+     "why": "Correct. Session guarantees read-your-writes within the session."
+    },
+    {
+     "text": "Strong",
+     "why": "Strong works but doubles read RUs and adds latency; Session is the recommended balance."
+    },
+    {
+     "text": "Eventual",
+     "why": "Eventual may return stale data with no ordering."
+    },
+    {
+     "text": "Consistent prefix",
+     "why": "Consistent prefix guarantees order, not freshness."
+    }
+   ],
+   "answer": 0,
+   "hint": "The user needs to see their own write right away.",
+   "explain": "Session suits most AI apps: users see their own uploads immediately.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-022",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which consistency levels read from two replicas and cost about twice the read RUs?",
+   "options": [
+    {
+     "text": "Session and eventual",
+     "why": "These read from one replica."
+    },
+    {
+     "text": "Strong and bounded staleness",
+     "why": "Correct. Strong and bounded staleness read from two replicas (minority quorum)."
+    },
+    {
+     "text": "Consistent prefix and session",
+     "why": "These read from one replica."
+    },
+    {
+     "text": "Bounded staleness and eventual",
+     "why": "Eventual reads from one replica."
+    }
+   ],
+   "answer": 1,
+   "hint": "Two levels read from two replicas.",
+   "explain": "Strong and bounded staleness reads cost 2×; the other levels 1×.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-023",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "order",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Put the five Cosmos DB consistency levels in order from strongest to weakest.",
+   "steps": [
+    "Strong",
+    "Bounded staleness",
+    "Session",
+    "Consistent prefix",
+    "Eventual"
+   ],
+   "hint": "From the strongest guarantee down to the weakest.",
+   "explain": "Stronger levels give fresher reads at the cost of latency, availability and (for the top two) read RUs.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-024",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An upload service writes a document, and a separate search service queries it for the same user, both using Session consistency.",
+   "rows": [
+    {
+     "text": "The search service sees the new document only if it receives the session token from the upload.",
+     "answer": true,
+     "why": "Across services you must pass session tokens explicitly."
+    },
+    {
+     "text": "Session tokens are global and work for every partition.",
+     "answer": false,
+     "why": "Session tokens are partition-bound."
+    },
+    {
+     "text": "Writes under Session consistency cost more RUs than under Eventual.",
+     "answer": false,
+     "why": "Write RU costs don't vary by consistency level."
+    }
+   ],
+   "hint": "Session guarantees follow the session token, and they apply per partition.",
+   "explain": "Pass session tokens between services that handle the same user flow.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-025",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A globally distributed app uses multiple write regions and asks for Strong consistency for payment records. What should you know?",
+   "options": [
+    {
+     "text": "Strong costs the same read RUs as Session",
+     "why": "Strong reads cost 2× because they read from two replicas."
+    },
+    {
+     "text": "Strong guarantees reads at most K versions behind",
+     "why": "That describes bounded staleness."
+    },
+    {
+     "text": "Strong isn't supported with multiple write regions",
+     "why": "Correct. Strong consistency with multiple write regions isn't supported."
+    },
+    {
+     "text": "Strong reads from a single replica",
+     "why": "Strong reads from two replicas."
+    }
+   ],
+   "answer": 2,
+   "hint": "One consistency level can't work with multiple write regions.",
+   "explain": "For multi-region writes, choose Session or weaker; Strong needs a single write region.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m3-026",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An analytics job uses Eventual consistency. PBS metrics show it returns the latest data 99.6% of the time. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Move to bounded staleness to reduce read RUs",
+     "why": "Bounded staleness reads cost 2×, so it raises RUs."
+    },
+    {
+     "text": "Switch the job to Strong to remove the remaining 0.4%",
+     "why": "Strong doubles read RUs; analytics rarely needs it."
+    },
+    {
+     "text": "PBS measures Session reads, so ignore it here",
+     "why": "PBS measures how often eventual reads return the latest data."
+    },
+    {
+     "text": "Eventual is probably safe for more operations",
+     "why": "Correct. If PBS shows current data more than 99% of the time, you might use eventual for more operations."
+    }
+   ],
+   "answer": 3,
+   "hint": "Probabilistic bounded staleness shows how often weaker reads are already up to date.",
+   "explain": "Use PBS metrics (Metrics → Consistency) to validate weaker consistency choices.",
+   "origin": "lab500"
+  }
+ ]
+}

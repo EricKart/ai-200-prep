@@ -1,0 +1,1122 @@
+{
+ "module": "lp1m2",
+ "title": "Deploy containers to Azure App Service",
+ "questions": [
+  {
+   "id": "lp1m2-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your web app pulls from ACR using its system-assigned managed identity, and the first deployment fails with an authorization error. Which role does the identity need on the registry?",
+   "options": [
+    {
+     "text": "AcrPull",
+     "why": "Correct. The identity must have the AcrPull role on the registry."
+    },
+    {
+     "text": "AcrPush",
+     "why": "AcrPush is for pushing images; the web app only needs to pull."
+    },
+    {
+     "text": "Reader",
+     "why": "Reader isn't the role Learn names for pulling images."
+    },
+    {
+     "text": "Owner",
+     "why": "Owner grants far more than pulling an image needs."
+    }
+   ],
+   "answer": 0,
+   "hint": "Pulling images from ACR is a read-only job. Which built-in ACR role allows only pulls?",
+   "explain": "With managed identity authentication, the identity must have the AcrPull role on the registry.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which statement describes a user-assigned managed identity?",
+   "options": [
+    {
+     "text": "Azure deletes it automatically when you delete the web app",
+     "why": "That's the system-assigned identity, tied to the app's lifecycle."
+    },
+    {
+     "text": "It stores the registry admin username and password in app settings",
+     "why": "That's admin credentials authentication, not an identity."
+    },
+    {
+     "text": "It's a separate resource you can assign to several web apps",
+     "why": "Correct. User-assigned identities exist independently and can be shared by several apps."
+    },
+    {
+     "text": "It can be enabled once the web app already exists, not before",
+     "why": "You can create a user-assigned identity and grant permissions before the app exists."
+    }
+   ],
+   "answer": 2,
+   "hint": "System-assigned identities live and die with one resource. What's different about the other kind?",
+   "explain": "User-assigned identities exist independently, so several apps can share registry access and permissions can be set up first.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Three web apps must pull images from the same ACR without stored credentials. The security team wants to grant registry access before any of the apps is created. Which authentication should the apps use?",
+   "options": [
+    {
+     "text": "The registry's admin credentials stored in app settings",
+     "why": "This stores credentials in App Service config and needs manual rotation, the opposite of the requirement."
+    },
+    {
+     "text": "A user-assigned managed identity with the AcrPull role",
+     "why": "Correct. It exists independently, can be shared by several apps, and can get permissions in advance."
+    },
+    {
+     "text": "A Docker Hub username and password for each app",
+     "why": "These are credentials for other registries. They also store secrets, which the requirement rules out."
+    },
+    {
+     "text": "A system-assigned managed identity on each app",
+     "why": "A system-assigned identity is created with the app, so it can't be granted access before the app exists."
+    }
+   ],
+   "answer": 1,
+   "hint": "Access must exist before the apps do, and three apps share it. Which identity type is its own resource?",
+   "explain": "It exists independently, can be shared by several apps, and can get permissions in advance.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You push a fixed image to `docprocessor:latest`, the tag the web app already uses. An hour later the app still runs the old code. What is the cause?",
+   "options": [
+    {
+     "text": "App Service doesn't detect a new image pushed to the same tag by itself",
+     "why": "Correct. Restart the app or enable continuous deployment so a webhook triggers the restart."
+    },
+    {
+     "text": "The AcrPull role has to be granted again after each push to the registry",
+     "why": "Role assignments don't expire per push."
+    },
+    {
+     "text": "Images tagged latest can't be pulled by App Service on Linux at all",
+     "why": "latest can be pulled; Learn uses nginx:latest as an example."
+    },
+    {
+     "text": "App Service caches the image for 24 hours before checking the registry again",
+     "why": "Learn doesn't describe a 24-hour cache; App Service pulls on restart."
+    }
+   ],
+   "answer": 0,
+   "hint": "Pushing to the same tag doesn't notify anyone. What makes App Service pull an image again?",
+   "explain": "Pushing to the same tag isn't detected. App Service runs docker pull on restart and pulls only changed layers.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You want every push to ACR to redeploy the web app automatically. Put the steps in order.",
+   "steps": [
+    "Run az webapp deployment container config --enable-cd true",
+    "Copy the webhook URL that the command returns",
+    "Create a webhook in the ACR registry that triggers on push events",
+    "Push a new image to the registry so the webhook restarts the app"
+   ],
+   "hint": "The webhook needs a URL to call, and that URL appears only after continuous deployment is turned on.",
+   "explain": "Enabling continuous deployment returns a webhook URL. Add it to the registry as a push-event webhook; later pushes trigger the restart.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You ran the command below for your document processor. What else is needed so that pushes to ACR redeploy the app automatically?",
+   "code": "az webapp deployment container config \\\n  --resource-group myResourceGroup \\\n  --name myDocumentProcessor --enable-cd true",
+   "options": [
+    {
+     "text": "Add an ACR webhook that calls the returned URL",
+     "why": "Correct. The command returns a webhook URL, and the registry must call it when images are pushed."
+    },
+    {
+     "text": "Turn on Always On so the app polls the registry",
+     "why": "Always On keeps the app warm. It doesn't watch the registry."
+    },
+    {
+     "text": "Set WEBSITES_ENABLE_APP_SERVICE_STORAGE to true",
+     "why": "That controls /home persistence, not deployments."
+    },
+    {
+     "text": "Enable the admin user on the registry",
+     "why": "The admin user is an authentication option. It has nothing to do with triggering redeploys."
+    }
+   ],
+   "answer": 0,
+   "hint": "Turning on continuous deployment gives you a URL. Something must call that URL when an image is pushed.",
+   "explain": "The command returns a webhook URL, and the registry must call it when images are pushed.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-007",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A web app runs `myregistry.azurecr.io/docprocessor:v1` on three instances.",
+   "rows": [
+    {
+     "text": "Running az webapp config container set with :v2 swaps the image without restarting the app.",
+     "answer": false,
+     "why": "Changing the image tag restarts the app, and each instance pulls the new image."
+    },
+    {
+     "text": "After a plain restart with an unchanged image, App Service downloads every layer again.",
+     "answer": false,
+     "why": "On restart it checks for changes and pulls only modified layers."
+    },
+    {
+     "text": "When the app scales out to a fourth instance, that instance pulls the image.",
+     "answer": true,
+     "why": "Each new instance pulls the image on scale out."
+    },
+    {
+     "text": "Moving the app to a different pricing tier can cause a fresh image pull.",
+     "answer": true,
+     "why": "A tier change might allocate new infrastructure, which pulls the image fresh."
+    }
+   ],
+   "hint": "App Service reuses cached layers when it can. Think about restarts, new instances and tier changes separately.",
+   "explain": "Full pull on first deploy or image change; only changed layers on restart; new instances and tier changes can pull fresh.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your image is private on GitHub Container Registry. When you create the web app with az webapp create, what do you pass as --docker-registry-server-url?",
+   "options": [
+    {
+     "text": "https://index.docker.io/v1/",
+     "why": "That's Docker Hub's server URL."
+    },
+    {
+     "text": "https://ghcr.io",
+     "why": "Correct. This is the server URL for GitHub Container Registry."
+    },
+    {
+     "text": "https://myregistry.azurecr.io",
+     "why": "That's an ACR login server, not GitHub's."
+    },
+    {
+     "text": "https://github.com",
+     "why": "That's the website, not the container registry endpoint."
+    }
+   ],
+   "answer": 1,
+   "hint": "The registry server URL is the registry's own address, including the scheme.",
+   "explain": "This is the server URL for GitHub Container Registry.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-009",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A web app pulls from ACR with its system-assigned managed identity. The app is deleted. What happens to that identity?",
+   "options": [
+    {
+     "text": "Azure deletes it together with the web app",
+     "why": "Correct. A system-assigned identity is tied to the app's lifecycle."
+    },
+    {
+     "text": "It remains, ready to assign to another app",
+     "why": "That describes a user-assigned identity."
+    },
+    {
+     "text": "It keeps AcrPull but loses all other roles",
+     "why": "The identity itself is removed, so it holds no roles."
+    },
+    {
+     "text": "It turns into a user-assigned identity",
+     "why": "Identities don't change type."
+    }
+   ],
+   "answer": 0,
+   "hint": "A system-assigned identity is tied to the lifecycle of one resource.",
+   "explain": "A system-assigned identity is tied to the app's lifecycle.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-010",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "medium",
+   "q": "With the image source set to Other container registries, what must the registry support?",
+   "options": [
+    {
+     "text": "Geo-replication across Azure regions",
+     "why": "Geo-replication isn't required to serve images to App Service."
+    },
+    {
+     "text": "HTTPS and the Docker Registry HTTP API V2",
+     "why": "Correct. Any registry that meets both works, such as Docker Hub or GHCR."
+    },
+    {
+     "text": "Microsoft Entra ID authentication for every pull",
+     "why": "Entra ID integration is an ACR benefit, not a requirement for other registries."
+    },
+    {
+     "text": "Storage of Helm charts alongside images",
+     "why": "Helm support has nothing to do with App Service image pulls."
+    }
+   ],
+   "answer": 1,
+   "hint": "App Service speaks a standard registry protocol over a secure connection.",
+   "explain": "Any registry that meets both works, such as Docker Hub or GHCR.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A Python container runs Gunicorn on port 8000, and App Service returns errors because traffic goes to the wrong port. Which app setting fixes this?",
+   "options": [
+    {
+     "text": "WEBSITES_PORT=8000",
+     "why": "Correct. WEBSITES_PORT tells App Service which container port receives HTTP requests."
+    },
+    {
+     "text": "EXPOSE=8000",
+     "why": "EXPOSE is a Dockerfile instruction, not an app setting App Service reads for routing."
+    },
+    {
+     "text": "ASPNETCORE_URLS=8000",
+     "why": "That setting configures ASP.NET Core, not App Service routing."
+    },
+    {
+     "text": "PORT_FORWARD=8000",
+     "why": "PORT_FORWARD isn't an App Service setting."
+    }
+   ],
+   "answer": 0,
+   "hint": "App Service has to know which port the container listens on when it isn't 80 or 8080. Which setting tells it?",
+   "explain": "App Service routes automatically to 80 or 8080. For any other port, set WEBSITES_PORT.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A document processor writes output files, and they disappear whenever the app restarts. The app runs on three instances that must see the same files. What should you do?",
+   "options": [
+    {
+     "text": "Write the files to /tmp, which App Service keeps between restarts",
+     "why": "/tmp is part of the ephemeral container file system."
+    },
+    {
+     "text": "Set WEBSITES_ENABLE_APP_SERVICE_STORAGE=true and write output under /home",
+     "why": "Correct. /home then persists across restarts and is shared by all instances."
+    },
+    {
+     "text": "Enable always-on so the container stays loaded and keeps the files",
+     "why": "Always-on prevents idling; restarts and moves still lose ephemeral files."
+    },
+    {
+     "text": "Add a startup command that copies files back from the image on each start",
+     "why": "Copying from the image restores only what was baked in, not new output."
+    }
+   ],
+   "answer": 1,
+   "hint": "Container file systems are temporary, and the files must be shared by three instances. Which path can be persistent?",
+   "explain": "Container writes are ephemeral. With app service storage enabled, /home persists and is shared across instances.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A Linux custom container app runs on three instances with WEBSITES_ENABLE_APP_SERVICE_STORAGE=true. For each statement, select Yes if it's true. Otherwise, select No.",
+   "rows": [
+    {
+     "text": "Files written to /home/output survive an app restart.",
+     "answer": true,
+     "why": "With the setting enabled, /home persists across restarts."
+    },
+    {
+     "text": "Each instance has its own separate copy of /home.",
+     "answer": false,
+     "why": "All instances of a scaled-out app share the same /home content."
+    },
+    {
+     "text": "Files written to /tmp also survive an app restart.",
+     "answer": false,
+     "why": "Writes outside /home stay ephemeral and are lost on restart."
+    }
+   ],
+   "hint": "Only one path is backed by persistent shared storage. Is it per instance or shared?",
+   "explain": "With WEBSITES_ENABLE_APP_SERVICE_STORAGE=true, /home is persistent storage shared by all instances and kept across restarts. Other paths, such as /tmp, are lost on restart.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-014",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. You run `az webapp config set --startup-file \"gunicorn --bind=0.0.0.0:8000 app:application\"` on a custom container.",
+   "rows": [
+    {
+     "text": "The startup command replaces the CMD instruction from the Dockerfile.",
+     "answer": true,
+     "why": "The startup command replaces CMD."
+    },
+    {
+     "text": "The startup command also replaces the ENTRYPOINT from the Dockerfile.",
+     "answer": false,
+     "why": "ENTRYPOINT remains unchanged unless you change the container configuration directly."
+    },
+    {
+     "text": "To run migrations first, you can use \"/bin/bash -c 'python migrate.py && gunicorn app:application'\".",
+     "answer": true,
+     "why": "Learn shows the shell prefix for commands that need shell processing."
+    }
+   ],
+   "hint": "A startup command replaces one Dockerfile instruction and leaves the other alone. Shell operators need a shell.",
+   "explain": "Startup commands override CMD but keep ENTRYPOINT; wrap in /bin/bash -c when you need shell features.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-015",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A production inference API on the Basic tier has slow first requests after quiet periods, and one instance sometimes hangs while still receiving traffic. Which two settings address these problems? (Select two.)",
+   "options": [
+    {
+     "text": "Set WEBSITES_ENABLE_APP_SERVICE_STORAGE to false",
+     "why": "Persistent storage is about files, not cold starts or unhealthy instances."
+    },
+    {
+     "text": "Enable always-on for the web app",
+     "why": "Correct. Always-on keeps the app warm, removing cold starts after idle periods (Basic tier or higher)."
+    },
+    {
+     "text": "Set WEBSITES_PORT to 80 for every container",
+     "why": "The port setting must match the app; it doesn't fix idling or hung instances."
+    },
+    {
+     "text": "Set a health check path such as /health",
+     "why": "Correct. Health checks take an instance that keeps failing out of load balancer rotation."
+    }
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "hint": "One symptom comes from idling, the other from a sick instance that still gets traffic. One setting for each.",
+   "explain": "Always-on prevents idle cold starts. Health checks ping every minute and remove instances that keep failing (default 10 failures).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-016",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Users complain that the first request after a quiet period takes a long time. You try to enable Always On, but the app's plan is on the Free tier. What do you need to do?",
+   "options": [
+    {
+     "text": "Enable persistent storage at /home",
+     "why": "Storage persistence is unrelated to Always On."
+    },
+    {
+     "text": "Configure a health check path for the app first",
+     "why": "Health checks remove unhealthy instances. They don't unlock Always On."
+    },
+    {
+     "text": "Set WEBSITES_PORT to 80",
+     "why": "The port setting affects routing, not idle behavior."
+    },
+    {
+     "text": "Scale the plan up to Basic or higher",
+     "why": "Correct. Always On requires the Basic pricing tier or higher."
+    }
+   ],
+   "answer": 3,
+   "hint": "Always On isn't available on every tier. Which tiers include it?",
+   "explain": "Always On requires the Basic pricing tier or higher.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-017",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A health check path of /health is configured. One instance starts returning 503 on every ping. With default settings, what does App Service do?",
+   "options": [
+    {
+     "text": "Restarts every instance after the first failed ping",
+     "why": "One failure doesn't trigger action, and healthy instances aren't touched."
+    },
+    {
+     "text": "Stops routing to it after repeated failed pings",
+     "why": "Correct. By default, after 10 failed pings the instance leaves rotation, and it can be replaced if it stays unhealthy."
+    },
+    {
+     "text": "Switches the app to a different pricing tier",
+     "why": "Health checks don't change pricing tiers."
+    },
+    {
+     "text": "Keeps routing traffic to it but raises an alert",
+     "why": "The purpose of the health check is to stop routing to unhealthy instances."
+    }
+   ],
+   "answer": 1,
+   "hint": "A health check exists to take bad instances out of rotation. What does it do after repeated failures?",
+   "explain": "By default, after 10 failed pings the instance leaves rotation, and it can be replaced if it stays unhealthy.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-018",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An inference API's /health endpoint returns 200 whenever the web server process is running. Last night the API couldn't reach its blob storage for an hour, yet health checks stayed green and traffic kept going to the broken instances. How should you change /health?",
+   "options": [
+    {
+     "text": "Point the health check path at the home page instead of the /health endpoint",
+     "why": "The home page may not touch blob storage either, so it would still report healthy."
+    },
+    {
+     "text": "Turn on Always On so that App Service recycles a stuck instance more often",
+     "why": "Always On keeps the app loaded. It doesn't restart instances or check dependencies."
+    },
+    {
+     "text": "Make /health return its 200 response faster so the platform's ping doesn't time out",
+     "why": "A faster 200 still says the instance is healthy when it can't serve real requests."
+    },
+    {
+     "text": "Check the API's dependencies and return 503 if one fails",
+     "why": "Correct. A health check that verifies dependencies and returns an error status lets App Service take instances that can't serve requests out of rotation."
+    }
+   ],
+   "answer": 3,
+   "hint": "The process was alive, but the API couldn't do its job. What should a health check test, and what should it return on failure?",
+   "explain": "For more useful health checks, verify dependencies and return an error status code such as 503 when one fails. App Service then removes instances that keep failing (after 10 failed pings by default) from the load balancer rotation.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp1m2-019",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An ASP.NET Core container listens on port 80. What port configuration does App Service need?",
+   "options": [
+    {
+     "text": "WEBSITES_PORT=80",
+     "why": "Not needed. App Service already routes to port 80 automatically, and the guidance says no change is needed for ASP.NET Core."
+    },
+    {
+     "text": "No port setting is needed",
+     "why": "Correct. App Service routes automatically when the container listens on 80 or 8080."
+    },
+    {
+     "text": "A second exposed port for HTTPS",
+     "why": "App Service ends TLS and supports only one HTTP port for a custom container."
+    },
+    {
+     "text": "WEBSITES_PORT=8080",
+     "why": "That would point traffic away from the port the app listens on."
+    }
+   ],
+   "answer": 1,
+   "hint": "App Service checks some ports by default. Is 80 one of them?",
+   "explain": "App Service routes automatically when the container listens on 80 or 8080.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-020",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": false,
+   "difficulty": "medium",
+   "q": "For each statement about App Service custom containers, select Yes if it's true. Otherwise, select No.",
+   "rows": [
+    {
+     "text": "A custom container can expose several ports for HTTP requests.",
+     "answer": false,
+     "why": "App Service supports exposing only one port for HTTP requests to a custom container."
+    },
+    {
+     "text": "The container receives plain HTTP even when clients connect over HTTPS.",
+     "answer": true,
+     "why": "TLS ends at the platform before traffic reaches the container."
+    },
+    {
+     "text": "App Service pings the health check path every minute.",
+     "answer": true,
+     "why": "That's the documented ping interval."
+    }
+   ],
+   "hint": "Think about how many ports can take HTTP traffic, where TLS ends, and how often the health check pings.",
+   "explain": "A custom container exposes one port for HTTP. TLS ends at the App Service front end, so the container receives plain HTTP. The health check path is pinged every minute.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-021",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An internal document-classification API on App Service gets a few requests each morning and is quiet the rest of the day. Users say the first request after a quiet spell is slow. What is happening?",
+   "options": [
+    {
+     "text": "The TLS certificate is renewed by the front end on the first request of the day",
+     "why": "Certificates don't renew per request. The slowness comes from the app idling and starting again."
+    },
+    {
+     "text": "The app idles after about 20 minutes, so the next request cold-starts it",
+     "why": "Correct. App Service apps can become idle after about 20 minutes of inactivity, and the next request has to start the app again."
+    },
+    {
+     "text": "The health check marked the only instance unhealthy, and requests wait for a replacement",
+     "why": "An unhealthy instance shows up as failed or rerouted requests, not as a slow first request after quiet periods."
+    },
+    {
+     "text": "App Service pulls the full image again from the registry before each request",
+     "why": "Restarts reuse cached layers. App Service doesn't pull the image again for every request."
+    }
+   ],
+   "answer": 1,
+   "hint": "The delay only happens after periods with no traffic. What does App Service do with an app nobody is using?",
+   "explain": "App Service apps can become idle after about 20 minutes of inactivity. The next request triggers a cold start. Always On (Basic tier and above) keeps the app loaded.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp1m2-022",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You add a connection string named DefaultConnection with type SQLAzure. Which environment variable does the container see?",
+   "options": [
+    {
+     "text": "APPSETTING_SQLAzure_DefaultConnection",
+     "why": "That isn't the format App Service uses."
+    },
+    {
+     "text": "DefaultConnection",
+     "why": "Connection strings always get a type prefix."
+    },
+    {
+     "text": "SQLAZURECONNSTR_DefaultConnection",
+     "why": "Correct. SQL Azure connection strings get the SQLAZURECONNSTR_ prefix."
+    },
+    {
+     "text": "CUSTOMCONNSTR_DefaultConnection",
+     "why": "CUSTOMCONNSTR_ is the prefix for the Custom type."
+    }
+   ],
+   "answer": 2,
+   "hint": "Connection strings get a prefix that depends on their type. Which prefix goes with SQLAzure?",
+   "explain": "Connection strings are injected with a type prefix such as SQLAZURECONNSTR_, MYSQLCONNSTR_ or POSTGRESQLCONNSTR_.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-023",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "A .NET app on a Linux container reads the key ConnectionStrings:DefaultConnection. What name should the app setting use?",
+   "options": [
+    {
+     "text": "CONNECTIONSTRINGS_DEFAULTCONNECTION",
+     "why": "A single underscore doesn't express nesting."
+    },
+    {
+     "text": "ConnectionStrings:DefaultConnection",
+     "why": "Setting names can contain only letters, numbers and underscores, so a colon isn't allowed."
+    },
+    {
+     "text": "ConnectionStrings__DefaultConnection",
+     "why": "Correct. On Linux containers, nested .NET keys use double underscores."
+    },
+    {
+     "text": "ConnectionStrings.DefaultConnection",
+     "why": "A dot isn't allowed in setting names."
+    }
+   ],
+   "answer": 2,
+   "hint": "Linux environment variable names can't contain a colon. What do .NET apps use as the separator instead?",
+   "explain": "For Linux containers, replace the colon in nested .NET keys with a double underscore.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-024",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A Python service on App Service needs a PostgreSQL connection string. Which approach does the guidance recommend for a non-.NET app?",
+   "options": [
+    {
+     "text": "Add the value as an ordinary app setting",
+     "why": "Correct. For Python and Node.js, app settings are simpler, and the type prefix adds no benefit."
+    },
+    {
+     "text": "Bake the value into the image at build time",
+     "why": "This defeats the purpose of per-environment settings and forces rebuilds."
+    },
+    {
+     "text": "Add a connection string of type Custom",
+     "why": "A Custom type still adds the CUSTOMCONNSTR_ prefix with no benefit."
+    },
+    {
+     "text": "Add a connection string of type PostgreSQL",
+     "why": "It works, but it creates a POSTGRESQLCONNSTR_ variable whose prefix adds complexity for non-.NET apps."
+    }
+   ],
+   "answer": 0,
+   "hint": "Connection strings mostly exist for .NET. What does the guidance suggest for other languages?",
+   "explain": "For Python and Node.js, app settings are simpler, and the type prefix adds no benefit.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-025",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Staging has ENVIRONMENT=staging and an API endpoint for the test backend. After a swap, production must keep its own values. What should you do in the staging slot?",
+   "options": [
+    {
+     "text": "Move both values into the Dockerfile as ENV instructions",
+     "why": "Baking values into the image means they'd swap with the image."
+    },
+    {
+     "text": "Store both values as connection strings of type Custom",
+     "why": "Connection string type doesn't decide whether a value swaps."
+    },
+    {
+     "text": "Add both values with --slot-settings so they stay with the slot",
+     "why": "Correct. Slot settings remain with the slot during swap operations."
+    },
+    {
+     "text": "Export the settings to JSON and import them again after the swap",
+     "why": "Re-importing after each swap is a manual fix, not the feature for this."
+    }
+   ],
+   "answer": 2,
+   "hint": "Some values must stay with their slot during a swap. What marks a setting as sticky?",
+   "explain": "Mark environment identifiers and environment-specific endpoints as slot settings so they don't move during a swap.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-026",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "In the staging slot, ENVIRONMENT=staging is marked as a slot setting and LOG_LEVEL=DEBUG isn't. You swap staging into production. For each statement, select Yes if it's true. Otherwise, select No.",
+   "rows": [
+    {
+     "text": "After the swap, the production slot still has ENVIRONMENT=production.",
+     "answer": true,
+     "why": "Slot settings stay with their slot during a swap."
+    },
+    {
+     "text": "After the swap, the production slot has LOG_LEVEL=DEBUG.",
+     "answer": true,
+     "why": "Settings that aren't slot settings move with the swapped app."
+    },
+    {
+     "text": "The staging slot runs on separate compute outside the production App Service plan.",
+     "answer": false,
+     "why": "Slots share the underlying compute of the same App Service plan."
+    }
+   ],
+   "hint": "Sticky settings stay with their slot. Settings that aren't sticky move with the swap. Slots share the plan.",
+   "explain": "Slot settings stay with their slot during a swap, and other settings move with the app. Every slot runs on the same App Service plan as production.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-027",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An app setting is `API_KEY=@Microsoft.KeyVault(SecretUri=https://myvault.vault.azure.net/secrets/api-key)`, with no version in the URI.",
+   "rows": [
+    {
+     "text": "The web app needs a managed identity that can read secrets from the vault.",
+     "answer": true,
+     "why": "Key Vault references require a managed identity with access to read secrets."
+    },
+    {
+     "text": "The application code must call the Key Vault SDK to read API_KEY.",
+     "answer": false,
+     "why": "App Service resolves the reference; the app reads a normal environment variable."
+    },
+    {
+     "text": "After the secret is rotated, App Service picks up the new version within 24 hours.",
+     "answer": true,
+     "why": "References without a version resolve to the latest; refresh happens within 24 hours."
+    },
+    {
+     "text": "The setting must include the secret version, or the reference fails.",
+     "answer": false,
+     "why": "References without a version resolve to the latest version."
+    }
+   ],
+   "hint": "A Key Vault reference needs access to the vault, and a reference with no version tracks the latest secret.",
+   "explain": "Key Vault references need a managed identity, need no code changes, and refresh within 24 hours or on a restart-causing config change.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-028",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An app setting holds a Key Vault reference to a model API key. The key was rotated in Key Vault five days ago, but the app still sends the old key. No other app settings changed. What is the most likely cause?",
+   "options": [
+    {
+     "text": "The SecretUri in the reference includes a specific secret version",
+     "why": "Correct. Only references without a version resolve to the latest version. A versioned URI keeps returning that exact version."
+    },
+    {
+     "text": "The managed identity's role covers the original secret version but not new ones",
+     "why": "Read access to secrets isn't limited to one version. The identity can read whichever version the URI asks for."
+    },
+    {
+     "text": "The setting isn't marked as a deployment slot setting, so it doesn't refresh",
+     "why": "Slot settings control what moves during a swap. They don't affect how secrets refresh."
+    },
+    {
+     "text": "App Service resolves a Key Vault reference once, when the app is created",
+     "why": "App Service refreshes resolved values within 24 hours, and a restart forces a refetch, so references aren't fixed at creation."
+    }
+   ],
+   "answer": 0,
+   "hint": "Five days is far longer than the refresh window. What in the reference could stop it from following the latest value?",
+   "explain": "References without a version resolve to the latest version, and App Service refreshes resolved values within 24 hours (a restart forces an immediate refetch). A version in the SecretUri pins the reference to that version.",
+   "origin": "ca4s2"
+  },
+  {
+   "id": "lp1m2-029",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You want to confirm every environment variable the app receives, including system-provided ones. Where do you look?",
+   "options": [
+    {
+     "text": "The log stream",
+     "why": "The log stream shows output, not the configured environment."
+    },
+    {
+     "text": "The Environment page of the Kudu (SCM) site",
+     "why": "Correct. /Env lists app settings and system variables."
+    },
+    {
+     "text": "The output of az webapp show --query defaultHostName",
+     "why": "That returns the app's hostname only."
+    },
+    {
+     "text": "The AppServiceHTTPLogs table",
+     "why": "That table holds request and response information."
+    }
+   ],
+   "answer": 1,
+   "hint": "The Kudu (SCM) site shows the environment the platform injects into the app.",
+   "explain": "/Env lists app settings and system variables.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-030",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "match",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Match each log category to what it contains.",
+   "choices": [
+    "AppServiceConsoleLogs",
+    "AppServiceHTTPLogs",
+    "AppServicePlatformLogs"
+   ],
+   "items": [
+    {
+     "text": "Container stdout and stderr output",
+     "answer": 0,
+     "why": "Console logs capture the container's standard output and error streams."
+    },
+    {
+     "text": "HTTP request and response information",
+     "answer": 1,
+     "why": "HTTP logs record requests and responses."
+    },
+    {
+     "text": "Container lifecycle events and platform messages",
+     "answer": 2,
+     "why": "Platform logs record lifecycle events."
+    }
+   ],
+   "hint": "Each category name says where its data comes from: the console, HTTP traffic, or the platform.",
+   "explain": "Send these categories to Log Analytics with a diagnostic setting for long-term analysis and alerts.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-031",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "While testing a fix, you want to watch container output from every instance as it happens. What should you use?",
+   "options": [
+    {
+     "text": "The Kudu Environment page",
+     "why": "That page shows environment variables, not log output."
+    },
+    {
+     "text": "The diagnostic dump ZIP from the Kudu site",
+     "why": "A dump is a snapshot for offline analysis, not a live view."
+    },
+    {
+     "text": "A diagnostic setting that archives logs to a storage account",
+     "why": "That's for retention, not live watching."
+    },
+    {
+     "text": "The log stream, for example az webapp log tail",
+     "why": "Correct. It shows new entries in real time from all instances, each tagged with its instance."
+    }
+   ],
+   "answer": 3,
+   "hint": "You want output now, from every instance. Which feature streams logs live?",
+   "explain": "It shows new entries in real time from all instances, each tagged with its instance.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-032",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The container log says \"Listening on http://localhost:8000\" and WEBSITES_PORT is 8000, but every request returns 404. What is the most likely fix?",
+   "options": [
+    {
+     "text": "Change WEBSITES_PORT to 80 so the default route is used",
+     "why": "The port already matches; changing it would create a mismatch."
+    },
+    {
+     "text": "Enable always-on so the container finishes starting up",
+     "why": "Always-on doesn't change which interface the app listens on."
+    },
+    {
+     "text": "Bind the application to 0.0.0.0 instead of localhost",
+     "why": "Correct. An app listening on localhost doesn't accept traffic from outside the container."
+    },
+    {
+     "text": "Turn on persistent storage so the routes are kept",
+     "why": "Persistent storage doesn't affect routing."
+    }
+   ],
+   "answer": 2,
+   "hint": "The app listens, and the port matches, but nothing gets in. Which address accepts connections from outside the container?",
+   "explain": "For 404s after deployment, check that WEBSITES_PORT matches and that the app binds to 0.0.0.0 rather than localhost.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-033",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You need to inspect running processes inside the app container. You open the Kudu Debug console but can't find them. Why, and what should you use?",
+   "options": [
+    {
+     "text": "Kudu lists Windows processes, so switch the plan to Windows",
+     "why": "The plan OS isn't the reason; Kudu runs as a separate site."
+    },
+    {
+     "text": "Processes are listed in the diagnostic dump download",
+     "why": "The dump contains logs and configuration, not a live process view."
+    },
+    {
+     "text": "The log stream hides processes; enable filesystem logging",
+     "why": "Logging settings don't expose processes."
+    },
+    {
+     "text": "Kudu is a separate site, so use SSH enabled in the image",
+     "why": "Correct. The SCM site isn't the app container. SSH (when enabled in the image) gives in-container inspection."
+    }
+   ],
+   "answer": 3,
+   "hint": "Kudu runs beside your app, not inside it. How do you get a shell in the app container itself?",
+   "explain": "Kudu can browse /home and environment variables, but not the full container file system or processes. Use SSH for that.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-034",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You're adding SSH support to a custom container for App Service. Which three requirements must the image meet? (Select three.)",
+   "options": [
+    {
+     "text": "Store the SSH password as a Key Vault reference",
+     "why": "The root password is a fixed value App Service requires, not a stored secret."
+    },
+    {
+     "text": "Expose SSH on port 22 through WEBSITES_PORT",
+     "why": "WEBSITES_PORT is for HTTP traffic, and SSH uses 2222, not 22."
+    },
+    {
+     "text": "Set the root password to Docker!",
+     "why": "Correct. App Service requires the root password Docker!."
+    },
+    {
+     "text": "Configure SSH to listen on port 2222",
+     "why": "Correct. App Service expects SSH on port 2222."
+    },
+    {
+     "text": "Install the openssh-server package",
+     "why": "Correct. The image must include the OpenSSH server."
+    }
+   ],
+   "answer": [
+    2,
+    3,
+    4
+   ],
+   "hint": "SSH needs a server, a fixed port that App Service expects, and a known root password.",
+   "explain": "Install openssh-server, listen on 2222, set root:Docker!, and start sshd alongside the app.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp1m2-035",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Ops wants to query the last hour of container errors with KQL and keep the logs long-term. What should you configure?",
+   "options": [
+    {
+     "text": "The log stream in the portal",
+     "why": "The log stream is live viewing, not something you can query."
+    },
+    {
+     "text": "Send AppServiceConsoleLogs to Log Analytics",
+     "why": "Correct. Log Analytics supports KQL queries, alerts and long retention."
+    },
+    {
+     "text": "Enable container logging to the App Service filesystem",
+     "why": "This stores logs in /home/LogFiles. It doesn't support KQL queries or long retention."
+    },
+    {
+     "text": "The Kudu diagnostic dump",
+     "why": "A dump is a one-off ZIP for offline analysis."
+    }
+   ],
+   "answer": 1,
+   "hint": "KQL queries and long-term retention point to one Azure Monitor destination.",
+   "explain": "Log Analytics supports KQL queries, alerts and long retention.",
+   "origin": "site"
+  },
+  {
+   "id": "lp1m2-036",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You suspect the platform restarted the container overnight. Which log category records container lifecycle events?",
+   "options": [
+    {
+     "text": "AppServicePlatformLogs",
+     "why": "Correct. It records container lifecycle events and platform messages."
+    },
+    {
+     "text": "AppServiceAppLogs",
+     "why": "This holds application-level logs, when configured."
+    },
+    {
+     "text": "AppServiceHTTPLogs",
+     "why": "This holds HTTP request and response information."
+    },
+    {
+     "text": "AppServiceConsoleLogs",
+     "why": "This holds the container's own stdout and stderr."
+    }
+   ],
+   "answer": 0,
+   "hint": "Restarts are platform events, not app output. Which category records the platform's actions?",
+   "explain": "It records container lifecycle events and platform messages.",
+   "origin": "site"
+  }
+ ]
+}

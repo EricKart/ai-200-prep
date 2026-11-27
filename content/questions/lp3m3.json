@@ -1,0 +1,709 @@
+{
+ "module": "lp3m3",
+ "title": "Monitor and troubleshoot applications on Azure Kubernetes Service",
+ "questions": [
+  {
+   "id": "lp3m3-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A Pod runs an inference-api container and a logging sidecar. Which command shows only the inference-api container's logs?",
+   "options": [
+    {
+     "text": "kubectl top pods -n ai-workloads",
+     "why": "top shows resource usage, not logs."
+    },
+    {
+     "text": "kubectl logs <pod> -f",
+     "why": "-f streams logs, but doesn't choose the container."
+    },
+    {
+     "text": "kubectl logs <pod> -c inference-api",
+     "why": "Correct. -c selects the container in a multi-container Pod."
+    },
+    {
+     "text": "kubectl describe pod <pod> -n ai-workloads",
+     "why": "describe shows configuration and events, not container logs."
+    }
+   ],
+   "answer": 2,
+   "hint": "The Pod has two containers. Tell kubectl which one you mean.",
+   "explain": "Specify -c <container> when a Pod has several containers.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What must be installed in the cluster for kubectl top nodes to work?",
+   "options": [
+    {
+     "text": "Container insights",
+     "why": "Container insights is a portal monitoring feature, not what kubectl top needs."
+    },
+    {
+     "text": "The Key Vault CSI driver",
+     "why": "The CSI driver mounts secrets."
+    },
+    {
+     "text": "An ingress controller",
+     "why": "Ingress controllers route traffic."
+    },
+    {
+     "text": "The metrics server",
+     "why": "Correct. kubectl top requires the metrics server."
+    }
+   ],
+   "answer": 3,
+   "hint": "kubectl top reads data that a cluster add-on collects.",
+   "explain": "kubectl top nodes and kubectl top pods need the metrics server.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You need historical CPU trends across many Pods to see which inference workloads were resource-constrained last week. Which tool fits best?",
+   "options": [
+    {
+     "text": "kubectl top pods",
+     "why": "kubectl top gives a current snapshot only."
+    },
+    {
+     "text": "Live Logs in the portal",
+     "why": "Live Logs streams output; it doesn't chart resource history."
+    },
+    {
+     "text": "kubectl logs -f",
+     "why": "Streaming logs shows current output, not resource trends."
+    },
+    {
+     "text": "Container insights dashboards",
+     "why": "Correct. Container insights gives historical trends and cross-Pod analysis."
+    }
+   ],
+   "answer": 3,
+   "hint": "Last week, across many Pods: you need history, not a snapshot.",
+   "explain": "Use Container insights for history and cross-Pod analysis; kubectl top for a quick snapshot.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An inference Pod has a CPU limit of 2, and kubectl top shows it at 2 cores all the time while latency is rising.",
+   "rows": [
+    {
+     "text": "The Pod may be throttled at its CPU limit, which can increase inference latency.",
+     "answer": true,
+     "why": "A Pod constantly at its CPU limit can be throttled."
+    },
+    {
+     "text": "Exceeding the CPU limit makes Kubernetes kill the container immediately.",
+     "answer": false,
+     "why": "CPU over-use is throttled; OOMKill is the memory behavior."
+    },
+    {
+     "text": "Scaling out replicas or giving the model more CPU are both options Learn mentions.",
+     "answer": true,
+     "why": "High CPU can indicate a need for more resources or more replicas."
+    }
+   ],
+   "hint": "A container held at its CPU limit gets throttled, not killed.",
+   "explain": "Compare usage with requests and limits; CPU pressure shows up as throttling and latency.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "CPU is spiking on the inference cluster. Put Learn's example investigation in order.",
+   "steps": [
+    "Notice high CPU on the portal's Monitoring tab",
+    "Drill into Container insights to find the affected Pods",
+    "Use kubectl logs to inspect app behavior during the spike"
+   ],
+   "hint": "Start broad in the portal, narrow down to Pods, then read the logs.",
+   "explain": "Overview in the portal → identify Pods in Container insights → targeted kubectl investigation.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "During an incident, you want to watch an inference container's stdout and stderr as it's written, from the Azure portal and without kubectl. Which feature do you use?",
+   "options": [
+    {
+     "text": "Live Logs",
+     "why": "Correct. Live Logs streams container stdout and stderr in real time in the portal."
+    },
+    {
+     "text": "Diagnose and solve problems",
+     "why": "This runs guided diagnostics. It doesn't stream container output."
+    },
+    {
+     "text": "Container insights",
+     "why": "Container insights is for dashboards and historical trends, not a live text stream."
+    },
+    {
+     "text": "Metrics explorer",
+     "why": "Metrics explorer charts numbers. It doesn't show log lines."
+    }
+   ],
+   "answer": 0,
+   "hint": "You want the real-time stream of what the container prints.",
+   "explain": "Live Logs streams container output in the browser; you can pause, search and switch containers in multi-container Pods.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp3m3-007",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You want the terminal to keep printing new log lines from an inference Pod while you send test requests. Which command does that?",
+   "options": [
+    {
+     "text": "kubectl logs -f <pod-name> -n ai-workloads",
+     "why": "Correct. -f follows the log and prints new output as it arrives."
+    },
+    {
+     "text": "kubectl top pods -n ai-workloads",
+     "why": "This shows CPU and memory, not logs."
+    },
+    {
+     "text": "kubectl describe pod <pod-name>",
+     "why": "describe shows configuration and events once. It doesn't stream logs."
+    },
+    {
+     "text": "kubectl get pods -n ai-workloads -w",
+     "why": "-w watches Pod status changes, not log output."
+    }
+   ],
+   "answer": 0,
+   "hint": "kubectl logs has a flag that keeps the stream open.",
+   "explain": "kubectl logs -f <pod> follows the container's output as new lines arrive. Add -c <container> for multi-container Pods.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp3m3-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A worker Pod's memory use climbs slowly for hours before it's OOM-killed. Which view would have shown the problem earliest?",
+   "options": [
+    {
+     "text": "The Pod's restart count",
+     "why": "The restart count changes only after the kill has already happened."
+    },
+    {
+     "text": "The ingress 5xx error rate",
+     "why": "Errors may appear late, and they don't show memory growth."
+    },
+    {
+     "text": "A single kubectl top snapshot after the restart",
+     "why": "A snapshot after the restart shows the new, low usage, not the trend."
+    },
+    {
+     "text": "Container insights memory trends over time",
+     "why": "Correct. Historical trends show a steady climb long before the kill."
+    }
+   ],
+   "answer": 3,
+   "hint": "A slow leak is a trend over time. Which tool keeps history?",
+   "explain": "Use Container insights dashboards for historical trends and cross-Pod analysis, and kubectl top for a quick point-in-time snapshot.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp3m3-009",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your team keeps dev and prod AI services in the same cluster. You need to filter logs for one AI service within prod. How do namespaces and labels split this job?",
+   "options": [
+    {
+     "text": "Either one works, because they're interchangeable",
+     "why": "They do different jobs: one scopes, and the other selects."
+    },
+    {
+     "text": "Namespaces apply to Services only, so labels do both jobs",
+     "why": "Namespaces contain Pods too, and kubectl -n targets them."
+    },
+    {
+     "text": "Labels separate the environments; namespaces select the service's Pods",
+     "why": "That's the other way round."
+    },
+    {
+     "text": "Namespaces separate the environments; labels select the service's Pods",
+     "why": "Correct. Namespaces separate environments, access and quotas; labels select specific Pods inside a namespace."
+    }
+   ],
+   "answer": 3,
+   "hint": "One is a boundary you pass with -n. The other is a tag you select with -l.",
+   "explain": "Namespaces help you separate environments and control access and quotas, while labels select specific Pods inside a namespace when you scale, roll out or filter logs.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp3m3-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You don't have kubectl configured, but you need a shell inside a running container from your browser. What should you use?",
+   "options": [
+    {
+     "text": "The Monitoring tab on the Overview page",
+     "why": "The Monitoring tab shows metric graphs."
+    },
+    {
+     "text": "Diagnose and solve problems in the AKS resource menu",
+     "why": "That runs guided diagnostics, not an interactive shell."
+    },
+    {
+     "text": "The Console tab for the Pod in the Azure portal",
+     "why": "Correct. The Console tab opens an interactive terminal session in the browser."
+    },
+    {
+     "text": "Container insights Live Metrics",
+     "why": "Live Metrics shows CPU, memory and network data."
+    }
+   ],
+   "answer": 2,
+   "hint": "Without kubectl, the portal can open a shell into a Pod.",
+   "explain": "Use the portal Console tab or kubectl exec -it … -- /bin/sh.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Inside a container you discover the MODEL_ENDPOINT variable is wrong. How should you fix it?",
+   "options": [
+    {
+     "text": "Export the right value in the shell and leave it running",
+     "why": "Manual changes inside a container are lost and aren't reproducible."
+    },
+    {
+     "text": "Edit /etc/environment inside the container",
+     "why": "Ad hoc edits inside containers break reproducibility."
+    },
+    {
+     "text": "Restart the node so the container reloads",
+     "why": "A node restart doesn't change the configured value."
+    },
+    {
+     "text": "Update the manifest or configuration and redeploy",
+     "why": "Correct. Make permanent changes through manifests and configuration."
+    }
+   ],
+   "answer": 3,
+   "hint": "Changes made inside a running container disappear and can't be reproduced.",
+   "explain": "Avoid ad hoc fixes inside containers; keep the environment reproducible.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A Pod keeps failing its readiness probe. In kubectl describe pod output, which two areas should you check? (Select two.)",
+   "options": [
+    {
+     "text": "The node pool's billing tier and pricing details",
+     "why": "Billing isn't in describe output and doesn't cause probe failures."
+    },
+    {
+     "text": "The registry's geo-replication settings for the image",
+     "why": "Geo-replication doesn't affect readiness probes."
+    },
+    {
+     "text": "The Events section for probe failures",
+     "why": "Correct. Events record probe failures, failed pulls and scheduling issues."
+    },
+    {
+     "text": "The readiness probe definition for the AI endpoint",
+     "why": "Correct. Describe shows the probe configuration."
+    }
+   ],
+   "answer": [
+    2,
+    3
+   ],
+   "hint": "describe shows both the probe's configuration and what happened to it.",
+   "explain": "Describe output shows probes, environment, mounts and events.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. All inference Pods are Running and Ready, but requests to the Service time out.",
+   "rows": [
+    {
+     "text": "Checking kubectl get endpointslices for the Service is a good next step.",
+     "answer": true,
+     "why": "EndpointSlices list the Pod IPs that receive traffic."
+    },
+    {
+     "text": "If no EndpointSlices exist, the Service can't route traffic even though the Pods are healthy.",
+     "answer": true,
+     "why": "Without endpoints, the API can't receive traffic."
+    },
+    {
+     "text": "Healthy Pods prove that the Service's targetPort matches the container port.",
+     "answer": false,
+     "why": "Pod health doesn't validate the Service's port mapping."
+    },
+    {
+     "text": "EndpointSlices list the node IPs, not Pod IPs, that receive the traffic.",
+     "answer": false,
+     "why": "EndpointSlices list the actual Pod IPs that receive traffic."
+    }
+   ],
+   "hint": "Healthy Pods don't prove routing works. Check what the Service actually routes to.",
+   "explain": "Check selectors, ports and EndpointSlices when Pods are healthy but unreachable.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-014",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Several Pods across the namespace failed in the last ten minutes for different reasons. Which command gives one view of recent events across Pods and controllers?",
+   "options": [
+    {
+     "text": "kubectl get events -n ai-workloads",
+     "why": "Correct. get events reviews recent cluster events across Pods and controllers."
+    },
+    {
+     "text": "kubectl exec -it <pod> -- /bin/sh",
+     "why": "That opens a shell in one container."
+    },
+    {
+     "text": "kubectl logs -f <pod> -n ai-workloads",
+     "why": "That streams one Pod's application output."
+    },
+    {
+     "text": "kubectl top pods -n ai-workloads",
+     "why": "That shows resource usage only."
+    }
+   ],
+   "answer": 0,
+   "hint": "describe pod is for one Pod. You want events across the whole namespace.",
+   "explain": "Use kubectl describe pod for one Pod's events and kubectl get events for a wider view.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-015",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You need one view of a Pod's events, environment variables and mounted volumes, including Secrets. Which command gives you all of that?",
+   "options": [
+    {
+     "text": "kubectl logs <pod-name>",
+     "why": "Logs show application output, not configuration or events."
+    },
+    {
+     "text": "kubectl top pod <pod-name>",
+     "why": "top shows resource usage only."
+    },
+    {
+     "text": "kubectl get pod <pod-name> -o name",
+     "why": "This prints only the Pod's name."
+    },
+    {
+     "text": "kubectl describe pod <pod-name>",
+     "why": "Correct. describe pod shows probes, environment, mounts and events together."
+    }
+   ],
+   "answer": 3,
+   "hint": "You want a detailed description of one Pod, not its output.",
+   "explain": "kubectl describe pod shows the Pod's probes, environment, mounts and Events, which makes it the first stop for startup and probe problems.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp3m3-016",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You want to call a container's own health endpoint, http://localhost:8080/health, without changing or rebuilding the image. What do you do?",
+   "options": [
+    {
+     "text": "Rebuild the image with an extra probe that logs the result",
+     "why": "That changes the image, which you wanted to avoid."
+    },
+    {
+     "text": "Port-forward to the kubelet's port on the node",
+     "why": "The kubelet isn't your app. Port-forward to the Service or Pod instead."
+    },
+    {
+     "text": "SSH into the node and curl the Pod's localhost",
+     "why": "localhost on the node isn't the container's localhost."
+    },
+    {
+     "text": "Exec into the container and run curl against localhost",
+     "why": "Correct. kubectl exec (or the portal Console) lets you run simple HTTP checks from inside the container."
+    }
+   ],
+   "answer": 3,
+   "hint": "localhost means inside the container. How do you run a command in there?",
+   "explain": "Use kubectl exec -it <pod> -- /bin/sh (or the portal Console tab) to inspect files, check variables and run commands such as curl http://localhost:8080/health.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp3m3-017",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Several services on the cluster have problems, and you suspect node health or cluster configuration. Why start with Diagnose and solve problems in the portal?",
+   "options": [
+    {
+     "text": "It runs diagnostics for common issues automatically and suggests fixes",
+     "why": "Correct. It gives guided troubleshooting for connectivity, node health and configuration."
+    },
+    {
+     "text": "It needs kubectl configured first, so it's more precise",
+     "why": "It's a portal tool, so you don't need kubectl at all."
+    },
+    {
+     "text": "It shows more detail than kubectl describe for each Pod",
+     "why": "kubectl describe is still the detailed per-Pod view."
+    },
+    {
+     "text": "It edits the manifests to fix problems for you",
+     "why": "It suggests fixes. It doesn't change your manifests."
+    }
+   ],
+   "answer": 0,
+   "hint": "For cluster-wide symptoms, start with the tool that checks common problems for you.",
+   "explain": "Diagnose and solve problems gives guided troubleshooting for common issues such as connectivity, node health and cluster configuration, runs diagnostics automatically and suggests fixes.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp3m3-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Ingress isn't configured yet, and you want to test the inference Service from your laptop. Which command should you use?",
+   "options": [
+    {
+     "text": "kubectl top pods -n ai-workloads to read Pod usage",
+     "why": "top shows resource usage."
+    },
+    {
+     "text": "az aks scale --node-count 3 to add test capacity",
+     "why": "Scaling nodes doesn't create a test path."
+    },
+    {
+     "text": "kubectl port-forward service/inference-api 8080:80",
+     "why": "Correct. Port-forwarding sends local traffic to the Service inside the cluster."
+    },
+    {
+     "text": "kubectl get ingress -n ai-workloads to list ingress routes",
+     "why": "Listing ingress shows nothing useful when none is configured."
+    }
+   ],
+   "answer": 2,
+   "hint": "Test from your laptop without exposing the Service publicly.",
+   "explain": "Port-forwarding lets you test before exposing endpoints to users.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-019",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "After `kubectl port-forward service/inference-api 8080:80`, which URL reaches the API from your laptop?",
+   "options": [
+    {
+     "text": "http://inference-api:8080/api/inference",
+     "why": "That DNS name isn't resolvable from your laptop."
+    },
+    {
+     "text": "The Service's cluster IP on port 8080",
+     "why": "The cluster IP isn't reachable from your laptop."
+    },
+    {
+     "text": "http://localhost:8080/api/inference",
+     "why": "Correct. Local port 8080 forwards to Service port 80."
+    },
+    {
+     "text": "http://localhost:80/api/inference",
+     "why": "The local side of the forward is 8080."
+    }
+   ],
+   "answer": 2,
+   "hint": "In local:remote, the first number is the port on your machine.",
+   "explain": "In 8080:80, the first number is the local port.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-020",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "The portal shows the inference Service with an empty Endpoints list. Pods are running with the label `app: inference-api-v2`. What should you do?",
+   "options": [
+    {
+     "text": "Run kubectl port-forward to create the missing endpoints",
+     "why": "Port-forwarding tests a path; it doesn't create endpoints."
+    },
+    {
+     "text": "Add more replicas so the Service discovers them automatically",
+     "why": "More Pods with the same wrong label still won't match."
+    },
+    {
+     "text": "Align Pod labels and the Service selector, then check EndpointSlices",
+     "why": "Correct. Endpoints come from matching labels; fix the mismatch and verify."
+    },
+    {
+     "text": "Switch the Service type from LoadBalancer to ClusterIP",
+     "why": "The type doesn't affect which Pods are selected."
+    }
+   ],
+   "answer": 2,
+   "hint": "An empty endpoints list with running Pods means the selector found nothing.",
+   "explain": "Standardize labels so Services and ingress resources select the correct Pods.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-021",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Where do you find the external hostname or IP of an ingress resource with kubectl get ingress or in the portal?",
+   "options": [
+    {
+     "text": "The targetPort field",
+     "why": "targetPort is the container port."
+    },
+    {
+     "text": "The CLUSTER-IP column",
+     "why": "Cluster IPs are internal addresses."
+    },
+    {
+     "text": "The selector labels",
+     "why": "Selectors choose Pods; they aren't addresses."
+    },
+    {
+     "text": "The ADDRESS column",
+     "why": "Correct. Ingress resources show their external hostname or IP in the Address column."
+    }
+   ],
+   "answer": 3,
+   "hint": "Services and ingresses report their public address in different columns.",
+   "explain": "LoadBalancer Services show EXTERNAL-IP; ingress resources show ADDRESS.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m3-022",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "The Service's labels match the Pods, and its EndpointSlices list the Pod IPs, but clients get connection refused. What else should you check?",
+   "options": [
+    {
+     "text": "Whether the namespace name matches the environment",
+     "why": "Naming doesn't affect routing within a namespace."
+    },
+    {
+     "text": "Whether targetPort matches the port the container listens on",
+     "why": "Correct. With endpoints in place, a wrong targetPort sends traffic to a port nobody listens on."
+    },
+    {
+     "text": "Whether the Pods' restart count is zero",
+     "why": "A zero restart count is healthy and doesn't explain refused connections."
+    },
+    {
+     "text": "Whether the image came from a private registry",
+     "why": "The Pods are running, so the image pull already worked."
+    }
+   ],
+   "answer": 1,
+   "hint": "Traffic reaches the right Pods but finds nothing listening. Which number tells the Service where to send it?",
+   "explain": "When Pods are healthy and endpoints exist but connections fail, check that the Service's targetPort matches the container port, and that ingress rules point to the right Service and port.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp3m3-023",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A LoadBalancer Service still has no external IP after several minutes. Where in the portal do you check first?",
+   "options": [
+    {
+     "text": "The node pool scaling settings",
+     "why": "Node scaling doesn't show Service addresses."
+    },
+    {
+     "text": "The Live Logs stream of an inference Pod",
+     "why": "Container output doesn't show the Service's address."
+    },
+    {
+     "text": "The activity log, and nothing else",
+     "why": "The Services and ingresses view is the direct place to check a Service's address."
+    },
+    {
+     "text": "Services and ingresses under Kubernetes resources",
+     "why": "Correct. It shows every Service with external IPs, selectors, ports and endpoints."
+    }
+   ],
+   "answer": 3,
+   "hint": "Look in the portal section that lists Services and their addresses.",
+   "explain": "The Services and ingresses section shows all Services across namespaces, with external IPs, selector labels, ports and current endpoints.",
+   "origin": "ca3"
+  }
+ ]
+}

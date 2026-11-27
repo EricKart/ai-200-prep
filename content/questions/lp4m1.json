@@ -1,0 +1,901 @@
+{
+ "module": "lp4m1",
+ "title": "Build queries for Azure Cosmos DB for NoSQL",
+ "questions": [
+  {
+   "id": "lp4m1-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which Cosmos DB resource is the fundamental unit of scalability and holds the JSON items?",
+   "options": [
+    {
+     "text": "Account",
+     "why": "The account is the top-level management unit with the endpoint."
+    },
+    {
+     "text": "Partition key",
+     "why": "A partition key is a container setting, not a resource."
+    },
+    {
+     "text": "Database",
+     "why": "A database is a logical namespace that groups containers."
+    },
+    {
+     "text": "Container",
+     "why": "Correct. Containers are the unit of scalability and hold items."
+    }
+   ],
+   "answer": 3,
+   "hint": "Which level of the hierarchy holds the items and is the unit of scale?",
+   "explain": "Account → database → container → item; containers scale and hold the documents.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A chat app stores each user's conversation history. Queries almost always filter by user. Which property is the best partition key?",
+   "options": [
+    {
+     "text": "/createdDate",
+     "why": "Date keys can create hot partitions during busy periods."
+    },
+    {
+     "text": "/isActive",
+     "why": "A boolean gives two partitions and hot spots."
+    },
+    {
+     "text": "/userId",
+     "why": "Correct. userId has high cardinality and groups each user's data together."
+    },
+    {
+     "text": "/messageType",
+     "why": "A few message types give low cardinality."
+    }
+   ],
+   "answer": 2,
+   "hint": "Pick a property every item has, with many distinct values, that most queries filter on.",
+   "explain": "Choose a property that exists in every item, has many distinct values, and matches your queries.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Autoscale throughput is configured with a maximum of 4,000 RU/s. What range does the container scale within?",
+   "options": [
+    {
+     "text": "400 to 4,000 RU/s",
+     "why": "Correct. Autoscale scales between 10% of the maximum and the maximum."
+    },
+    {
+     "text": "1,000 to 4,000 RU/s",
+     "why": "1,000 RU/s is the smallest allowed maximum, not the floor here."
+    },
+    {
+     "text": "0 to 4,000 RU/s",
+     "why": "Autoscale doesn't go to zero."
+    },
+    {
+     "text": "4,000 to 40,000 RU/s",
+     "why": "The configured value is the maximum."
+    }
+   ],
+   "answer": 0,
+   "hint": "Autoscale's minimum is a fixed percentage of the maximum you set.",
+   "explain": "Autoscale minimum = 10% of the configured maximum.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Four containers in one database have unpredictable, uneven usage, and the team wants to keep cost down. Where should throughput be provisioned?",
+   "options": [
+    {
+     "text": "Shared throughput at the database level",
+     "why": "Correct. Database-level throughput is shared across containers with variable usage."
+    },
+    {
+     "text": "Dedicated throughput on the busiest container, none on the rest",
+     "why": "The other containers would then have no throughput."
+    },
+    {
+     "text": "Dedicated manual throughput on each container",
+     "why": "Dedicated throughput gives predictable performance but costs more for variable usage."
+    },
+    {
+     "text": "Autoscale on the account",
+     "why": "Throughput is provisioned on databases or containers, not accounts."
+    }
+   ],
+   "answer": 0,
+   "hint": "Uneven, unpredictable use across several containers suggests pooling the RUs.",
+   "explain": "Shared database throughput suits containers with variable usage; dedicated suits critical predictable workloads.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A container uses `/categoryId` as its partition key.",
+   "rows": [
+    {
+     "text": "Two items can share the id product-1 if they have different categoryId values.",
+     "answer": true,
+     "why": "id plus partition key value uniquely identifies an item."
+    },
+    {
+     "text": "You can switch the partition key to /brandId later with a setting change.",
+     "answer": false,
+     "why": "You can't change the partition key without a new container and migration."
+    },
+    {
+     "text": "If you create an item without an id, the SDK generates one for you.",
+     "answer": false,
+     "why": "You must provide an id; the SDK doesn't generate one."
+    },
+    {
+     "text": "_ts records when the item was last modified, in Unix seconds.",
+     "answer": true,
+     "why": "_ts is a Unix timestamp of the last modification."
+    }
+   ],
+   "hint": "Uniqueness is id plus partition key. The partition key can't change, and the SDK won't invent an id.",
+   "explain": "Design ids and partition keys up front: the key is permanent and ids are yours to supply.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Two workers read the same cached model output, change it and write it back, and one worker's change keeps getting lost. Which system property helps prevent this?",
+   "options": [
+    {
+     "text": "_ts",
+     "why": "_ts shows when it changed but doesn't block a stale write."
+    },
+    {
+     "text": "_self",
+     "why": "_self is a URI for addressing the item."
+    },
+    {
+     "text": "_rid",
+     "why": "_rid is an internal resource identifier."
+    },
+    {
+     "text": "_etag",
+     "why": "Correct. Writing with an _etag condition fails if the item changed since it was read."
+    }
+   ],
+   "answer": 3,
+   "hint": "Optimistic concurrency uses a value that changes every time the item changes.",
+   "explain": "_etag enables optimistic concurrency: the update fails with a conflict if someone else changed the item.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-007",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A team wants to cut RU consumption for a busy workload. Which three factors does Learn say increase RU charges? (Select three.)",
+   "options": [
+    {
+     "text": "Projecting fewer properties",
+     "why": "Returning fewer properties can lower RU cost."
+    },
+    {
+     "text": "Stronger consistency levels such as strong",
+     "why": "Correct. Strong and bounded staleness consume more RUs."
+    },
+    {
+     "text": "Using point reads instead of queries",
+     "why": "Point reads are the cheapest way to read one item."
+    },
+    {
+     "text": "Larger item sizes",
+     "why": "Correct. Larger documents cost more to read and write."
+    },
+    {
+     "text": "Cross-partition queries",
+     "why": "Correct. Spanning partitions costs more than single-partition queries."
+    }
+   ],
+   "answer": [
+    1,
+    3,
+    4
+   ],
+   "hint": "Bigger items, stronger guarantees and wider queries all cost more.",
+   "explain": "Item size, indexing policy, consistency, query complexity and cross-partition fan-out drive RU cost.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-008",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. You're explaining the Cosmos DB for NoSQL resource model to a new developer.",
+   "rows": [
+    {
+     "text": "The hierarchy runs account → database → container → item.",
+     "answer": true,
+     "why": "Accounts are the top-level unit, then databases, containers and items."
+    },
+    {
+     "text": "The account provides the DNS endpoint https://<account-name>.documents.azure.com:443/.",
+     "answer": true,
+     "why": "SDK connections use the account's endpoint."
+    },
+    {
+     "text": "Items in one container must all follow the same schema.",
+     "answer": false,
+     "why": "Containers are schema-agnostic, so items can have different structures."
+    },
+    {
+     "text": "By default, an account can hold up to 500 databases and containers combined.",
+     "answer": true,
+     "why": "That's the default limit Learn gives."
+    }
+   ],
+   "hint": "Think top-down from the account, and remember Cosmos DB doesn't enforce a schema.",
+   "explain": "Cosmos DB organizes resources as account → database → container → item. The account gives the DNS endpoint; containers are schema-agnostic; by default an account holds up to 500 databases and containers combined.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp4m1-009",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A developer proposes partitioning an inference-results container by the boolean property isActive, because most queries filter on it. What problem does Learn warn about?",
+   "options": [
+    {
+     "text": "The container would need a nested path such as /metadata/isActive",
+     "why": "Nested paths are allowed, but they don't fix low cardinality."
+    },
+    {
+     "text": "Only two values exist, so traffic and data pile up in hot partitions",
+     "why": "Correct. Low-cardinality keys such as booleans create hot partitions and limit scale."
+    },
+    {
+     "text": "Queries filtered on isActive would become cross-partition queries",
+     "why": "Filtering on the partition key routes to one partition. The problem is the lack of spread."
+    },
+    {
+     "text": "Boolean properties can't be used as partition key paths",
+     "why": "The issue isn't the data type. It's that there are only two values."
+    }
+   ],
+   "answer": 1,
+   "hint": "How many distinct values does a boolean have? Think about how the data spreads.",
+   "explain": "Partition keys need high cardinality. A key with only a few values, such as a boolean, creates hot partitions that get disproportionate traffic and storage.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m1-010",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A database uses shared manual throughput. The team plans to add many small containers to it. What does Learn say about this model?",
+   "options": [
+    {
+     "text": "Shared throughput is available only with autoscale",
+     "why": "Shared throughput works with manual throughput too, as this database shows."
+    },
+    {
+     "text": "Shared throughput supports an unlimited number of containers",
+     "why": "Learn gives a limit of 25 containers for shared throughput."
+    },
+    {
+     "text": "Each container in the database still needs its own 400 RU/s minimum",
+     "why": "That's dedicated container throughput. Shared throughput pools RUs across containers."
+    },
+    {
+     "text": "The database has a minimum of 400 RU/s, shared across up to 25 containers",
+     "why": "Correct. Shared database throughput starts at 400 RU/s and can serve up to 25 containers."
+    }
+   ],
+   "answer": 3,
+   "hint": "Shared throughput has a minimum RU/s and a maximum number of containers.",
+   "explain": "With manual throughput, a container with dedicated throughput has a minimum of 400 RU/s. A database with shared throughput also has a 400 RU/s minimum and can share it across up to 25 containers.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m1-011",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You want to log how many RUs each Cosmos DB operation in your app uses, so that you can find expensive ones. Where does each operation report its RU charge?",
+   "options": [
+    {
+     "text": "In the activity ID returned with each request",
+     "why": "The activity ID identifies a request for support. It isn't the charge."
+    },
+    {
+     "text": "Only in Azure Monitor, about an hour later",
+     "why": "Each response carries its charge right away. Azure Monitor is for aggregated views."
+    },
+    {
+     "text": "In the x-ms-request-charge response header",
+     "why": "Correct. Every operation returns its RU cost in this header."
+    },
+    {
+     "text": "In the item's _ts system property",
+     "why": "_ts is the last-modified timestamp, not a cost."
+    }
+   ],
+   "answer": 2,
+   "hint": "Each response carries its own cost in a header.",
+   "explain": "Every operation returns its RU charge in the x-ms-request-charge response header. Log it (with the activity ID) to find expensive patterns.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m1-012",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An app fetches a 1-KB user profile by id and partition key, and also writes a 1-KB cached result. Roughly how do the two operations compare in RU cost?",
+   "options": [
+    {
+     "text": "About 100 RUs each, because both use the network",
+     "why": "Point reads are the cheapest operation, at about 1 RU."
+    },
+    {
+     "text": "About 10 RUs for the read; about 1 RU for the write",
+     "why": "That's the wrong way round. Writes cost more than point reads."
+    },
+    {
+     "text": "Both cost about the same, because the item size is the same",
+     "why": "Writes include indexing overhead, so they cost more than point reads."
+    },
+    {
+     "text": "About 1 RU for the read; about 5–10 RUs for the write",
+     "why": "Correct. A 1-KB point read costs about 1 RU, and a 1-KB write about 5–10 RUs."
+    }
+   ],
+   "answer": 3,
+   "hint": "Point reads are the cheapest operation there is. Writes pay for indexing too.",
+   "explain": "Point reads (single 1-KB item by id and partition key) cost around 1 RU. Writing a 1-KB item costs about 5–10 RUs depending on consistency and indexing.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m1-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A FastAPI service creates a new CosmosClient for every incoming request, and latency is erratic under load. What should you change?",
+   "options": [
+    {
+     "text": "Create a new client for each container instead of per request",
+     "why": "More clients still discard cached state."
+    },
+    {
+     "text": "Create one CosmosClient at startup and reuse it",
+     "why": "Correct. A single reused client keeps warm connection pools and cached routing information."
+    },
+    {
+     "text": "Call get_container_client before every query",
+     "why": "Container handles are cheap but don't fix the client problem."
+    },
+    {
+     "text": "Switch from Entra ID to account keys",
+     "why": "Authentication method doesn't fix per-request client creation."
+    }
+   ],
+   "answer": 1,
+   "hint": "Clients hold connection pools and routing caches. How many should an app create?",
+   "explain": "Register CosmosClient as a singleton or application-scoped service.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-014",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which built-in role lets an identity read and write items with Entra ID authentication?",
+   "options": [
+    {
+     "text": "Cosmos DB Built-in Data Reader",
+     "why": "Data Reader allows read operations only."
+    },
+    {
+     "text": "Cosmos DB Account Key Operator",
+     "why": "Learn doesn't list this role."
+    },
+    {
+     "text": "Cosmos DB Built-in Data Contributor",
+     "why": "Correct. Data Contributor allows read and write operations."
+    },
+    {
+     "text": "Cosmos DB Built-in Owner",
+     "why": "Learn doesn't list this role."
+    }
+   ],
+   "answer": 2,
+   "hint": "Read and write with Entra ID: one built-in role says it can contribute data.",
+   "explain": "Data Reader for reads; Data Contributor for reads and writes.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-015",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Startup code must make sure the products container exists, and the app may restart many times. Which method should it call?",
+   "options": [
+    {
+     "text": "database.create_container_if_not_exists()",
+     "why": "Correct. It creates the container if needed and returns it otherwise, so restarts don't fail."
+    },
+    {
+     "text": "container.upsert_item()",
+     "why": "upsert_item writes items, not containers."
+    },
+    {
+     "text": "database.create_container()",
+     "why": "create_container fails if the container already exists."
+    },
+    {
+     "text": "database.get_container_client()",
+     "why": "get_container_client only makes a handle; it doesn't create anything."
+    }
+   ],
+   "answer": 0,
+   "hint": "Startup code runs many times. Choose the call that's safe to repeat.",
+   "explain": "*_if_not_exists methods are idempotent, which suits application initialization.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-016",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each SDK call to its behavior.",
+   "choices": [
+    "Fails with 409 if the item exists",
+    "Inserts or replaces the item",
+    "Fails if the item doesn't exist",
+    "Cheapest way to fetch one known item"
+   ],
+   "items": [
+    {
+     "text": "create_item",
+     "answer": 0,
+     "why": "create_item catches accidental duplicates with a 409 Conflict."
+    },
+    {
+     "text": "upsert_item",
+     "answer": 1,
+     "why": "upsert creates the item or replaces the existing one."
+    },
+    {
+     "text": "replace_item",
+     "answer": 2,
+     "why": "replace requires the item to exist."
+    },
+    {
+     "text": "read_item with id and partition key",
+     "answer": 3,
+     "why": "A point read costs about 1 RU for a 1-KB item."
+    }
+   ],
+   "hint": "Create fails if it exists, replace fails if it doesn't, and upsert doesn't care.",
+   "explain": "Pick the write method by whether you expect the item to exist.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-017",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A cache lookup with read_item raises CosmosResourceNotFoundError when the result hasn't been computed yet. What should the code do?",
+   "options": [
+    {
+     "text": "Retry read_item until the item appears",
+     "why": "The item doesn't exist yet, so retrying won't help."
+    },
+    {
+     "text": "Switch to a cross-partition query to search all partitions",
+     "why": "A query won't find an item that doesn't exist, and it costs more."
+    },
+    {
+     "text": "Catch the exception and compute the value as a fallback",
+     "why": "Correct. Handle the exception to compute an uncached value or return a default."
+    },
+    {
+     "text": "Recreate the container with create_container_if_not_exists",
+     "why": "The container exists; the item is just missing."
+    }
+   ],
+   "answer": 2,
+   "hint": "Not found is an expected result for a cache miss. Handle it and compute the value.",
+   "explain": "Point reads raise CosmosResourceNotFoundError for missing items; use it for fallback logic.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-018",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An app uses an account key in its CosmosClient.",
+   "rows": [
+    {
+     "text": "Anyone holding that key has full access to all resources in the account.",
+     "answer": true,
+     "why": "Account keys grant full access to everything in the account."
+    },
+    {
+     "text": "Account keys support conditional access policies from Entra ID.",
+     "answer": false,
+     "why": "Keys don't integrate with centralized identity management or conditional access."
+    },
+    {
+     "text": "The primary and secondary keys let you rotate a key without downtime.",
+     "answer": true,
+     "why": "Two keys allow rotation without downtime."
+    },
+    {
+     "text": "get_container_client confirms that the container exists by calling the service.",
+     "answer": false,
+     "why": "These methods make no network calls and don't verify existence."
+    }
+   ],
+   "hint": "An account key is full access to everything, and Entra ID features don't apply to it.",
+   "explain": "Keys are simple but all-powerful; Entra ID with RBAC is preferred for production.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-019",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The same FastAPI code must authenticate to Cosmos DB with your Azure CLI login on your laptop and with a managed identity in Azure, with no code change. What should you use?",
+   "options": [
+    {
+     "text": "DefaultAzureCredential",
+     "why": "Correct. It picks the right credential for the environment: developer sign-in locally, managed identity in Azure."
+    },
+    {
+     "text": "A connection string per environment in local.settings.json",
+     "why": "That still uses keys and different values per environment."
+    },
+    {
+     "text": "ManagedIdentityCredential only",
+     "why": "A managed identity doesn't exist on your laptop, so local runs would fail."
+    },
+    {
+     "text": "The account's primary key from an environment variable",
+     "why": "That's key-based access, which skips Entra ID and RBAC."
+    }
+   ],
+   "answer": 0,
+   "hint": "One credential class tries several sign-in methods in order.",
+   "explain": "DefaultAzureCredential selects the credential for the environment: Azure CLI or Visual Studio sign-in locally, managed identity when deployed.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m1-020",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A reporting service must read items with Entra ID authentication and must not be able to write. Which built-in role should its identity get?",
+   "options": [
+    {
+     "text": "Cosmos DB Built-in Data Reader",
+     "why": "Correct. It allows read operations only."
+    },
+    {
+     "text": "Owner on the resource group",
+     "why": "Owner is far too broad for reading items."
+    },
+    {
+     "text": "Cosmos DB Account Reader Role",
+     "why": "That's a control-plane role for reading account settings, not item data."
+    },
+    {
+     "text": "Cosmos DB Built-in Data Contributor",
+     "why": "Contributor allows reads and writes, which is more than this service needs."
+    }
+   ],
+   "answer": 0,
+   "hint": "Grant only what's needed: data access, read-only.",
+   "explain": "The built-in data roles include Cosmos DB Built-in Data Reader for read operations and Cosmos DB Built-in Data Contributor for read/write.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m1-021",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A few writes have unusually high latency, and you plan to open a support case. Besides the RU charge, which value should your code log so that Microsoft support can find each request?",
+   "options": [
+    {
+     "text": "The item's _etag",
+     "why": "The etag tracks item versions for concurrency, not individual requests."
+    },
+    {
+     "text": "The partition key value",
+     "why": "The key routes data. It doesn't identify one request."
+    },
+    {
+     "text": "The client's process ID",
+     "why": "Support can't map a local process ID to a service request."
+    },
+    {
+     "text": "The activity ID from the response",
+     "why": "Correct. The activity ID uniquely identifies each request, which helps support diagnose it."
+    }
+   ],
+   "answer": 3,
+   "hint": "Each request gets a unique identifier in the response metadata.",
+   "explain": "Log the activity ID alongside errors or high RU charges. It uniquely identifies each request when working with Azure support.",
+   "origin": "new"
+  },
+  {
+   "id": "lp4m1-022",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You need a plain JSON array of product names, such as [\"Smart Speaker\", \"Laptop\"], without wrapping objects. Which query should you use?",
+   "options": [
+    {
+     "text": "SELECT COUNT(p.name) FROM products p",
+     "why": "This returns a count, not the names."
+    },
+    {
+     "text": "SELECT VALUE p.name FROM products p",
+     "why": "Correct. VALUE returns the scalar values without the surrounding object."
+    },
+    {
+     "text": "SELECT * FROM products p",
+     "why": "This returns whole documents."
+    },
+    {
+     "text": "SELECT p.name FROM products p",
+     "why": "This returns objects such as {\"name\": \"…\"}."
+    }
+   ],
+   "answer": 1,
+   "hint": "One keyword returns the bare values instead of objects.",
+   "explain": "SELECT VALUE unwraps results into scalars or custom shapes.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-023",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A search box sends a category typed by users into a query. How should you build the query?",
+   "options": [
+    {
+     "text": "Concatenate the user's text into the WHERE clause",
+     "why": "Concatenating user input invites injection."
+    },
+    {
+     "text": "Use a parameter such as @category with a parameters array",
+     "why": "Correct. Parameters prevent injection and allow query plan caching."
+    },
+    {
+     "text": "Run the query as a stored procedure with the user's text inline",
+     "why": "Inline user text is still unsafe."
+    },
+    {
+     "text": "Wrap the user's text in UPPER() before concatenating it",
+     "why": "UPPER changes case but doesn't stop injection."
+    }
+   ],
+   "answer": 1,
+   "hint": "User input never goes into the query text itself.",
+   "explain": "Always parameterize values that come from users or external sources.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-024",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. The products container is partitioned by `/categoryId`.",
+   "rows": [
+    {
+     "text": "A query that filters on categoryId = @category can be routed to a single partition.",
+     "answer": true,
+     "why": "Including the partition key routes the query directly."
+    },
+    {
+     "text": "A query that filters only on price needs enable_cross_partition_query=True.",
+     "answer": true,
+     "why": "Without the partition key, the query fans out across partitions."
+    },
+    {
+     "text": "WHERE p.name = \"speaker\" matches an item named \"Speaker\".",
+     "answer": false,
+     "why": "String comparisons are case-sensitive by default."
+    }
+   ],
+   "hint": "Filtering on the partition key routes to one partition. String comparison is case-sensitive.",
+   "explain": "Design queries to include the partition key; remember case-sensitive string comparisons.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-025",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Each product has a features array. You need one result row per matching feature, only for features \"wifi\" or \"bluetooth\". Which query does this?",
+   "options": [
+    {
+     "text": "SELECT p.name FROM products p WHERE CONTAINS(p.features, \"wifi\")",
+     "why": "CONTAINS is a string function, not an array membership test."
+    },
+    {
+     "text": "SELECT p.name FROM products p WHERE ARRAY_CONTAINS(p.features, \"wifi\") OR ARRAY_CONTAINS(p.features, \"bluetooth\")",
+     "why": "ARRAY_CONTAINS returns each matching product once; it doesn't flatten the array into one row per feature."
+    },
+    {
+     "text": "SELECT p.name, f AS feature FROM products p JOIN f IN p.features WHERE f IN (\"wifi\", \"bluetooth\")",
+     "why": "Correct. JOIN … IN flattens the array so you can filter and return individual elements."
+    },
+    {
+     "text": "SELECT VALUE p.features FROM products p WHERE p.features = \"wifi\"",
+     "why": "Comparing an array to a string doesn't test membership."
+    }
+   ],
+   "answer": 2,
+   "hint": "To get one row per array element, join the item to its own array.",
+   "explain": "Use ARRAY_CONTAINS for membership; JOIN with IN to flatten arrays and filter elements.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-026",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A dashboard query costs hundreds of RUs. Which two changes match Learn's cost optimization list? (Select two.)",
+   "options": [
+    {
+     "text": "Remove all WHERE filters and filter in the app",
+     "why": "Filtering early reduces cost; moving filters to the app does the opposite."
+    },
+    {
+     "text": "Project only the properties the dashboard shows",
+     "why": "Correct. Returning only needed fields reduces cost."
+    },
+    {
+     "text": "Add the partition key to the filter where possible",
+     "why": "Correct. Single-partition routing costs less than fan-out."
+    },
+    {
+     "text": "Add ORDER BY to every query to speed it up",
+     "why": "Sorting adds overhead rather than reducing it."
+    }
+   ],
+   "answer": [
+    1,
+    2
+   ],
+   "hint": "Use the partition key in filters and return only the fields you need.",
+   "explain": "Filter early, project needed fields, use partition keys, limit with TOP, and tune indexes.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp4m1-027",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Besides preventing injection, why does Learn say a frequently run query should use @parameters instead of building a new query string for each value?",
+   "options": [
+    {
+     "text": "Parameters make every query single-partition automatically",
+     "why": "Routing depends on the partition key filter, not on parameters."
+    },
+    {
+     "text": "Parameters convert the query into a stored procedure",
+     "why": "The query stays a query. Nothing is converted."
+    },
+    {
+     "text": "Cosmos DB can cache and reuse the query plan for different values",
+     "why": "Correct. Parameterized queries allow query plan caching, which improves performance for repeated queries."
+    },
+    {
+     "text": "Parameters halve the RU charge of the query",
+     "why": "Learn doesn't make that claim. The benefit is plan reuse."
+    }
+   ],
+   "answer": 2,
+   "hint": "The query text stays the same while the values change. What can the service reuse?",
+   "explain": "Parameterized queries separate structure from values, preventing injection and letting Cosmos DB cache and reuse query plans for repeated queries with different values.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp4m1-028",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A web API returns search results 50 at a time and lets the client ask for the next page later. How should it implement paging with the SDK?",
+   "options": [
+    {
+     "text": "Run SELECT * and slice the full result list in memory",
+     "why": "That reads every result on every call, which wastes RUs and memory."
+    },
+    {
+     "text": "Store each page in a new container for the client to read",
+     "why": "That adds writes and storage for no benefit."
+    },
+    {
+     "text": "Set max_item_count to 50 and return the continuation token to the client",
+     "why": "Correct. The iterator pages with continuation tokens, and max_item_count sets the page size."
+    },
+    {
+     "text": "Use OFFSET with the client's page number on each call",
+     "why": "Learn's paging guidance is continuation tokens, which keep query state between pages."
+    }
+   ],
+   "answer": 2,
+   "hint": "The SDK pages for you. One setting sets the page size, and one value lets you resume.",
+   "explain": "The SDK's query iterator pages through continuation tokens. Set max_item_count for page size, and return the continuation token so clients can request the next page.",
+   "origin": "new"
+  }
+ ]
+}

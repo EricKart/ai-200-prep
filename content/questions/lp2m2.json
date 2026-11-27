@@ -1,0 +1,846 @@
+{
+ "module": "lp2m2",
+ "title": "Manage containers in Azure Container Apps",
+ "questions": [
+  {
+   "id": "lp2m2-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You want to send 10% of traffic to a revision running a new model version and 90% to the current one. Which revision mode do you need?",
+   "options": [
+    {
+     "text": "Inactive revision mode",
+     "why": "Inactive is a revision state, not a mode."
+    },
+    {
+     "text": "Multiple revision mode",
+     "why": "Correct. Multiple revision mode enables canary rollouts and traffic splitting."
+    },
+    {
+     "text": "Labelled revision mode",
+     "why": "Learn describes only single and multiple revision modes."
+    },
+    {
+     "text": "Single revision mode",
+     "why": "Single revision mode keeps only one active revision, so you can't split traffic."
+    }
+   ],
+   "answer": 1,
+   "hint": "Sending a share of traffic to each of two revisions needs more than one active revision.",
+   "explain": "Multiple revision mode allows several active revisions, which enables traffic splitting.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What does it mean when a Container Apps revision is active?",
+   "options": [
+    {
+     "text": "It has passed every health probe",
+     "why": "Health and active state are separate properties."
+    },
+    {
+     "text": "It is in a state where it can receive traffic",
+     "why": "Correct. Active is the operational state that lets a revision receive traffic."
+    },
+    {
+     "text": "It is the newest revision of the app",
+     "why": "A newer revision can exist without being active."
+    },
+    {
+     "text": "It is stored with its image digest",
+     "why": "Activity isn't tied to how the image is referenced."
+    }
+   ],
+   "answer": 1,
+   "hint": "A revision can exist without receiving traffic. What does the word active add?",
+   "explain": "A revision can exist without being active; only active revisions can receive traffic.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A new revision starts returning errors in production. You want it to stop receiving traffic while keeping the evidence for later analysis. What should you do first?",
+   "options": [
+    {
+     "text": "Purge revisions with --max-inactive-revisions 0",
+     "why": "Purging removes inactive revisions you may need."
+    },
+    {
+     "text": "Restart the whole container app",
+     "why": "A restart doesn't stop traffic to that revision and doesn't isolate it."
+    },
+    {
+     "text": "Delete the revision so no new replicas start",
+     "why": "Deletion destroys the evidence and the rollback option."
+    },
+    {
+     "text": "Deactivate the revision to stop its traffic",
+     "why": "Correct. Deactivation stops traffic while preserving evidence and rollback options."
+    }
+   ],
+   "answer": 3,
+   "hint": "Stop the traffic but keep the evidence. Deleting removes evidence.",
+   "explain": "Deactivation is a safer first step than deletion during an incident.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team updates production with `az containerapp update --image myregistry.azurecr.io/ai-api@sha256:…`.",
+   "rows": [
+    {
+     "text": "Referencing the digest lets the team prove which artifact served requests during an incident.",
+     "answer": true,
+     "why": "Digests are immutable, so they give strong traceability."
+    },
+    {
+     "text": "Container Apps keeps every inactive revision forever unless someone deletes it.",
+     "answer": false,
+     "why": "Inactive revisions are purged automatically when you exceed 100."
+    },
+    {
+     "text": "The update creates a new revision with the updated template.",
+     "answer": true,
+     "why": "Updating the image creates a new revision."
+    },
+    {
+     "text": "A tag such as staging is a guarantee that the image content never changes.",
+     "answer": false,
+     "why": "Tags can change; treat them as a convenience."
+    }
+   ],
+   "hint": "Digests prove which artifact ran. Think about what an image update creates and how inactive revisions are cleaned up.",
+   "explain": "Use digests in production, check the new revision's health, and know the 100-revision purge threshold.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your app uses the default single revision mode. You update the image, and the new revision becomes healthy. How many revisions can be active now?",
+   "options": [
+    {
+     "text": "Up to 100, after which inactive ones are purged",
+     "why": "100 is the default purge threshold for inactive revisions, not a limit on active ones."
+    },
+    {
+     "text": "Two, so that traffic can be split during the rollout",
+     "why": "Traffic splitting needs multiple revision mode, which isn't the default."
+    },
+    {
+     "text": "One",
+     "why": "Correct. Single revision mode keeps only one active revision."
+    },
+    {
+     "text": "As many as the app's maximum replica count",
+     "why": "Replica limits count running instances. They don't decide how many revisions are active."
+    }
+   ],
+   "answer": 2,
+   "hint": "The mode's name tells you the answer.",
+   "explain": "Revision mode determines how many revisions can be active at once. Single revision mode keeps only one active revision; multiple revision mode allows canary rollouts and traffic splitting.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp2m2-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You updated a production app to an image digest. Before routing traffic, you want to confirm the platform recorded exactly the image you expect. Which command shows it?",
+   "options": [
+    {
+     "text": "az containerapp logs show --type system",
+     "why": "System logs show platform events. They don't list the configured image reference."
+    },
+    {
+     "text": "az containerapp env show --query properties.containers",
+     "why": "Containers are defined in each app's template, not in the environment."
+    },
+    {
+     "text": "az acr repository show-manifests --name myregistry",
+     "why": "That lists manifests in the registry, not what the container app is configured to run."
+    },
+    {
+     "text": "az containerapp show --query properties.template.containers",
+     "why": "Correct. The container template shows the image reference the platform recorded."
+    }
+   ],
+   "answer": 3,
+   "hint": "The image reference lives in the app's template. Show the app and query that part.",
+   "explain": "After an update, inspect the container template with az containerapp show --query properties.template.containers to confirm the image you expect.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Auditors want inactive revisions kept far longer than usual, so that up to 300 old revisions remain available for incident review. What should you change?",
+   "options": [
+    {
+     "text": "Raise --max-inactive-revisions above the default threshold of 100",
+     "why": "Correct. Container Apps purges inactive revisions beyond 100 by default, and --max-inactive-revisions adjusts that threshold."
+    },
+    {
+     "text": "Switch the app to multiple revision mode so that inactive revisions are kept longer",
+     "why": "Revision mode controls how many revisions are active. It doesn't change the purge threshold."
+    },
+    {
+     "text": "Deactivate each revision manually, since purging applies to deleted revisions",
+     "why": "Deactivated revisions are exactly the inactive ones that the purge threshold applies to."
+    },
+    {
+     "text": "Tag each revision's image with a stable tag so that the platform keeps it",
+     "why": "Image tags don't affect how many inactive revisions Container Apps keeps."
+    }
+   ],
+   "answer": 0,
+   "hint": "There's a default number of inactive revisions kept, and a parameter that changes it.",
+   "explain": "Container Apps automatically purges inactive revisions when you exceed 100. Adjust the threshold with --max-inactive-revisions as part of a retention strategy.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Revision ai-api--v7 fails while ai-api--v6 works. You want to compare the two revisions' configuration side by side. Which command retrieves one revision's details?",
+   "options": [
+    {
+     "text": "az containerapp replica list --revision ai-api--v7",
+     "why": "This lists running instances, not the revision's configuration."
+    },
+    {
+     "text": "az containerapp logs show --revision ai-api--v7 --follow",
+     "why": "Logs show runtime output. Comparing configuration needs the revision's details."
+    },
+    {
+     "text": "az containerapp revision show --revision ai-api--v7",
+     "why": "Correct. revision show returns a specific revision's details, so you can compare it with a working one."
+    },
+    {
+     "text": "az containerapp revision deactivate --revision ai-api--v7",
+     "why": "Deactivation stops traffic to the revision. It doesn't show its configuration."
+    }
+   ],
+   "answer": 2,
+   "hint": "List shows all revisions. Which verb gives you the details of one?",
+   "explain": "Listing revisions confirms which is active; az containerapp revision show retrieves a specific revision so you can compare a working and a failing configuration.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An upstream model provider is down, and you must guarantee that the app doesn't start any replicas until it's back. What should you do?",
+   "options": [
+    {
+     "text": "Rely on scale to zero",
+     "why": "Scale to zero depends on scale rules; incoming work can still start replicas."
+    },
+    {
+     "text": "Run az containerapp stop",
+     "why": "Correct. Stop is an explicit action that guarantees no replicas start."
+    },
+    {
+     "text": "Lower the CPU allocation",
+     "why": "CPU size doesn't stop replicas from starting."
+    },
+    {
+     "text": "Run az containerapp restart",
+     "why": "Restart starts replicas again."
+    }
+   ],
+   "answer": 1,
+   "hint": "Scaling rules can still start replicas. Which explicit action guarantees none start?",
+   "explain": "Stopping is an explicit operational action; scale to zero is automatic and can scale back out.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each failing revision symptom to the checklist category.",
+   "choices": [
+    "Image pull failure",
+    "Port mismatch",
+    "Probe failure",
+    "Resource pressure"
+   ],
+   "items": [
+    {
+     "text": "Registry credentials are missing, so the revision never starts",
+     "answer": 0,
+     "why": "Missing or invalid credentials or a wrong image reference cause pull failures."
+    },
+    {
+     "text": "The container listens on 5000 but ingress targets 8000",
+     "answer": 1,
+     "why": "The container listens on a different port than ingress expects."
+    },
+    {
+     "text": "Readiness checks /healthz but the app serves /health",
+     "answer": 2,
+     "why": "Probes target the wrong path."
+    },
+    {
+     "text": "Replicas are killed while loading a large model",
+     "answer": 3,
+     "why": "Containers killed at memory limits are resource pressure."
+    }
+   ],
+   "hint": "Each symptom points to one category: registry, port, probe or resources.",
+   "explain": "Learn's repeatable checklist: image pull, port, missing configuration, probes, resource pressure.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Only the newest revision is failing; two older revisions in multiple revision mode are serving traffic fine. Which first step limits the blast radius best?",
+   "options": [
+    {
+     "text": "Restart the container app to clear the bad state",
+     "why": "A restart affects the whole app and isn't a root-cause fix."
+    },
+    {
+     "text": "Stop the container app until the cause is known",
+     "why": "Stop is app-level and would take the healthy revisions down too."
+    },
+    {
+     "text": "Delete the two older revisions to avoid confusion",
+     "why": "The older revisions are healthy and are your rollback path."
+    },
+    {
+     "text": "Deactivate the failing revision and keep the others serving",
+     "why": "Correct. Deactivating one revision isolates the bad release."
+    }
+   ],
+   "answer": 3,
+   "hint": "Only one revision is bad. App-level actions affect every revision.",
+   "explain": "Start, stop and restart act on the whole app. For one bad release, deactivate that revision.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "After a configuration change, you want the change to take effect immediately. You also suspect one replica is stuck in a deadlock. Which lifecycle action fits?",
+   "options": [
+    {
+     "text": "az containerapp stop",
+     "why": "Stop keeps the app from starting replicas at all. It's for incidents, not for applying a change."
+    },
+    {
+     "text": "az containerapp revision deactivate",
+     "why": "Deactivation removes a revision from traffic. It doesn't restart replicas."
+    },
+    {
+     "text": "az containerapp restart",
+     "why": "Correct. Restart forces replicas to restart, which applies configuration immediately and can clear a stuck process."
+    },
+    {
+     "text": "Set the minimum replicas to zero and wait",
+     "why": "Scale to zero depends on traffic and rules, so it doesn't apply a change right away."
+    }
+   ],
+   "answer": 2,
+   "hint": "You want running replicas to start again, not to disappear.",
+   "explain": "Restart is useful when configuration changes should take effect immediately, or when a process is stuck because of a deadlock or a transient dependency issue. Pair it with log inspection.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An AI API loads a large model at startup, and the on-call engineer often restarts it when latency rises.",
+   "rows": [
+    {
+     "text": "Frequent restarts can increase how often users hit cold starts.",
+     "answer": true,
+     "why": "Each restart reloads the model, so restarting too aggressively increases cold starts."
+    },
+    {
+     "text": "A restart that makes latency normal again proves the root cause is fixed.",
+     "answer": false,
+     "why": "Restart isn't a substitute for root cause. Pair it with log inspection to see whether it fixed or delayed the failure."
+    },
+    {
+     "text": "Stopping the app affects every revision, not only the one with problems.",
+     "answer": true,
+     "why": "Start and stop are app-level actions, which can be too broad when one revision is the problem."
+    }
+   ],
+   "hint": "Think about what a restart costs a model-loading API, what it proves, and how wide stop reaches.",
+   "explain": "Restart clears transient states but isn't a root-cause fix, and frequent restarts increase cold starts for model-loading services. Start and stop are app-level, so revision deactivation is safer for one bad release.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-014",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "During an incident, you want one table that shows every revision's name, whether it's active, and its health state. Which command does Learn use as a starting point?",
+   "options": [
+    {
+     "text": "az containerapp logs show --type system --query revisions -o table",
+     "why": "Logs are a stream of events, not a status table of revisions."
+    },
+    {
+     "text": "az containerapp show --query properties.template.revisions -o table",
+     "why": "The app's template describes the current container definition, not every revision's status."
+    },
+    {
+     "text": "az containerapp revision list with --query \"[].{name:name,active:properties.active,health:properties.healthState}\" -o table",
+     "why": "Correct. This query compares revision status at a glance."
+    },
+    {
+     "text": "az containerapp replica list --query \"[].{name:name,health:properties.healthState}\" -o table",
+     "why": "Replicas are running instances. The question asks about revisions."
+    }
+   ],
+   "answer": 2,
+   "hint": "You're listing revisions and picking three fields with a JMESPath query.",
+   "explain": "Learn's checklist starts by confirming which revision is failing; az containerapp revision list with a --query for name, active and healthState compares revisions at a glance.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Which two fields does Learn recommend adding to an AI API's application logs? (Select two.)",
+   "options": [
+    {
+     "text": "A request identifier propagated across services",
+     "why": "Correct. A correlation ID ties logs together across services."
+    },
+    {
+     "text": "The full text of the user's prompt, for exact replay later",
+     "why": "Log identifiers and metadata rather than prompts."
+    },
+    {
+     "text": "The model version used for the request",
+     "why": "Correct. The model deployment name or version helps explain behavior."
+    },
+    {
+     "text": "The raw document that was processed, for later debugging",
+     "why": "Avoid logging raw documents; they can be sensitive."
+    }
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "hint": "Two fields help you tie a request to the exact path and model that served it.",
+   "explain": "Recommended fields: request id, revision or build id, model version, latency breakdown.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A new revision fails in production. Put Learn's incident workflow in order.",
+   "steps": [
+    "Confirm which revision is active and which is failing",
+    "Stream logs while you reproduce the issue",
+    "Compare the configuration of a working and the failing revision",
+    "Apply a targeted fix and validate that the next revision becomes ready"
+   ],
+   "hint": "Scope first, then watch, then compare, then fix and confirm.",
+   "explain": "Narrow the scope first, gather live evidence, compare configs, then fix and validate.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-017",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Some prompts make the AI API fail, and developers want the logs to help debug them. Security forbids storing sensitive user content in logs. What should the API log?",
+   "options": [
+    {
+     "text": "Identifiers and metadata such as request ID and model version",
+     "why": "Correct. Logging identifiers and metadata rather than raw prompts gives context without sensitive content."
+    },
+    {
+     "text": "The full prompt and response, encrypted with a key in Key Vault",
+     "why": "Encryption still stores the sensitive content, which the guidance avoids."
+    },
+    {
+     "text": "HTTP status codes alone, so that no request detail is stored",
+     "why": "Status codes alone don't give enough context to debug input-dependent failures."
+    },
+    {
+     "text": "The full prompt and response, but just for requests that fail",
+     "why": "Failed requests can still contain sensitive content, so this still logs it."
+    }
+   ],
+   "answer": 0,
+   "hint": "You want enough context to trace a request without keeping what the user wrote.",
+   "explain": "AI services behave differently for different inputs. Log identifiers and metadata (request ID, revision or build ID, model version, latency breakdown) instead of raw documents or prompts.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-018",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What happens when a liveness probe fails for a replica?",
+   "options": [
+    {
+     "text": "The revision is deactivated",
+     "why": "Probes act on replicas, not on revision activation."
+    },
+    {
+     "text": "The replica stops receiving traffic but keeps running",
+     "why": "That's the readiness behavior."
+    },
+    {
+     "text": "The platform restarts the replica",
+     "why": "Correct. If liveness fails, the platform restarts the replica."
+    },
+    {
+     "text": "The app scales to zero",
+     "why": "Probe failures don't trigger scale to zero."
+    }
+   ],
+   "answer": 2,
+   "hint": "One probe decides about traffic, and the other decides about restarts.",
+   "explain": "Readiness controls traffic; liveness controls restarts.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-019",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An AI API loads a 3 GB model at startup. New revisions are restarted again and again by the liveness probe about 20 seconds after starting, before the model finishes loading. What should you change?",
+   "options": [
+    {
+     "text": "Raise initialDelaySeconds and failureThreshold to match the model load time",
+     "why": "Correct. Tune these values so the process has enough time to reach a ready state."
+    },
+    {
+     "text": "Point the liveness probe at a downstream dependency's health URL",
+     "why": "Probe endpoints shouldn't depend on external systems."
+    },
+    {
+     "text": "Remove the readiness probe so traffic reaches the replica sooner",
+     "why": "Removing readiness sends traffic to replicas that can't serve it."
+    },
+    {
+     "text": "Restart the container app after each deployment",
+     "why": "Restarts make the cold-start problem worse."
+    }
+   ],
+   "answer": 0,
+   "hint": "The probe fires before the model finishes loading. Give the process more time before failures count.",
+   "explain": "Liveness failures shortly after startup usually mean the probe is too aggressive for the real startup time.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-020",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A new revision fails its probes during rollout.",
+   "rows": [
+    {
+     "text": "Revision status shows whether the platform considers the revision healthy.",
+     "answer": true,
+     "why": "Combine revision status with logs."
+    },
+    {
+     "text": "A probe failure is almost always a bug in the application code.",
+     "answer": false,
+     "why": "Learn says probe failures are frequently configuration issues."
+    },
+    {
+     "text": "A readiness endpoint that calls an external API can fail during that API's outage.",
+     "answer": true,
+     "why": "Probe endpoints shouldn't depend on external systems that might be unavailable."
+    },
+    {
+     "text": "Making liveness more aggressive reduces cold starts for model-heavy apps.",
+     "answer": false,
+     "why": "Aggressive liveness causes unnecessary restarts and more cold starts."
+    }
+   ],
+   "hint": "Probe failures are often configuration. Revision status and dependency calls matter.",
+   "explain": "Check port, path, timeouts and startup dependencies first; tune probes to the real startup behavior.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-021",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Each new replica of an AI API spends 40 seconds loading a model. During that time, requests that reach it fail. Which probe should protect users from this?",
+   "options": [
+    {
+     "text": "A readiness probe that succeeds only after the model is loaded",
+     "why": "Correct. Readiness decides whether a replica can receive traffic, so it guards model loading."
+    },
+    {
+     "text": "A liveness probe on the same path as the readiness probe",
+     "why": "Sharing a path doesn't stop traffic reaching an unready replica. That's readiness's job."
+    },
+    {
+     "text": "A liveness probe with a very short timeout",
+     "why": "Liveness decides whether to restart a replica. A short timeout would cause restarts during loading."
+    },
+    {
+     "text": "A startup command that sleeps for 40 seconds",
+     "why": "A sleep doesn't tell the platform when the replica can take traffic."
+    }
+   ],
+   "answer": 0,
+   "hint": "One probe asks \"can this replica receive traffic right now?\"",
+   "explain": "Readiness answers \"Can this replica receive traffic right now?\" If it fails, the platform stops routing to that replica. Use it to guard model loading and dependency readiness.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-022",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A new revision's readiness probe calls /health/ready on port 80, but the API serves on port 8080. Logs show the API started normally. What is the most likely fix?",
+   "options": [
+    {
+     "text": "Change the probe's port to 8080",
+     "why": "Correct. A probe that targets the wrong port is one of the most common probe failures."
+    },
+    {
+     "text": "Remove the readiness probe so that traffic flows straight away",
+     "why": "That sends traffic to replicas before you know they're ready."
+    },
+    {
+     "text": "Rewrite the /health/ready handler, because probe failures usually mean an application bug",
+     "why": "Probe failures are frequently configuration issues. The app started normally."
+    },
+    {
+     "text": "Lower the liveness probe's failureThreshold to 1",
+     "why": "That makes liveness more aggressive and doesn't fix the readiness probe's port."
+    }
+   ],
+   "answer": 0,
+   "hint": "The app is fine, and the probe is knocking on a door nobody is behind.",
+   "explain": "Common probe failure causes: wrong port, wrong path, timeouts too short for model loading, and slow or failing dependency calls at startup. Check configuration before chasing code.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-023",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A background worker keeps restarting, and logs show out-of-memory kills while it processes large batches. What should you increase first?",
+   "options": [
+    {
+     "text": "CPU per replica",
+     "why": "CPU addresses throttling, not out-of-memory restarts."
+    },
+    {
+     "text": "Memory per replica",
+     "why": "Correct. Size for the bottleneck: memory for out-of-memory restarts."
+    },
+    {
+     "text": "Minimum replica count",
+     "why": "More replicas don't give each replica more memory."
+    },
+    {
+     "text": "Maximum inactive revisions",
+     "why": "Revision retention doesn't affect memory."
+    }
+   ],
+   "answer": 1,
+   "hint": "Out-of-memory kills point to one resource. Size for the bottleneck.",
+   "explain": "Increase CPU when you see throttling and memory when you see out-of-memory restarts.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-024",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A synchronous chat API must avoid cold-start delays, and the team accepts a higher baseline cost. What should you configure?",
+   "options": [
+    {
+     "text": "A liveness probe with a lower threshold",
+     "why": "An aggressive liveness probe causes more restarts."
+    },
+    {
+     "text": "Single revision mode for the app",
+     "why": "Revision mode doesn't keep replicas warm."
+    },
+    {
+     "text": "Scale to zero with a short cooldown period",
+     "why": "Scale to zero is what causes cold starts here."
+    },
+    {
+     "text": "A minimum replica count above zero",
+     "why": "Correct. Minimum replicas reduce cold starts but increase baseline cost."
+    }
+   ],
+   "answer": 3,
+   "hint": "Cold starts are avoided by keeping replicas warm, at a cost.",
+   "explain": "Use minimum replicas intentionally: fewer cold starts, more baseline cost.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-025",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "After a model upgrade, p95 latency doubled. You plan to raise CPU, raise memory and change the replica limits. What does Learn recommend?",
+   "options": [
+    {
+     "text": "Change the three settings together to fix the problem fastest",
+     "why": "Several changes at once mask which one fixed it."
+    },
+    {
+     "text": "Roll back the model, since resource changes won't affect model latency",
+     "why": "Learn says to reassess resources after model changes, not to rule them out."
+    },
+    {
+     "text": "Change one variable at a time and measure after each change",
+     "why": "Correct. Optimization is iterative; change one variable at a time."
+    },
+    {
+     "text": "Set the minimum replicas equal to the maximum to take scaling out of the picture",
+     "why": "Fixing replicas at the maximum just raises cost."
+    }
+   ],
+   "answer": 2,
+   "hint": "Several changes at once hide which one helped.",
+   "explain": "Use logs and metrics to find the bottleneck, then change one variable at a time.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m2-026",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Under high concurrency, an AI API's latency spikes, and metrics show CPU throttling. Memory use is low, and there are no restarts. What should you change first?",
+   "options": [
+    {
+     "text": "Restart the app every hour",
+     "why": "Restarts don't add CPU, and they add cold starts for a model-loading API."
+    },
+    {
+     "text": "Increase CPU per replica",
+     "why": "Correct. Size for the bottleneck: increase CPU when you see throttling."
+    },
+    {
+     "text": "Set the minimum replicas to zero",
+     "why": "Scale to zero adds cold starts and doesn't address throttling."
+    },
+    {
+     "text": "Increase memory per replica",
+     "why": "Memory raises help with out-of-memory restarts, which aren't happening here."
+    }
+   ],
+   "answer": 1,
+   "hint": "Match the fix to the metric that's under pressure.",
+   "explain": "Size for the bottleneck: increase CPU when you see throttling, and increase memory when you see out-of-memory restarts. Validate that per-replica CPU supports your concurrency.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m2-027",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An event-driven background worker summarizes documents a few times a day and can drain its work safely when it scales down. The team wants the lowest cost. How should you set its minimum replicas?",
+   "options": [
+    {
+     "text": "Keep at least one replica so that it never cold-starts",
+     "why": "A minimum replica avoids cold starts but adds baseline cost, which this worker doesn't need."
+    },
+    {
+     "text": "Allow scale to zero",
+     "why": "Correct. Event-driven workers that drain work safely can often tolerate scale to zero, which keeps the baseline cost low."
+    },
+    {
+     "text": "Set the minimum to two for redundancy",
+     "why": "Two idle replicas raise baseline cost for work that only arrives a few times a day."
+    },
+    {
+     "text": "Match the minimum to the maximum so that capacity is fixed",
+     "why": "Fixed capacity pays for idle replicas most of the day."
+    }
+   ],
+   "answer": 1,
+   "hint": "Compare a synchronous API, which needs warm replicas, with a worker whose work can wait.",
+   "explain": "A synchronous API often needs a minimum replica count to reduce cold starts. A background worker that's event-driven and drains work safely can often tolerate scale to zero.",
+   "origin": "new"
+  }
+ ]
+}

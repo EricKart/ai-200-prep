@@ -1,0 +1,776 @@
+{
+ "module": "lp2m1",
+ "title": "Deploy containers to Azure Container Apps",
+ "questions": [
+  {
+   "id": "lp2m1-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An embedding service must be callable by the AI API in the same environment, but not from the internet. Which ingress setting should it use?",
+   "options": [
+    {
+     "text": "No ingress, plus a public IP address",
+     "why": "Learn uses ingress settings, not public IPs, to control reachability."
+    },
+    {
+     "text": "--ingress external",
+     "why": "External ingress exposes the app to callers outside the environment."
+    },
+    {
+     "text": "--ingress private-link",
+     "why": "private-link isn't one of the ingress values Learn describes."
+    },
+    {
+     "text": "--ingress internal",
+     "why": "Correct. Internal ingress makes the service reachable only within the environment."
+    }
+   ],
+   "answer": 3,
+   "hint": "Callers inside the environment need it, and the internet mustn't reach it. Which ingress mode keeps traffic inside?",
+   "explain": "Use external ingress for public-facing APIs and internal ingress for services called only by other services in the environment.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. You're planning environments for an AI solution with an API, a background processor, and dev, test and production stages.",
+   "rows": [
+    {
+     "text": "Putting the API and the background processor in the same environment lets them share networking and logging integration.",
+     "answer": true,
+     "why": "Related services are often grouped in one environment for shared networking and logging."
+    },
+    {
+     "text": "Learn recommends one shared environment for dev, test and production to keep things simple.",
+     "answer": false,
+     "why": "Learn recommends separate environments by lifecycle to reduce blast radius."
+    },
+    {
+     "text": "An environment is only a folder for resources and doesn't affect traffic between apps.",
+     "answer": false,
+     "why": "An environment influences internal traffic, logging connections and governance."
+    }
+   ],
+   "hint": "Think about what an environment shares and why you'd separate lifecycle stages.",
+   "explain": "Environments are an isolation and management model: group related services, separate lifecycles.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Several apps will share one environment, and the platform team wants control over its name and lifecycle. Which approach fits best?",
+   "options": [
+    {
+     "text": "Deploy each app with --ingress internal so they end up in one environment",
+     "why": "Ingress controls reachability, not which environment is created."
+    },
+    {
+     "text": "Let az containerapp up create a new environment for each app as it deploys",
+     "why": "containerapp up is fastest, but it makes the naming and lifecycle decisions for you."
+    },
+    {
+     "text": "Create the environment first with az containerapp env create, then deploy the apps into it",
+     "why": "Correct. Creating the environment explicitly gives more control when multiple apps share it."
+    },
+    {
+     "text": "Create a separate resource group per app; the environment follows from that",
+     "why": "Resource groups don't define a Container Apps environment."
+    }
+   ],
+   "answer": 2,
+   "hint": "Several apps share the environment, and you want control over its name. Should a deploy command create it implicitly?",
+   "explain": "Creating the environment first gives you control over naming and lifecycle, which helps when multiple apps share it.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-004",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An AI API calls a private embedding processor, and the team validates new revisions in dev and test before production. Which environment layout follows Learn's guidance?",
+   "options": [
+    {
+     "text": "Per-stage environments, each holding both services, with internal ingress on the processor",
+     "why": "Correct. Separate environments per lifecycle stage reduce blast radius, and services that talk privately belong in the same environment with internal ingress."
+    },
+    {
+     "text": "One environment per stage, with the processor deployed outside Container Apps as a VM",
+     "why": "Nothing in the scenario needs a VM. Both services fit in the same environment."
+    },
+    {
+     "text": "One shared environment for all three stages, with the processor's ingress set to external",
+     "why": "A shared environment removes the isolation between stages, and external ingress exposes a service that should stay private."
+    },
+    {
+     "text": "One environment for every app, so that the API and the processor never share networking",
+     "why": "Splitting the API and processor apart breaks the simple private communication that a shared environment gives them."
+    }
+   ],
+   "answer": 0,
+   "hint": "Two guidelines apply: separate by lifecycle, and keep services that talk privately together.",
+   "explain": "Learn recommends separate environments for development, test and production, and placing services that must communicate privately in the same environment with internal ingress.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp2m1-005",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A new revision of your AI API fails at startup, and you want to query its container logs and the platform's system logs together, in one place. What does a Container Apps environment commonly integrate with for this?",
+   "options": [
+    {
+     "text": "Azure DevOps pipeline history",
+     "why": "Pipeline history shows deployments you ran, not the app's runtime logs."
+    },
+    {
+     "text": "Azure Container Registry webhooks",
+     "why": "Registry webhooks notify about image pushes. They don't collect logs."
+    },
+    {
+     "text": "Azure Monitor logs",
+     "why": "Correct. An environment commonly integrates with Azure Monitor logs, so you can query container and system logs in one place."
+    },
+    {
+     "text": "Azure Key Vault diagnostics",
+     "why": "Key Vault holds secrets. It isn't where Container Apps logs go."
+    }
+   ],
+   "answer": 2,
+   "hint": "You want one queryable store for logs. Which Azure monitoring service holds logs?",
+   "explain": "A Container Apps environment commonly integrates with Azure Monitor logs, so you can query container logs and system logs in one place.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m1-006",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which command is the fastest way to deploy a first version of a container app, creating the environment if needed?",
+   "options": [
+    {
+     "text": "az containerapp up",
+     "why": "Correct. up can create the environment and supporting resources and returns the FQDN."
+    },
+    {
+     "text": "az containerapp update",
+     "why": "update changes an existing app."
+    },
+    {
+     "text": "az containerapp env create",
+     "why": "env create only creates the environment, not the app."
+    },
+    {
+     "text": "az containerapp create",
+     "why": "create is the more explicit option and expects an existing environment."
+    }
+   ],
+   "answer": 0,
+   "hint": "One command can create the environment and the app together. It's the quickest path to a first deployment.",
+   "explain": "az containerapp up is the fastest initial deployment; az containerapp create is the more explicit path.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-007",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You run `az containerapp update --yaml ./containerapp.yml --image myregistry.azurecr.io/ai-api:v3`, but the app keeps the image named in the YAML file. Why?",
+   "options": [
+    {
+     "text": "The YAML file is applied first and then overwritten by the flag",
+     "why": "It's the other way round: the flag is ignored entirely."
+    },
+    {
+     "text": "Image changes need az containerapp up instead of update",
+     "why": "update can change images; the issue is the --yaml behavior."
+    },
+    {
+     "text": "When --yaml is used, other flags are ignored",
+     "why": "Correct. The YAML becomes the source of truth, so --image is ignored."
+    },
+    {
+     "text": "The registry has to be set again before each image change",
+     "why": "Registry configuration isn't required again for each update."
+    }
+   ],
+   "answer": 2,
+   "hint": "The command used a YAML file and a flag. Which one does Container Apps treat as the source of truth?",
+   "explain": "With --yaml, the YAML file is the full configuration source and other flags are ignored.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You're preparing a new machine to deploy Container Apps from the CLI. Put the steps in the order Learn's quickstart uses.",
+   "steps": [
+    "az login",
+    "az upgrade",
+    "az extension add --name containerapp --upgrade",
+    "az provider register --namespace Microsoft.App"
+   ],
+   "hint": "Sign in, update the CLI, add the extension, then register the provider.",
+   "explain": "Sign in, update the CLI, add or upgrade the containerapp extension, then register the Microsoft.App (and Microsoft.OperationalInsights) providers.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A deployment of `myregistry.azurecr.io/Team/AI-Api:v1` fails with what looks like an authentication error, although the credentials are correct. What should you check first?",
+   "options": [
+    {
+     "text": "Whether the YAML file in source control was reviewed",
+     "why": "Code review doesn't affect the image pull."
+    },
+    {
+     "text": "Whether the provider Microsoft.OperationalInsights is registered",
+     "why": "Provider registration problems don't show up as image pull auth errors."
+    },
+    {
+     "text": "Whether the app was created with az containerapp up or create",
+     "why": "Both commands pull the image the same way."
+    },
+    {
+     "text": "Whether the repository name in the image reference is lower case",
+     "why": "Correct. Learn warns that non-lower-case repository names cause pull failures that look like authentication errors."
+    }
+   ],
+   "answer": 3,
+   "hint": "Pull failures can look like authentication errors. Check the case of the image path.",
+   "explain": "Keep the repository portion of the image reference lower case to avoid misleading pull failures.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your first az containerapp create in a new subscription fails with a message that the subscription isn't registered to use the namespace Microsoft.OperationalInsights. What should you run?",
+   "options": [
+    {
+     "text": "az upgrade --namespace Microsoft.OperationalInsights",
+     "why": "az upgrade updates the CLI itself, and it has no namespace parameter."
+    },
+    {
+     "text": "az provider register --namespace Microsoft.OperationalInsights",
+     "why": "Correct. The quickstart setup registers both Microsoft.App and Microsoft.OperationalInsights."
+    },
+    {
+     "text": "az containerapp env create --logs-destination none",
+     "why": "Changing log options avoids the question. The quickstart flow registers the provider."
+    },
+    {
+     "text": "az extension add --name containerapp --upgrade",
+     "why": "The extension adds CLI commands. It doesn't register resource providers in the subscription."
+    }
+   ],
+   "answer": 1,
+   "hint": "The error names a resource provider. Which az command family registers providers in a subscription?",
+   "explain": "Before deploying, register the resource providers: az provider register --namespace Microsoft.App and --namespace Microsoft.OperationalInsights.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m1-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You run az containerapp update --image myregistry.azurecr.io/ai-api:v2 on a running app. You want to validate the change before it takes all traffic. What does the update create?",
+   "options": [
+    {
+     "text": "A new environment that copies the app's settings",
+     "why": "Updating an app doesn't create an environment. Environments are created separately."
+    },
+    {
+     "text": "An in-place restart of the existing replicas",
+     "why": "Container Apps versions configuration changes as revisions rather than patching running replicas."
+    },
+    {
+     "text": "A new revision that represents the new configuration",
+     "why": "Correct. Updates usually create a new revision, which lets you validate it before shifting all traffic."
+    },
+    {
+     "text": "A replacement app with a new FQDN for the v2 image",
+     "why": "The app keeps its identity and FQDN. The change is versioned as a revision."
+    }
+   ],
+   "answer": 2,
+   "hint": "Container Apps versions every configuration change. What's the name for one version of an app?",
+   "explain": "Container Apps uses revisions to version configuration changes. An update such as a new image tag creates a new revision.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp2m1-012",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Engineers deploy the AI API with ad-hoc CLI flags, and test and production configurations keep drifting apart. The team wants every change reviewed. What does Learn recommend?",
+   "options": [
+    {
+     "text": "Use az containerapp up for every deployment so that defaults stay the same",
+     "why": "az containerapp up is for fast first deployments. It doesn't create a reviewable record of configuration."
+    },
+    {
+     "text": "Make changes in the Azure portal so that the activity log records them",
+     "why": "Portal changes are for one-off work. They aren't reviewed before they're applied."
+    },
+    {
+     "text": "Keep containerapp.yml in source control and apply it with --yaml after code review",
+     "why": "Correct. YAML in source control makes deployments repeatable and reviewable and reduces drift."
+    },
+    {
+     "text": "Combine --yaml with extra CLI flags for the values that differ per stage",
+     "why": "With --yaml, other flags are ignored, so the per-stage flags would silently do nothing."
+    }
+   ],
+   "answer": 2,
+   "hint": "You want a file that can go through code review and be applied the same way every time.",
+   "explain": "Store the YAML file in source control and apply changes through code review. With --yaml, the YAML becomes the source of truth and other flags are ignored.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m1-013",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "The AI API needs the embeddings API key as the variable EMBEDDINGS_API_KEY, and the key is already stored as the secret embeddings-api-key. What value should the variable have?",
+   "options": [
+    {
+     "text": "secretref:embeddings-api-key",
+     "why": "Correct. secretref:<secret-name> maps the secret to the variable without exposing its value."
+    },
+    {
+     "text": "$(embeddings-api-key)",
+     "why": "That isn't Container Apps syntax."
+    },
+    {
+     "text": "The key itself, pasted into --set-env-vars",
+     "why": "Pasting the value exposes it in shell history and config."
+    },
+    {
+     "text": "keyvault:embeddings-api-key",
+     "why": "That isn't the Container Apps reference syntax."
+    }
+   ],
+   "answer": 0,
+   "hint": "Environment variables can point to a secret by name with a special prefix.",
+   "explain": "Set the variable to secretref:<secret-name> (secretRef in YAML).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-014",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You need to change LOG_LEVEL to debug on a running app without removing its other environment variables. Which command should you use?",
+   "options": [
+    {
+     "text": "az containerapp update --set-env-vars LOG_LEVEL=debug",
+     "why": "Correct. --set-env-vars adds or updates variables without removing existing ones."
+    },
+    {
+     "text": "az containerapp registry set --env-vars LOG_LEVEL=debug",
+     "why": "registry set configures image pull authentication."
+    },
+    {
+     "text": "az containerapp create --env-vars LOG_LEVEL=debug",
+     "why": "create is for new apps."
+    },
+    {
+     "text": "az containerapp secret set --secrets LOG_LEVEL=debug",
+     "why": "A log level isn't sensitive and doesn't belong in secrets."
+    }
+   ],
+   "answer": 0,
+   "hint": "One flag replaces the variable list and the other adds or updates. Which keeps existing variables?",
+   "explain": "Use --env-vars on create and --set-env-vars on update for non-sensitive settings.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team stores `containerapp.yml` in Git and uses secrets for provider API keys.",
+   "rows": [
+    {
+     "text": "The YAML file in Git should contain the API key values so deployments are complete.",
+     "answer": false,
+     "why": "Keep secret values out of YAML; store only secret names."
+    },
+    {
+     "text": "Rotating a Container Apps secret requires rebuilding the container image.",
+     "answer": false,
+     "why": "Secrets let you rotate values without rebuilding or redeploying the image."
+    },
+    {
+     "text": "A Key Vault reference lets the app fetch a secret whose system of record is Key Vault.",
+     "answer": true,
+     "why": "The CLI supports a Key Vault reference format for secrets."
+    },
+    {
+     "text": "After a registry change, deploying a new revision and checking it starts validates the change.",
+     "answer": true,
+     "why": "Learn recommends validating auth during rollout this way."
+    }
+   ],
+   "hint": "Secrets stay out of Git and images. Key Vault can be the system of record.",
+   "explain": "Secrets stay out of YAML and images; Key Vault can be the system of record; validate registry changes with a new revision.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-016",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your containerapp.yml is stored in Git. EMBEDDINGS_API_KEY must come from the Container Apps secret embeddings-api-key. How should the env entry for the ai-api container look?",
+   "options": [
+    {
+     "text": "name: EMBEDDINGS_API_KEY, with value: set to the key copied from the provider",
+     "why": "That puts the secret value in Git, which the guidance says to avoid."
+    },
+    {
+     "text": "name: EMBEDDINGS_API_KEY, with valueFrom: secretKeyRef: embeddings-api-key",
+     "why": "That's Kubernetes Pod syntax. Container Apps YAML uses secretRef."
+    },
+    {
+     "text": "name: EMBEDDINGS_API_KEY, with value: ${embeddings-api-key}",
+     "why": "Container Apps doesn't expand shell-style placeholders in YAML values."
+    },
+    {
+     "text": "name: EMBEDDINGS_API_KEY, with secretRef: embeddings-api-key",
+     "why": "Correct. In YAML, secretRef names the secret, so only the secret's name is stored in source control."
+    }
+   ],
+   "answer": 3,
+   "hint": "In the CLI you write secretref: in the value. YAML has its own field for the same thing.",
+   "explain": "In YAML, an env entry uses secretRef: <secret-name>. In the CLI, you set the value to secretref:<secret-name>. Either way, only the secret's name is stored.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m1-017",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Twenty container apps pull images from one ACR registry, and rotating the registry password across all of them is costly. Which two steps follow Learn's guidance? (Select two.)",
+   "options": [
+    {
+     "text": "Omit credentials so the CLI infers them in production",
+     "why": "Learn says to prefer an explicit authentication method in production."
+    },
+    {
+     "text": "Grant each app's identity only the AcrPull role",
+     "why": "Correct. Grant least privilege: only AcrPull for identities that pull images."
+    },
+    {
+     "text": "Run az containerapp registry set with --identity system",
+     "why": "Correct. Managed identity avoids storing long-lived registry credentials."
+    },
+    {
+     "text": "Grant each app's identity the Owner role on the registry",
+     "why": "Owner is far more than pulling needs; Learn says least privilege."
+    }
+   ],
+   "answer": [
+    1,
+    2
+   ],
+   "hint": "Learn's advice for many apps pulling from ACR is to avoid long-lived credentials and grant least privilege.",
+   "explain": "Prefer managed identity for ACR and assign only AcrPull.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-018",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A vendor's model image is in a third-party private registry that doesn't support Azure managed identities. How should you configure the container app to pull it?",
+   "options": [
+    {
+     "text": "az containerapp registry set with --server, --username and --password",
+     "why": "Correct. Username and password works with registries that don't support Azure-managed identities."
+    },
+    {
+     "text": "Grant the app's managed identity the AcrPull role on the vendor's registry",
+     "why": "AcrPull is an Azure Container Registry role. It can't be assigned on a third-party registry."
+    },
+    {
+     "text": "Store the vendor password in an environment variable named REGISTRY_PASSWORD",
+     "why": "Container Apps doesn't read registry credentials from app environment variables."
+    },
+    {
+     "text": "az containerapp registry set with --server and --identity system",
+     "why": "Managed identity pulls need a registry that accepts Azure identities, such as ACR."
+    }
+   ],
+   "answer": 0,
+   "hint": "Managed identity isn't an option for this registry. What's the simplest credential type that works with any registry?",
+   "explain": "Container Apps supports registry authentication with username and password, and with managed identity when the registry is ACR. For registries without Azure-managed identity support, use username and password.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m1-019",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "The same app is deployed to dev, test and prod, and you suspect a different registry is configured in one of them. Which command shows the registries configured on an app?",
+   "options": [
+    {
+     "text": "az containerapp registry list",
+     "why": "Correct. It lists the registries configured on the app, which helps you spot drift between environments."
+    },
+    {
+     "text": "az containerapp revision list",
+     "why": "This lists revisions and their state, not registry configuration."
+    },
+    {
+     "text": "az containerapp env show",
+     "why": "This shows the environment. Registry settings belong to each app."
+    },
+    {
+     "text": "az acr repository list",
+     "why": "This lists repositories inside a registry. It doesn't show which registries an app is set up to use."
+    }
+   ],
+   "answer": 0,
+   "hint": "Registry configuration belongs to the app. Look for the registry sub-command of az containerapp.",
+   "explain": "Use az containerapp registry list (or show --server) to confirm which registries an app is configured to use, for example to detect drift across environments.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m1-020",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. You're switching a production container app to pull from ACR with managed identity.",
+   "rows": [
+    {
+     "text": "The app's identity should get the AcrPush role so that future CI changes don't need new role assignments.",
+     "answer": false,
+     "why": "Grant least privilege: an identity that only pulls images needs only AcrPull."
+    },
+    {
+     "text": "Image references should use fully qualified names that include the registry hostname.",
+     "answer": true,
+     "why": "Fully qualified names avoid ambiguity about which registry an image comes from."
+    },
+    {
+     "text": "Because the CLI can sometimes infer ACR credentials, production scripts can safely leave authentication out.",
+     "answer": false,
+     "why": "Learn says to prefer an explicit authentication approach in production so behavior is predictable."
+    },
+    {
+     "text": "You should deploy a new revision and confirm it starts before assuming the registry change works.",
+     "answer": true,
+     "why": "Validating auth during rollout catches pull failures before you rely on the change."
+    }
+   ],
+   "hint": "Think least privilege, unambiguous image names, explicit auth, and proving the change with a real revision.",
+   "explain": "Best practices: prefer managed identity for ACR, grant only AcrPull, use fully qualified image names, and validate the change by deploying a new revision and checking that it starts.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m1-021",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "match",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Match each verification need to the command.",
+   "choices": [
+    "az containerapp logs show --type system",
+    "az containerapp revision list --all",
+    "az containerapp replica list"
+   ],
+   "items": [
+    {
+     "text": "Check for a platform-level issue",
+     "answer": 0,
+     "why": "--type system returns platform system logs."
+    },
+    {
+     "text": "Include inactive revisions while debugging",
+     "answer": 1,
+     "why": "--all includes inactive revisions."
+    },
+    {
+     "text": "See whether any instances of the revision are running",
+     "answer": 2,
+     "why": "Replicas are the running instances of a revision."
+    }
+   ],
+   "hint": "System logs, all revisions, and running instances each have their own command.",
+   "explain": "Logs explain errors, revisions show versions, replicas show what's running.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-022",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "After an update, users still get the old behavior. You want to confirm that the update created a new revision and that it became healthy. Which command should you run?",
+   "options": [
+    {
+     "text": "az containerapp registry list",
+     "why": "registry list shows pull configuration only."
+    },
+    {
+     "text": "az containerapp revision list",
+     "why": "Correct. Listing revisions confirms a new revision exists and becomes active."
+    },
+    {
+     "text": "az containerapp env show",
+     "why": "env show describes the environment, not app revisions."
+    },
+    {
+     "text": "az containerapp secret list",
+     "why": "secret list doesn't show revision state."
+    }
+   ],
+   "answer": 1,
+   "hint": "You want to see whether the update produced a new version and whether it's healthy.",
+   "explain": "Use revisions for rollout validation: list them after updates.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-023",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. You're investigating a startup failure of a new AI API revision.",
+   "rows": [
+    {
+     "text": "az containerapp logs show is a good first step to capture startup errors.",
+     "answer": true,
+     "why": "Learn says to start with logs."
+    },
+    {
+     "text": "By default, az containerapp logs show streams every line ever written by the app.",
+     "answer": false,
+     "why": "By default it returns a limited number of lines; use --follow and --tail to stream."
+    },
+    {
+     "text": "If replica list shows zero replicas, the revision has crashed.",
+     "answer": false,
+     "why": "Zero replicas can also mean the app scaled to zero."
+    }
+   ],
+   "hint": "Logs are the first step. Think about how many lines logs show returns by default, and what zero replicas can mean.",
+   "explain": "Start with logs; replicas help detect scale-to-zero, crash loops or missing traffic.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m1-024",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A web client can't reach your newly deployed AI API. Before reading any logs, you want to confirm the ingress settings and get the FQDN. Which command should you run?",
+   "options": [
+    {
+     "text": "az containerapp show",
+     "why": "Correct. It shows the app's configuration, including ingress, so you can spot internal-vs-external mistakes and get the FQDN."
+    },
+    {
+     "text": "az containerapp logs show --type system",
+     "why": "System logs help with platform issues, but they don't show the app's ingress configuration."
+    },
+    {
+     "text": "az containerapp env show",
+     "why": "The environment doesn't hold each app's ingress settings or FQDN."
+    },
+    {
+     "text": "az containerapp replica list",
+     "why": "Replicas tell you whether instances are running, not how ingress is configured."
+    }
+   ],
+   "answer": 0,
+   "hint": "You want the app's own configuration, not its logs or instances.",
+   "explain": "Before diving into logs, confirm app configuration and ingress with az containerapp show. It catches mistakes such as internal ingress where you expected external, and it returns the FQDN.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m1-025",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "While you send test traffic to the AI API, you want to watch new log lines as they arrive, with more history than the default. Which command fits?",
+   "options": [
+    {
+     "text": "az containerapp logs show --type system",
+     "why": "This switches to platform logs. It doesn't follow new output."
+    },
+    {
+     "text": "az containerapp revision list --all",
+     "why": "This lists revisions, including inactive ones. It doesn't show logs."
+    },
+    {
+     "text": "az containerapp logs show --follow --tail 30",
+     "why": "Correct. --follow streams logs in real time, and --tail raises the number of lines returned."
+    },
+    {
+     "text": "az containerapp replica list --revision latest",
+     "why": "This lists running instances. It doesn't stream their output."
+    }
+   ],
+   "answer": 2,
+   "hint": "You need two options: one keeps the stream open, and one sets how many lines come back.",
+   "explain": "az containerapp logs show returns a limited number of lines by default. Add --follow to tail in real time and --tail to increase the count.",
+   "origin": "new"
+  }
+ ]
+}

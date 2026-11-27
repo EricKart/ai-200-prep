@@ -1,0 +1,816 @@
+{
+ "module": "lp9m1",
+ "title": "Instrument an app with OpenTelemetry",
+ "questions": [
+  {
+   "id": "lp9m1-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which observability pillar shows where in a multi-service request the time is spent?",
+   "options": [
+    {
+     "text": "Distributed tracing",
+     "why": "Correct. Traces show the sequence and timing of operations across services."
+    },
+    {
+     "text": "Metrics over time",
+     "why": "Metrics show that something changed, in aggregate."
+    },
+    {
+     "text": "Alert rules",
+     "why": "Alerts aren't one of the three pillars."
+    },
+    {
+     "text": "Logs of each event",
+     "why": "Logs explain why a specific operation behaved as it did."
+    }
+   ],
+   "answer": 0,
+   "hint": "Metrics show trends and logs show detail. The pillar that follows one request across services is the third one.",
+   "explain": "Metrics: something changed. Traces: where. Logs: why.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which standard does OpenTelemetry use to propagate trace context over HTTP?",
+   "options": [
+    {
+     "text": "OAuth 2.0 bearer tokens",
+     "why": "OAuth tokens are for authorization."
+    },
+    {
+     "text": "The AMQP 1.0 protocol",
+     "why": "AMQP is a messaging protocol."
+    },
+    {
+     "text": "The CloudEvents v1.0 schema",
+     "why": "CloudEvents is an event schema."
+    },
+    {
+     "text": "W3C TraceContext",
+     "why": "Correct. The traceparent header carries the trace and parent span IDs."
+    }
+   ],
+   "answer": 3,
+   "hint": "Trace context travels in a header defined by a web standards body.",
+   "explain": "traceparent: version-traceId-parentSpanId-flags.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-003",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "In Application Insights, which field corresponds to the OpenTelemetry trace ID?",
+   "options": [
+    {
+     "text": "customDimensions",
+     "why": "customDimensions holds span attributes."
+    },
+    {
+     "text": "cloud_RoleName",
+     "why": "cloud_RoleName identifies the service."
+    },
+    {
+     "text": "operation_Id",
+     "why": "Correct. operation_Id links all telemetry in one distributed trace."
+    },
+    {
+     "text": "itemCount",
+     "why": "itemCount relates to sampling counts, not trace identity."
+    }
+   ],
+   "answer": 2,
+   "hint": "Application Insights uses its own name for the ID that ties a whole request together.",
+   "explain": "Join tables on operation_Id to follow one request.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-004",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Given `traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01`, what is `00f067aa0ba902b7`?",
+   "options": [
+    {
+     "text": "The trace ID for the request",
+     "why": "The trace ID is the 32-character second field."
+    },
+    {
+     "text": "The trace flags (sampled)",
+     "why": "Flags are the last field (01 = sampled)."
+    },
+    {
+     "text": "The format version number",
+     "why": "Version is the first field (00)."
+    },
+    {
+     "text": "The calling (parent) span ID",
+     "why": "Correct. The third field is the 16-hex-character parent span ID."
+    }
+   ],
+   "answer": 3,
+   "hint": "The header has four parts: version, trace ID, parent span ID, flags.",
+   "explain": "The receiver creates a span with the same trace ID and this span as parent.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each OpenTelemetry span kind to the Application Insights table it lands in.",
+   "choices": [
+    "requests",
+    "dependencies"
+   ],
+   "items": [
+    {
+     "text": "SpanKind.SERVER",
+     "answer": 0,
+     "why": "Incoming requests map to requests."
+    },
+    {
+     "text": "SpanKind.CONSUMER",
+     "answer": 0,
+     "why": "Processing a queued message maps to requests."
+    },
+    {
+     "text": "SpanKind.CLIENT",
+     "answer": 1,
+     "why": "Outgoing calls map to dependencies."
+    },
+    {
+     "text": "SpanKind.INTERNAL",
+     "answer": 1,
+     "why": "Internal operations map to dependencies."
+    }
+   ],
+   "hint": "Server spans become requests. Client and internal spans become dependencies.",
+   "explain": "SERVER and CONSUMER → requests; CLIENT, INTERNAL, PRODUCER → dependencies.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team instruments a RAG pipeline with OpenTelemetry and exports to Application Insights.",
+   "rows": [
+    {
+     "text": "Switching to a different OpenTelemetry-compatible backend would require re-instrumenting the code.",
+     "answer": false,
+     "why": "Instrument once; change exporters, not instrumentation."
+    },
+    {
+     "text": "The trace ID in a traceparent header is 16 hexadecimal characters.",
+     "answer": false,
+     "why": "The trace ID is 32 hex characters; the parent span ID is 16."
+    },
+    {
+     "text": "Attributes set with span.set_attribute() appear in customDimensions.",
+     "answer": true,
+     "why": "Span attributes map to customDimensions."
+    },
+    {
+     "text": "Without context propagation, each service creates its own independent trace.",
+     "answer": true,
+     "why": "Propagation is what links spans across services."
+    }
+   ],
+   "hint": "Think about context propagation, span identity, and where custom attributes end up.",
+   "explain": "Vendor-neutral instrumentation plus W3C propagation yields one correlated trace.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An HTTP framework instrumentation library records incoming requests without any code from you. Which OpenTelemetry component sends that telemetry on to Application Insights?",
+   "options": [
+    {
+     "text": "The instrumentation library",
+     "why": "Instrumentation libraries capture telemetry from frameworks. Exporters transmit it."
+    },
+    {
+     "text": "Context propagation",
+     "why": "Propagation carries trace IDs between services. It doesn't send data to a backend."
+    },
+    {
+     "text": "The API",
+     "why": "The API defines the interfaces for creating telemetry. It doesn't send data anywhere."
+    },
+    {
+     "text": "An exporter",
+     "why": "Correct. Exporters serialize and send collected telemetry to a backend such as Azure Monitor."
+    }
+   ],
+   "answer": 3,
+   "hint": "OpenTelemetry has APIs, SDKs, instrumentation libraries, and one more part that ships data out.",
+   "explain": "OpenTelemetry components: APIs (interfaces), SDKs (processing, batching, sampling), instrumentation libraries (automatic capture), and exporters (send telemetry to backends). The Azure Monitor Distro bundles them.",
+   "origin": "new"
+  },
+  {
+   "id": "lp9m1-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Which call initializes OpenTelemetry tracing, metrics and logging to Application Insights in a Python app?",
+   "options": [
+    {
+     "text": "span.set_attribute()",
+     "why": "That sets a span attribute."
+    },
+    {
+     "text": "logging.basicConfig()",
+     "why": "That configures standard logging only."
+    },
+    {
+     "text": "trace.get_tracer(\"rag\")",
+     "why": "get_tracer gets a tracer after configuration."
+    },
+    {
+     "text": "configure_azure_monitor()",
+     "why": "Correct. Call it once at startup to configure all three providers."
+    }
+   ],
+   "answer": 3,
+   "hint": "The Azure Monitor Distro has one function that sets everything up.",
+   "explain": "pip install azure-monitor-opentelemetry, then configure_azure_monitor().",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Which environment variable should hold the Application Insights connection string in production?",
+   "options": [
+    {
+     "text": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+     "why": "Correct. The Distro picks it up automatically and keeps it out of source code."
+    },
+    {
+     "text": "OTEL_SERVICE_NAME with the endpoint",
+     "why": "That sets the service name."
+    },
+    {
+     "text": "AzureWebJobsStorage with the string",
+     "why": "That's the Functions runtime storage setting."
+    },
+    {
+     "text": "OTEL_TRACES_SAMPLER with the key",
+     "why": "That chooses the sampler."
+    }
+   ],
+   "answer": 0,
+   "hint": "Production configuration shouldn't live in code. Which environment variable does the Distro read?",
+   "explain": "Environment variable is recommended; code-based configuration is least recommended.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A Flask app calls an embeddings API with the requests library and queries PostgreSQL with psycopg2, after configure_azure_monitor().",
+   "rows": [
+    {
+     "text": "Incoming Flask requests are captured as server spans automatically.",
+     "answer": true,
+     "why": "Flask/Django/FastAPI instrumentation is included."
+    },
+    {
+     "text": "The embeddings API calls need hand-written spans to appear as dependencies.",
+     "answer": false,
+     "why": "The requests instrumentation captures them as client spans."
+    },
+    {
+     "text": "psycopg2 queries appear as dependency spans automatically.",
+     "answer": true,
+     "why": "psycopg2 is instrumented."
+    },
+    {
+     "text": "Log lines from logging.getLogger() need a separate exporter to reach Application Insights.",
+     "answer": false,
+     "why": "Standard logging is integrated automatically."
+    }
+   ],
+   "hint": "The Distro instruments common libraries automatically. Think about requests and the web framework.",
+   "explain": "The Distro auto-collects common HTTP, web, database, Azure SDK and logging telemetry.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Four RAG services send telemetry to one Application Insights resource but appear as one node on the Application Map. What should you set?",
+   "options": [
+    {
+     "text": "A separate connection string for each service",
+     "why": "They can share a resource; the role name is what separates nodes."
+    },
+    {
+     "text": "A higher sampling ratio on every service",
+     "why": "Sampling doesn't affect role names."
+    },
+    {
+     "text": "SpanKind.SERVER set on every single span",
+     "why": "Span kind doesn't name services."
+    },
+    {
+     "text": "A distinct service.name per service",
+     "why": "Correct. Cloud role name comes from service.namespace + service.name."
+    }
+   ],
+   "answer": 3,
+   "hint": "Each service needs its own cloud role name, which comes from resource attributes.",
+   "explain": "For example rag-pipeline.embedding-service, rag-pipeline.llm-orchestrator.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "APPLICATIONINSIGHTS_CONNECTION_STRING points to the production resource, but code also passes a connection string for a test resource. Where does telemetry go?",
+   "options": [
+    {
+     "text": "Neither, because the conflict disables export",
+     "why": "Conflicts don't disable export."
+    },
+    {
+     "text": "The test resource, because code takes priority",
+     "why": "Correct. For the connection string, code has the highest priority."
+    },
+    {
+     "text": "Both resources",
+     "why": "The exporter sends to one connection string."
+    },
+    {
+     "text": "The production resource, because environment variables win",
+     "why": "That precedence applies to sampling settings, not the connection string."
+    }
+   ],
+   "answer": 1,
+   "hint": "When code and environment disagree about the connection string, one of them wins.",
+   "explain": "Connection string precedence: code first, then environment variable.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-013",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You can't change the embedding service's code, but it must appear on the Application Map as rag-pipeline.embedding-service. How can you set this?",
+   "options": [
+    {
+     "text": "Rename the container image to embedding-service",
+     "why": "The image name doesn't set OpenTelemetry resource attributes."
+    },
+    {
+     "text": "Set OTEL_SERVICE_NAME=embedding-service and OTEL_RESOURCE_ATTRIBUTES=service.namespace=rag-pipeline",
+     "why": "Correct. Resource attributes can be set through environment variables, and the cloud role name is namespace.name."
+    },
+    {
+     "text": "Create a second Application Insights resource for the service",
+     "why": "Separate resources don't set the role name, and they split the Application Map."
+    },
+    {
+     "text": "Set APPLICATIONINSIGHTS_ROLE=rag-pipeline.embedding-service",
+     "why": "That isn't a variable the Distro reads for the role name."
+    }
+   ],
+   "answer": 1,
+   "hint": "Cloud role name comes from two OpenTelemetry resource attributes, which have standard environment variables.",
+   "explain": "The cloud role name is service.namespace + service.name. Set them in code (Resource.create) or with OTEL_SERVICE_NAME and OTEL_RESOURCE_ATTRIBUTES.",
+   "origin": "new"
+  },
+  {
+   "id": "lp9m1-014",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A Flask RAG service uses psycopg2 for PostgreSQL. After you add the Azure Monitor OpenTelemetry Distro, where do the database queries appear?",
+   "options": [
+    {
+     "text": "As log records in the traces table",
+     "why": "Queries are captured as spans, not as log records."
+    },
+    {
+     "text": "They don't appear unless you write a custom span for each query",
+     "why": "psycopg2 is one of the libraries the Distro instruments automatically."
+    },
+    {
+     "text": "As dependency spans, with the database name and execution time",
+     "why": "Correct. The Distro's psycopg2 instrumentation records queries as dependencies."
+    },
+    {
+     "text": "As request spans, because they run inside a request",
+     "why": "Requests are incoming HTTP calls. Outgoing database calls are dependencies."
+    }
+   ],
+   "answer": 2,
+   "hint": "Outgoing calls from your service, including database calls, all land in one table.",
+   "explain": "The Distro instruments requests, urllib/urllib3, Flask/Django/FastAPI, psycopg2 and Azure SDK calls. Outgoing calls such as database queries become dependency spans.",
+   "origin": "new"
+  },
+  {
+   "id": "lp9m1-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "If you don't specify a kind when starting a span, which SpanKind is used?",
+   "options": [
+    {
+     "text": "INTERNAL",
+     "why": "Correct. INTERNAL is the default and maps to dependencies."
+    },
+    {
+     "text": "SERVER",
+     "why": "SERVER represents incoming requests."
+    },
+    {
+     "text": "CLIENT",
+     "why": "CLIENT represents outgoing calls."
+    },
+    {
+     "text": "CONSUMER",
+     "why": "CONSUMER represents processing async messages."
+    }
+   ],
+   "answer": 0,
+   "hint": "Without a kind, OpenTelemetry assumes the span is work inside the service, not a call in or out.",
+   "explain": "Set kind explicitly for outgoing calls (CLIENT) or message processing (CONSUMER).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-016",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You want to record which model and how many tokens each LLM call used, so you can filter traces later. What should you add?",
+   "options": [
+    {
+     "text": "Separate log files per model",
+     "why": "Attributes keep the data on the span for querying."
+    },
+    {
+     "text": "Span attributes like llm.model",
+     "why": "Correct. Span attributes describe a specific operation and land in customDimensions."
+    },
+    {
+     "text": "A new tracer for each request",
+     "why": "One tracer per component is enough."
+    },
+    {
+     "text": "Resource attributes such as service.name",
+     "why": "Resource attributes describe the whole service."
+    }
+   ],
+   "answer": 1,
+   "hint": "Custom key-value context on a span is searchable later.",
+   "explain": "Use namespaced keys for searchability.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-017",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A span named CallLlmApi represents an outgoing HTTP call to Azure OpenAI. Which kind should it use?",
+   "options": [
+    {
+     "text": "SpanKind.CLIENT",
+     "why": "Correct. Outgoing calls are CLIENT spans (dependencies)."
+    },
+    {
+     "text": "SpanKind.INTERNAL",
+     "why": "INTERNAL is for operations that don't cross process boundaries."
+    },
+    {
+     "text": "SpanKind.SERVER",
+     "why": "SERVER is for incoming requests."
+    },
+    {
+     "text": "SpanKind.CONSUMER",
+     "why": "CONSUMER is for processing async messages."
+    }
+   ],
+   "answer": 0,
+   "hint": "The span represents an outgoing call to another service.",
+   "explain": "Correct span kinds put telemetry in the right tables.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. Code inside `with tracer.start_as_current_span(\"GenerateEmbedding\") as span:` catches a timeout exception and returns a fallback.",
+   "rows": [
+    {
+     "text": "The SDK still records the exception automatically.",
+     "answer": false,
+     "why": "Only exceptions that propagate out are recorded automatically."
+    },
+    {
+     "text": "Calling span.record_exception() and span.set_status() marks the span as failed with details.",
+     "answer": true,
+     "why": "Do this when you handle the exception yourself."
+    },
+    {
+     "text": "A span started inside this block becomes its child automatically.",
+     "answer": true,
+     "why": "The SDK tracks the current span via context variables."
+    },
+    {
+     "text": "The span must be ended manually with span.end().",
+     "answer": false,
+     "why": "The context manager ends it when the block exits."
+    }
+   ],
+   "hint": "A caught exception is invisible to the SDK unless you record it. Child spans nest by themselves, and the with block ends the span.",
+   "explain": "start_as_current_span handles lifetime and parentage; caught errors need explicit recording.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-019",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A request handler creates nested spans for a RAG query. Put them in the order they start in the waterfall.",
+   "steps": [
+    "ProcessQuery (root)",
+    "GenerateEmbedding",
+    "SearchVectorIndex",
+    "CallLlm"
+   ],
+   "hint": "The parent starts first, then its children in the order the code runs.",
+   "explain": "Nested context managers create parent-child spans; the waterfall shows each step's share of the time.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-020",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Code sets sampling_ratio=0.5, but OTEL_TRACES_SAMPLER=microsoft.fixed_percentage and OTEL_TRACES_SAMPLER_ARG=0.1 are set on the host. What sampling applies?",
+   "options": [
+    {
+     "text": "About 50%, because code takes precedence",
+     "why": "Code wins for the connection string, not sampling."
+    },
+    {
+     "text": "About 10%; env vars win for sampling",
+     "why": "Correct. For sampling, environment variables win."
+    },
+    {
+     "text": "About 60%, the two ratios combined",
+     "why": "They don't add up."
+    },
+    {
+     "text": "No sampling, because the settings conflict",
+     "why": "Conflicts don't disable sampling."
+    }
+   ],
+   "answer": 1,
+   "hint": "For sampling, environment variables take precedence over code.",
+   "explain": "Adjust sampling via environment variables without redeploying.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-021",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "In Application Insights, which table receives log records emitted through Python's logging module?",
+   "options": [
+    {
+     "text": "customMetrics",
+     "why": "customMetrics holds custom metric values."
+    },
+    {
+     "text": "dependencies",
+     "why": "dependencies holds client, internal and producer spans."
+    },
+    {
+     "text": "traces",
+     "why": "Correct. Log records land in the traces table."
+    },
+    {
+     "text": "requests",
+     "why": "requests holds server and consumer spans."
+    }
+   ],
+   "answer": 2,
+   "hint": "Log records aren't requests or dependencies. Their table name sounds like another pillar of observability.",
+   "explain": "Despite its name, the traces table holds logs; spans go to requests and dependencies.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-022",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A high-volume service uses fixed-percentage sampling at 0.05.",
+   "rows": [
+    {
+     "text": "Custom metrics are also sampled at 5%.",
+     "answer": false,
+     "why": "Metrics are never sampled."
+    },
+    {
+     "text": "Counts in the Performance and Failures panes become less precise at lower ratios.",
+     "answer": true,
+     "why": "Fewer data points make adjusted counts less precise."
+    },
+    {
+     "text": "If the network drops, telemetry is cached and retried for up to 48 hours.",
+     "answer": true,
+     "why": "Offline storage with retries is built in."
+    },
+    {
+     "text": "Without any sampler configured, the Python Distro sends 100% of traces.",
+     "answer": false,
+     "why": "The default is RateLimitedSampler."
+    }
+   ],
+   "hint": "Sampling applies to traces, not custom metrics. Lower ratios make counts less precise. Think about offline caching and the default.",
+   "explain": "Sample traces for cost; metrics stay complete; offline storage covers outages.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-023",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "medium",
+   "q": "In the traceparent header 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01, what does the final 01 mean?",
+   "options": [
+    {
+     "text": "The trace-context format version",
+     "why": "The version is the first field, 00."
+    },
+    {
+     "text": "The trace is sampled",
+     "why": "Correct. The trace flags field 01 indicates the trace is sampled."
+    },
+    {
+     "text": "The request had one retry",
+     "why": "Retries aren't recorded in traceparent."
+    },
+    {
+     "text": "It's the first span in the trace",
+     "why": "Span position isn't encoded in the header."
+    }
+   ],
+   "answer": 1,
+   "hint": "The four fields are version, trace ID, parent span ID, and one set of flags.",
+   "explain": "traceparent fields: version (00), 32-hex trace ID, 16-hex parent span ID, and trace flags (01 = sampled).",
+   "origin": "new"
+  },
+  {
+   "id": "lp9m1-024",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Which KQL query links slow requests to the dependency calls inside the same distributed trace?",
+   "options": [
+    {
+     "text": "requests | union dependencies | order by duration desc",
+     "why": "union stacks rows; it doesn't relate them by trace."
+    },
+    {
+     "text": "requests | where duration > 5000 | join kind=inner (dependencies) on cloud_RoleName",
+     "why": "cloud_RoleName joins by service, not by trace."
+    },
+    {
+     "text": "requests | where duration > 5000 | join kind=inner (dependencies) on operation_Id",
+     "why": "Correct. operation_Id identifies the trace shared by all its spans."
+    },
+    {
+     "text": "dependencies | summarize avg(duration) by name",
+     "why": "This summarizes dependencies without linking them to requests."
+    }
+   ],
+   "answer": 2,
+   "hint": "Requests and dependencies are joined on the field that identifies the whole operation.",
+   "explain": "operation_Id corresponds to the OpenTelemetry trace ID.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-025",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Vector search spans are usually 100 ms but sometimes 5 s, mostly right after quiet periods, with normal result counts. What pattern does this suggest?",
+   "options": [
+    {
+     "text": "Embedding model timeouts",
+     "why": "These are search spans, not embedding spans."
+    },
+    {
+     "text": "Vector search cold starts",
+     "why": "Correct. Slow clusters after inactivity, with normal search.result_count, point to cold starts."
+    },
+    {
+     "text": "Context window overflow",
+     "why": "Overflow appears on prompt assembly or LLM errors."
+    },
+    {
+     "text": "LLM token rate limiting",
+     "why": "Rate limiting shows 429s on LLM calls."
+    }
+   ],
+   "answer": 1,
+   "hint": "Slow only after idle periods, with normal results, suggests something warming up.",
+   "explain": "Attributes like search.result_count separate cold starts from genuinely heavy queries.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp9m1-026",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team investigates slow RAG responses in Application Insights.",
+   "rows": [
+    {
+     "text": "The Application Map shows average response time and failure rate per service node.",
+     "answer": true,
+     "why": "Nodes and edges show key metrics."
+    },
+    {
+     "text": "Selecting a span in the transaction view shows its custom attributes.",
+     "answer": true,
+     "why": "Span details include attributes and exceptions."
+    },
+    {
+     "text": "Custom span attributes can be queried as regular table columns without customDimensions.",
+     "answer": false,
+     "why": "They live in customDimensions; extract them with KQL."
+    }
+   ],
+   "hint": "Look at the waterfall, the dependency durations, and whether attributes explain the slow spans.",
+   "explain": "Map → waterfall → KQL is the usual drill-down.",
+   "origin": "lab500"
+  }
+ ]
+}

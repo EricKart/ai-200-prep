@@ -1,0 +1,708 @@
+{
+ "module": "lp6m2",
+ "title": "Implement event messaging with Azure Managed Redis",
+ "questions": [
+  {
+   "id": "lp6m2-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which command subscribes to every channel that starts with ai: ?",
+   "options": [
+    {
+     "text": "SUBSCRIBE ai:*",
+     "why": "SUBSCRIBE takes exact channel names."
+    },
+    {
+     "text": "PUBLISH ai:*",
+     "why": "PUBLISH sends a message."
+    },
+    {
+     "text": "XREADGROUP ai:*",
+     "why": "XREADGROUP reads Streams."
+    },
+    {
+     "text": "PSUBSCRIBE ai:*",
+     "why": "Correct. PSUBSCRIBE subscribes with pattern matching."
+    }
+   ],
+   "answer": 3,
+   "hint": "Pattern subscriptions have their own command, which starts with P.",
+   "explain": "SUBSCRIBE for named channels, PSUBSCRIBE for patterns.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "When a new embedding model is deployed, every running API instance must clear its cached embeddings immediately. Which Redis feature fits?",
+   "options": [
+    {
+     "text": "A hash with one field per API instance",
+     "why": "A hash doesn't notify anyone."
+    },
+    {
+     "text": "Pub/sub: publish an invalidation message",
+     "why": "Correct. Every active subscriber receives the broadcast at once."
+    },
+    {
+     "text": "An atomic counter that instances poll",
+     "why": "Polling adds delay; pub/sub pushes immediately."
+    },
+    {
+     "text": "A Stream with a consumer group of API instances",
+     "why": "A consumer group gives each message to just one instance."
+    }
+   ],
+   "answer": 1,
+   "hint": "Every instance must hear the same signal right away.",
+   "explain": "Broadcasting cache invalidation is a core pub/sub use case.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A sentiment analyzer subscribes to `conversations:new` and restarts for 30 seconds during a deployment.",
+   "rows": [
+    {
+     "text": "Messages published during those 30 seconds are delivered when it reconnects.",
+     "answer": false,
+     "why": "Pub/sub has no persistence; offline subscribers miss messages."
+    },
+    {
+     "text": "The publisher is told the message wasn't received.",
+     "answer": false,
+     "why": "Pub/sub is fire-and-forget; publishers don't know who received messages."
+    },
+    {
+     "text": "Other subscribers that stayed connected receive those messages.",
+     "answer": true,
+     "why": "Redis delivers to all active subscribers."
+    }
+   ],
+   "hint": "Pub/sub only reaches subscribers that are connected at that moment.",
+   "explain": "At-most-once, no persistence, fire-and-forget.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A subscriber processes model-prediction events more slowly than they're published, and its memory keeps growing. Which pub/sub limitation is this?",
+   "options": [
+    {
+     "text": "Channel naming rules",
+     "why": "Channel names don't affect delivery rate."
+    },
+    {
+     "text": "Pattern subscriptions",
+     "why": "Patterns don't cause this."
+    },
+    {
+     "text": "No backpressure handling",
+     "why": "Correct. Redis keeps delivering even if subscribers can't keep up."
+    },
+    {
+     "text": "At-most-once delivery",
+     "why": "At-most-once is about missed messages, not slow consumers."
+    }
+   ],
+   "answer": 2,
+   "hint": "Redis keeps sending even when a subscriber can't keep up.",
+   "explain": "Without backpressure, slow subscribers can run into memory issues or message loss.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A billing service must charge for every completed AI request, even if the billing service is briefly offline. Should it consume events through Redis pub/sub?",
+   "options": [
+    {
+     "text": "Yes, if the channel name includes the user id",
+     "why": "Channel names don't add durability."
+    },
+    {
+     "text": "Yes, if it uses PSUBSCRIBE instead of SUBSCRIBE",
+     "why": "Pattern subscriptions don't add durability."
+    },
+    {
+     "text": "Yes: Redis stores pub/sub messages until they're acknowledged",
+     "why": "Pub/sub messages aren't stored or acknowledged."
+    },
+    {
+     "text": "No: pub/sub has no durability, so offline periods lose events",
+     "why": "Correct. Use something durable (such as Streams) when messages must not be lost."
+    }
+   ],
+   "answer": 3,
+   "hint": "Billing can't miss events. Does pub/sub keep messages for offline consumers?",
+   "explain": "Pub/sub suits real-time notifications, not scenarios that need durability or replay.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A service publishes \"prediction ready\" events, and the team asks how the publisher will know whether any subscriber processed each one. What does Learn say about pub/sub?",
+   "options": [
+    {
+     "text": "Redis retries delivery until every subscriber confirms",
+     "why": "Pub/sub has no retries. Messages are delivered once to connected subscribers."
+    },
+    {
+     "text": "Messages are stored until a subscriber calls XACK",
+     "why": "XACK belongs to Streams, not pub/sub."
+    },
+    {
+     "text": "It's fire-and-forget: publishers don't know whether any subscriber received the message",
+     "why": "Correct. Pub/sub decouples publishers from subscribers, so there's no delivery confirmation."
+    },
+    {
+     "text": "PUBLISH returns an acknowledgment from each subscriber after processing",
+     "why": "Subscribers don't acknowledge processing back to the publisher in pub/sub."
+    }
+   ],
+   "answer": 2,
+   "hint": "Pub/sub trades guarantees for speed and loose coupling.",
+   "explain": "Pub/sub characteristics: at-most-once delivery, no persistence, fire-and-forget (publishers don't know if anyone received the message), and high throughput.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m2-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Browser clients should see AI predictions the moment the backend publishes them to a Redis channel. Which pattern does Learn show?",
+   "options": [
+    {
+     "text": "A backend subscriber that forwards each message over WebSocket connections",
+     "why": "Correct. Combining pub/sub with WebSockets pushes real-time updates to browsers."
+    },
+    {
+     "text": "Browsers poll a Stream with XRANGE every second",
+     "why": "Polling adds latency and load. The pattern is to push over WebSockets."
+    },
+    {
+     "text": "Browsers connect to Redis directly and run SUBSCRIBE",
+     "why": "Browsers don't connect to Redis. A backend service bridges the two."
+    },
+    {
+     "text": "The backend writes each prediction to a cookie",
+     "why": "Cookies travel with requests. They can't push new data to the browser."
+    }
+   ],
+   "answer": 0,
+   "hint": "Something on the server has to hold an open connection to each browser.",
+   "explain": "Learn's example combines pub/sub with WebSocket connections: a backend subscriber receives channel messages and pushes them to connected browser clients.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m2-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Status channels are named ml:models:resnet:status, ml:models:bert:status and so on. One monitoring service must receive the status of every model, including ones added later. Which subscription fits?",
+   "options": [
+    {
+     "text": "PSUBSCRIBE ml:models:*:status",
+     "why": "Correct. A pattern subscription matches every channel with that shape, including new ones."
+    },
+    {
+     "text": "SUBSCRIBE ml:models:resnet:status ml:models:bert:status",
+     "why": "This lists today's channels and misses models added later."
+    },
+    {
+     "text": "SUBSCRIBE ml:models:*:status",
+     "why": "SUBSCRIBE takes exact channel names. Patterns need PSUBSCRIBE."
+    },
+    {
+     "text": "XREADGROUP on a stream named ml:models",
+     "why": "That reads a Stream, not pub/sub channels."
+    }
+   ],
+   "answer": 0,
+   "hint": "You need a wildcard, and wildcards need a particular command.",
+   "explain": "Channels are strings. PSUBSCRIBE subscribes with patterns such as ai:conversations:* or ml:models:*:status, so new matching channels are included.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m2-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which command marks a Stream task as completed by a consumer?",
+   "options": [
+    {
+     "text": "XREADGROUP",
+     "why": "XREADGROUP reads tasks."
+    },
+    {
+     "text": "XADD",
+     "why": "XADD adds tasks."
+    },
+    {
+     "text": "XINFO",
+     "why": "XINFO reports metrics."
+    },
+    {
+     "text": "XACK",
+     "why": "Correct. XACK acknowledges completion."
+    }
+   ],
+   "answer": 3,
+   "hint": "Streams have three commands: add, read in a group, acknowledge.",
+   "explain": "XADD → XREADGROUP → XACK.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An upload endpoint must return immediately while documents are analyzed later, and no document may be lost if a worker crashes. What should the endpoint do?",
+   "options": [
+    {
+     "text": "Process the document inside the request",
+     "why": "That blocks the API."
+    },
+    {
+     "text": "Store the job in a string with a 60-second TTL",
+     "why": "An expiring string can disappear before processing."
+    },
+    {
+     "text": "XADD the job to a Stream and return a job id",
+     "why": "Correct. Streams keep tasks until acknowledged and let workers process at their own pace."
+    },
+    {
+     "text": "PUBLISH the job to a channel and return",
+     "why": "Pub/sub would lose jobs if no worker is listening."
+    }
+   ],
+   "answer": 2,
+   "hint": "Return quickly and keep the job safe from worker crashes.",
+   "explain": "Streams give durable async queues for long AI operations.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. Workers read from a Stream with a consumer group, and one worker crashes after reading a task but before XACK.",
+   "rows": [
+    {
+     "text": "The task stays in the pending list.",
+     "answer": true,
+     "why": "Unacknowledged tasks remain pending."
+    },
+    {
+     "text": "XPENDING can show tasks that have been pending too long.",
+     "answer": true,
+     "why": "XPENDING finds stuck tasks."
+    },
+    {
+     "text": "The task is deleted when the worker's connection drops.",
+     "answer": false,
+     "why": "Tasks survive crashes."
+    },
+    {
+     "text": "XACK was already sent automatically when the worker read the task.",
+     "answer": false,
+     "why": "The worker must call XACK after processing; it crashed before that."
+    }
+   ],
+   "hint": "An unacknowledged task stays pending, and you can inspect it.",
+   "explain": "Pending lists and XCLAIM make Stream processing self-healing.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A queue Stream processes millions of tasks a day and Redis memory keeps climbing, although every task is acknowledged. Why?",
+   "options": [
+    {
+     "text": "Pending tasks are duplicated on each read",
+     "why": "Reading doesn't duplicate entries."
+    },
+    {
+     "text": "Consumer groups disable eviction",
+     "why": "Learn doesn't say this."
+    },
+    {
+     "text": "Acknowledged entries stay until trimmed",
+     "why": "Correct. Tasks don't auto-expire; trim with maxlen on XADD or XTRIM."
+    },
+    {
+     "text": "XACK copies each task into a second stream",
+     "why": "XACK doesn't copy tasks."
+    }
+   ],
+   "answer": 2,
+   "hint": "Acknowledging doesn't delete. Trim the stream.",
+   "explain": "Plan trimming upfront: xadd(…, maxlen=10000, approximate=True) or periodic XTRIM.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Put the steps of a reliable Stream worker in order.",
+   "steps": [
+    "Create the consumer group once (ignore the error if it exists)",
+    "Read new tasks with XREADGROUP",
+    "Process the task",
+    "Acknowledge it with XACK"
+   ],
+   "hint": "Create the group, read, process, acknowledge.",
+   "explain": "Unacknowledged tasks remain pending for retry.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-014",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A pipeline needs microsecond-level notifications that a model finished loading, and losing one notification is acceptable. Should you use a Stream?",
+   "options": [
+    {
+     "text": "No: pub/sub is faster and loss is acceptable",
+     "why": "Correct. Streams add a few milliseconds for persistence and acks; pub/sub fits low-latency, loss-tolerant notifications."
+    },
+    {
+     "text": "No: Streams can't hold more than one message",
+     "why": "Streams hold many entries."
+    },
+    {
+     "text": "Yes: pub/sub can't send to more than one subscriber",
+     "why": "Pub/sub broadcasts to all subscribers."
+    },
+    {
+     "text": "Yes: Streams have lower latency than pub/sub in every case",
+     "why": "Streams are slightly slower than pub/sub."
+    }
+   ],
+   "answer": 0,
+   "hint": "Microsecond notifications where loss is acceptable don't need durability.",
+   "explain": "Choose Streams for reliability, pub/sub for the lowest latency.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-015",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A new analytics service is added next month and must process every inference request already queued in a Stream, from the beginning. Which Streams benefit makes this possible?",
+   "options": [
+    {
+     "text": "Streams broadcast each entry to subscribers in real time",
+     "why": "That describes pub/sub, which doesn't keep history."
+    },
+    {
+     "text": "Streams delete entries as soon as they're read",
+     "why": "Entries stay in the Stream until trimmed."
+    },
+    {
+     "text": "Streams keep history, so new services can catch up",
+     "why": "Correct. You can query, replay for debugging, or let new services catch up on historical data."
+    },
+    {
+     "text": "Streams keep entries for subscribers connected at the time",
+     "why": "That's pub/sub's limitation. Streams persist entries."
+    }
+   ],
+   "answer": 2,
+   "hint": "Unlike pub/sub, a Stream remembers what was added to it.",
+   "explain": "Streams benefits: tasks survive crashes, automatic retry via pending entries, built-in work distribution with consumer groups, processing history (replay and catch-up), and simple async patterns.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m2-016",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An inference queue Stream should keep roughly the last 10,000 entries and drop older ones as new tasks arrive, without a separate cleanup job. How can the producer do this?",
+   "options": [
+    {
+     "text": "Set a 10,000-second TTL on each entry",
+     "why": "Stream entries don't get individual TTLs."
+    },
+    {
+     "text": "Call XADD with maxlen=10000 and approximate=True",
+     "why": "Correct. XADD can trim the stream as it adds, keeping about the last 10,000 entries."
+    },
+    {
+     "text": "Call XACK with count=10000",
+     "why": "XACK acknowledges entries. It doesn't trim the stream."
+    },
+    {
+     "text": "Use PUBLISH instead of XADD",
+     "why": "That moves to pub/sub, which loses durability."
+    }
+   ],
+   "answer": 1,
+   "hint": "The add command itself can cap the stream's length.",
+   "explain": "Acknowledged entries stay until trimmed. Cap a stream with XADD …, maxlen=N, approximate=True, or trim it separately with XTRIM.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m2-017",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Three worker instances subscribe to the same pub/sub channel for inference requests. What happens when one request is published?",
+   "options": [
+    {
+     "text": "All three workers receive and process it",
+     "why": "Correct. Pub/sub duplicates messages to every subscriber, tripling the cost."
+    },
+    {
+     "text": "Redis queues it until a worker is idle",
+     "why": "Pub/sub doesn't queue messages."
+    },
+    {
+     "text": "One worker gets it, chosen round-robin",
+     "why": "Pub/sub doesn't load-balance."
+    },
+    {
+     "text": "The first worker to acknowledge it keeps it",
+     "why": "Pub/sub has no acknowledgments."
+    }
+   ],
+   "answer": 0,
+   "hint": "Pub/sub copies each message to every subscriber.",
+   "explain": "Use Stream consumer groups to distribute work.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A worker restarts and should first finish tasks it had already received but not acknowledged. Which read ID should it pass to XREADGROUP?",
+   "options": [
+    {
+     "text": "*",
+     "why": "* isn't used to read pending messages."
+    },
+    {
+     "text": ">",
+     "why": "> returns only new messages never delivered to any consumer."
+    },
+    {
+     "text": "0",
+     "why": "Correct. An ID such as 0 reads this consumer's pending messages."
+    },
+    {
+     "text": "$",
+     "why": "Learn doesn't use $ for this."
+    }
+   ],
+   "answer": 2,
+   "hint": "New messages use one special ID. Your own unacknowledged ones start from the beginning of your pending list.",
+   "explain": "> for new work; 0 to re-read your own pending tasks.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-019",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each scenario to the Redis approach.",
+   "choices": [
+    "Pub/sub broadcast",
+    "Stream consumer group",
+    "Hybrid: Stream + pub/sub"
+   ],
+   "items": [
+    {
+     "text": "Feature flag changed; every service must reload its config",
+     "answer": 0,
+     "why": "All instances need the same update."
+    },
+    {
+     "text": "Each document summary job must run on exactly one GPU worker",
+     "answer": 1,
+     "why": "Consumer groups give each message to one consumer."
+    },
+    {
+     "text": "Queue a large document for processing and tell dashboards it arrived",
+     "answer": 2,
+     "why": "Queue the work in a Stream and broadcast the notification."
+    }
+   ],
+   "hint": "Broadcast to everyone, or hand each job to exactly one worker.",
+   "explain": "Broadcast vs coordinate: choose by whether everyone or exactly one should act.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-020",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A Stream consumer group scales from two workers to five.",
+   "rows": [
+    {
+     "text": "The new workers start receiving tasks without code changes.",
+     "answer": true,
+     "why": "New workers in the group automatically share the work."
+    },
+    {
+     "text": "Each task is now delivered to all five workers.",
+     "answer": false,
+     "why": "Each message goes to exactly one consumer in the group."
+    },
+    {
+     "text": "Each worker gets a smaller share of the total workload.",
+     "answer": true,
+     "why": "Work spreads across more workers."
+    }
+   ],
+   "hint": "Consumer groups split work, and more members means smaller shares.",
+   "explain": "Consumer groups scale horizontally by simply adding consumers.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-021",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A monitoring service should reassign tasks that have been pending for more than five minutes because their worker crashed. Which commands does it use?",
+   "options": [
+    {
+     "text": "PUBLISH to announce them, then SUBSCRIBE to retry",
+     "why": "Pub/sub can't reassign Stream tasks."
+    },
+    {
+     "text": "XADD a copy of each task, then XACK the original",
+     "why": "Duplicating tasks risks double processing."
+    },
+    {
+     "text": "XTRIM the stream so stuck tasks are removed",
+     "why": "Trimming deletes entries rather than recovering them."
+    },
+    {
+     "text": "XPENDING to find them, XCLAIM to reassign",
+     "why": "Correct. XPENDING finds stuck tasks; XCLAIM moves them to a healthy worker."
+    }
+   ],
+   "answer": 3,
+   "hint": "Find stale pending entries, then take them over.",
+   "explain": "XPENDING + XCLAIM keep tasks from being lost when workers crash.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp6m2-022",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "When a user finishes an AI interaction, the analytics, billing and recommendation services must each react in their own way. Losing an event for one service is acceptable. Which approach does Learn describe for notifying them?",
+   "options": [
+    {
+     "text": "Publish one event to a channel that all three services subscribe to",
+     "why": "Correct. Pub/sub suits notifying heterogeneous services that each process the same event."
+    },
+    {
+     "text": "Add the event to one Stream read by a single consumer group of all three services",
+     "why": "A single consumer group gives each entry to one consumer, so only one service would get each event."
+    },
+    {
+     "text": "Write the event to a Redis List that all three pop from",
+     "why": "Popping removes the item, so only one service would get it."
+    },
+    {
+     "text": "Call each service's API in turn from the web request",
+     "why": "That couples the request to every service. Pub/sub decouples them."
+    }
+   ],
+   "answer": 0,
+   "hint": "All three need the same event. Should it be copied or distributed?",
+   "explain": "Use pub/sub when all services must react to the same event (cache invalidation, configuration updates, monitoring, notifying heterogeneous services). Use Stream consumer groups to distribute work so each task runs once.",
+   "origin": "new"
+  },
+  {
+   "id": "lp6m2-023",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Three GPU workers each subscribe to the channel ai:inference:requests. Costs tripled, and results are inconsistent. What should the team change?",
+   "options": [
+    {
+     "text": "Add a fourth worker to spread the load",
+     "why": "With pub/sub, a fourth worker would also process every request."
+    },
+    {
+     "text": "Have the workers use PSUBSCRIBE instead of SUBSCRIBE",
+     "why": "Pattern subscriptions still broadcast every message to every subscriber."
+    },
+    {
+     "text": "Move the requests to a Stream that the workers read through one consumer group",
+     "why": "Correct. Consumer groups deliver each entry to only one worker, which distributes the load."
+    },
+    {
+     "text": "Publish each request three times, once per worker",
+     "why": "That multiplies the duplication."
+    }
+   ],
+   "answer": 2,
+   "hint": "Pub/sub duplicates messages. What distributes them instead?",
+   "explain": "Pub/sub broadcasts, so every worker processes every request. Stream consumer groups give each message to exactly one consumer, enabling horizontal scaling without duplicate work.",
+   "origin": "new"
+  }
+ ]
+}

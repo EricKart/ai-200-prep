@@ -1,0 +1,874 @@
+{
+ "module": "lp5m1",
+ "title": "Build and query with Azure Database for PostgreSQL",
+ "questions": [
+  {
+   "id": "lp5m1-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your AI API makes many short-lived database calls and you enable the built-in PgBouncer. Which port should the app connect to?",
+   "options": [
+    {
+     "text": "443",
+     "why": "443 is HTTPS, not a PostgreSQL port."
+    },
+    {
+     "text": "6432",
+     "why": "Correct. PgBouncer connections use port 6432."
+    },
+    {
+     "text": "5432",
+     "why": "5432 is the standard direct PostgreSQL port."
+    },
+    {
+     "text": "1433",
+     "why": "1433 is the SQL Server port."
+    }
+   ],
+   "answer": 1,
+   "hint": "PgBouncer listens on a different port from PostgreSQL itself.",
+   "explain": "Enable PgBouncer in server configuration and connect on 6432.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which PostgreSQL extension provides trigram-based fuzzy text matching for autocomplete?",
+   "options": [
+    {
+     "text": "pg_trgm",
+     "why": "Correct. pg_trgm provides trigram text similarity."
+    },
+    {
+     "text": "hstore",
+     "why": "hstore adds a key-value data type."
+    },
+    {
+     "text": "pgvector",
+     "why": "pgvector adds vector types and similarity search."
+    },
+    {
+     "text": "PostGIS",
+     "why": "PostGIS is for geospatial capabilities."
+    }
+   ],
+   "answer": 0,
+   "hint": "Fuzzy matching splits text into groups of three characters.",
+   "explain": "pgvector for embeddings, pg_trgm for fuzzy text, hstore for key-value pairs.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team runs a Burstable-tier Azure Database for PostgreSQL server for a proof of concept.",
+   "rows": [
+    {
+     "text": "They can enable the built-in PgBouncer on this tier.",
+     "answer": false,
+     "why": "PgBouncer isn't available on the Burstable tier."
+    },
+    {
+     "text": "They can move to General Purpose later with a brief restart.",
+     "answer": true,
+     "why": "Compute tiers can be changed after deployment with a brief restart."
+    },
+    {
+     "text": "Backups are kept for 35 days unless they change it.",
+     "answer": false,
+     "why": "Default retention is seven days; you can extend it up to 35."
+    },
+    {
+     "text": "A point-in-time restore creates a new server instance.",
+     "answer": true,
+     "why": "Restore creates a new server at the chosen timestamp."
+    }
+   ],
+   "hint": "Burstable is for dev and doesn't get every feature. Backups default to a week, and a restore makes a new server.",
+   "explain": "Know the tier limits, backup defaults and how restores work.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An AI service keeps large working sets in memory and runs complex analytical queries alongside vector operations. Which compute tier fits best?",
+   "options": [
+    {
+     "text": "General Purpose (D-series)",
+     "why": "General Purpose is balanced, not memory-heavy."
+    },
+    {
+     "text": "Memory Optimized (E-series)",
+     "why": "Correct. High memory-to-vCPU ratios suit large in-memory sets and analytical queries."
+    },
+    {
+     "text": "Burstable (B-series)",
+     "why": "Burstable suits dev and intermittent workloads."
+    },
+    {
+     "text": "Any tier, because storage scales separately",
+     "why": "Storage scaling doesn't provide the memory this workload needs."
+    }
+   ],
+   "answer": 1,
+   "hint": "Large in-memory working sets point to the tier named after memory.",
+   "explain": "Memory Optimized for in-memory and analytical work; General Purpose for steady production.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-005",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Yesterday a script dropped the conversations table on a production server. Backups use the default settings. How do you recover the data?",
+   "options": [
+    {
+     "text": "Point-in-time restore, which rolls the existing server back in place",
+     "why": "A restore creates a new server instance. It doesn't overwrite the existing one."
+    },
+    {
+     "text": "You can't: backups are kept for 24 hours",
+     "why": "The default retention is seven days."
+    },
+    {
+     "text": "Point-in-time restore into a new server",
+     "why": "Correct. PITR recovers to any moment within retention (seven days by default) into a new server."
+    },
+    {
+     "text": "Open a support ticket, because backups must be requested in advance",
+     "why": "Backups are automatic, so you can restore yourself."
+    }
+   ],
+   "answer": 2,
+   "hint": "Automatic backups allow recovery to a point in time. Where does the restored data end up?",
+   "explain": "Backups are automatic, with seven days' retention by default (configurable up to 35). Point-in-time restore recovers to any moment in that window and creates a new server instance.",
+   "origin": "new"
+  },
+  {
+   "id": "lp5m1-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Two applications share one Azure Database for PostgreSQL server. They must never see each other's data, and each needs its own backup and restore. How should you organize them?",
+   "options": [
+    {
+     "text": "Put both applications in one database, with a table prefix per app",
+     "why": "Prefixes don't isolate data or give independent restores."
+    },
+    {
+     "text": "Use one database and give each application its own schema",
+     "why": "Schemas organize objects inside a database. Learn suggests separate databases for full isolation and independent restore."
+    },
+    {
+     "text": "Create one table per application inside the postgres system database",
+     "why": "The system database isn't meant for application data, and this doesn't isolate anything."
+    },
+    {
+     "text": "Give each application its own database on the server",
+     "why": "Correct. Separate databases give complete isolation and independent backup and restore."
+    }
+   ],
+   "answer": 3,
+   "hint": "A server can host several databases. When does Learn say to separate them?",
+   "explain": "A server can host multiple databases, each isolated. Use separate databases for complete isolation between applications or independent backup and restore.",
+   "origin": "new"
+  },
+  {
+   "id": "lp5m1-007",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Production code must make sure it's talking to the genuine Azure PostgreSQL server, checking both the certificate authority and the hostname. Which sslmode should it use?",
+   "options": [
+    {
+     "text": "require",
+     "why": "require encrypts but doesn't validate certificates."
+    },
+    {
+     "text": "prefer",
+     "why": "prefer doesn't validate certificates."
+    },
+    {
+     "text": "verify-full",
+     "why": "Correct. verify-full validates the CA and confirms the hostname."
+    },
+    {
+     "text": "verify-ca",
+     "why": "verify-ca validates the CA but not the hostname."
+    }
+   ],
+   "answer": 2,
+   "hint": "There's an sslmode that checks both the certificate chain and the host name.",
+   "explain": "Use verify-full in production.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An Azure-hosted app uses a managed identity to connect with Microsoft Entra authentication. Which resource should it request a token for?",
+   "options": [
+    {
+     "text": "https://vault.azure.net/.default",
+     "why": "That's Key Vault."
+    },
+    {
+     "text": "https://ossrdbms-aad.database.windows.net",
+     "why": "Correct. Entra identities obtain tokens from this resource and use them as the password."
+    },
+    {
+     "text": "https://management.azure.com/.default",
+     "why": "That's the Azure Resource Manager audience."
+    },
+    {
+     "text": "https://database.windows.net/postgres",
+     "why": "That isn't the PostgreSQL token resource Learn names."
+    }
+   ],
+   "answer": 1,
+   "hint": "Entra tokens for Azure's open-source databases come from one specific resource URL.",
+   "explain": "credential.get_token(\"https://ossrdbms-aad.database.windows.net/.default\")",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Put the Microsoft Entra connection flow in order.",
+   "steps": [
+    "The application requests an access token from Microsoft Entra ID",
+    "Entra validates the identity and returns a token",
+    "The application connects to PostgreSQL using the token as the password",
+    "PostgreSQL validates the token against the configured Entra administrator"
+   ],
+   "hint": "Get a token, Entra issues it, connect with it as the password, and the server checks it.",
+   "explain": "Tokens are short-lived, so no password is stored.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A developer can't connect from a laptop to a server that uses **private access** with VNet integration.",
+   "rows": [
+    {
+     "text": "Adding the laptop's IP to firewall rules is the fix Learn describes for private access.",
+     "answer": false,
+     "why": "Firewall rules apply to public access; private access is reachable only from the VNet, peered networks or VPN/ExpressRoute."
+    },
+    {
+     "text": "Connecting through a VPN into the virtual network is a valid path.",
+     "answer": true,
+     "why": "Private access works through VPN or ExpressRoute."
+    },
+    {
+     "text": "A client using sslmode=disable would be rejected even on the right network.",
+     "answer": true,
+     "why": "Azure rejects unencrypted connections."
+    },
+    {
+     "text": "TLS 1.0 connections are accepted for older clients.",
+     "answer": false,
+     "why": "Only TLS 1.2 and 1.3 are supported."
+    }
+   ],
+   "hint": "Private access means connecting from inside the network. TLS is always required.",
+   "explain": "Know the two networking models and the TLS requirements.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A legacy reporting tool can only connect with TLS 1.0, and its connections to Azure Database for PostgreSQL are rejected. What does the server enforce?",
+   "options": [
+    {
+     "text": "TLS by default, with TLS 1.2 and 1.3 supported",
+     "why": "Correct. Older TLS versions are rejected, so the tool needs an upgrade."
+    },
+    {
+     "text": "Plain TCP unless a certificate is installed on the server",
+     "why": "The managed server already requires TLS. You don't install certificates on it."
+    },
+    {
+     "text": "Encryption for connections from outside Azure, plain TCP inside",
+     "why": "All connections must use TLS, wherever they come from."
+    },
+    {
+     "text": "TLS 1.0 for Burstable-tier servers",
+     "why": "The tier doesn't change the TLS versions accepted."
+    }
+   ],
+   "answer": 0,
+   "hint": "Which TLS versions does the managed service accept?",
+   "explain": "Azure Database for PostgreSQL encrypts all connections with TLS. It requires TLS by default, supports TLS 1.2 and 1.3, and rejects older versions.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp5m1-012",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Security asks why the team should move the AI API from a database password to Microsoft Entra authentication with a managed identity. Which benefit does Learn give?",
+   "options": [
+    {
+     "text": "Connections no longer need TLS",
+     "why": "TLS is still required for every connection."
+    },
+    {
+     "text": "No stored password: tokens are short-lived, and identity is managed centrally",
+     "why": "Correct. Entra uses OAuth 2.0 tokens instead of passwords, which removes password storage."
+    },
+    {
+     "text": "Queries run faster because tokens skip permission checks",
+     "why": "Tokens authenticate the identity. Database permissions still apply."
+    },
+    {
+     "text": "The app no longer needs PgBouncer",
+     "why": "Authentication and connection pooling are separate concerns."
+    }
+   ],
+   "answer": 1,
+   "hint": "Think about what the app no longer has to keep secret.",
+   "explain": "Microsoft Entra authentication uses short-lived OAuth 2.0 tokens instead of passwords, giving centralized identity management and removing password storage.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp5m1-013",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your server uses public access. A new developer can't connect from home, although the same code works for teammates in the office. What should you check first?",
+   "options": [
+    {
+     "text": "Whether the developer uses sslmode=disable",
+     "why": "TLS is required, but the difference here is location, which points to the firewall."
+    },
+    {
+     "text": "Whether the server has VNet integration enabled",
+     "why": "Public access servers use firewall rules, not VNet integration."
+    },
+    {
+     "text": "Whether PgBouncer is enabled on port 6432",
+     "why": "Pooling doesn't explain why one location fails and another works."
+    },
+    {
+     "text": "Whether the developer's IP address is allowed in the firewall rules",
+     "why": "Correct. With public access, firewall rules control which client IPs can connect."
+    }
+   ],
+   "answer": 3,
+   "hint": "The code works from one network and not from another. What controls which clients can connect?",
+   "explain": "With public access, the server has a public IP and firewall rules control which client IPs can connect. If your machine can't connect, check that its IP is allowed.",
+   "origin": "new"
+  },
+  {
+   "id": "lp5m1-014",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A messages table will receive billions of inserts and needs a simple auto-incrementing key. Which type fits?",
+   "options": [
+    {
+     "text": "VARCHAR(255)",
+     "why": "Strings aren't auto-incrementing keys."
+    },
+    {
+     "text": "SERIAL",
+     "why": "SERIAL is 32-bit and can run out above about two billion rows."
+    },
+    {
+     "text": "BYTEA",
+     "why": "BYTEA stores binary data."
+    },
+    {
+     "text": "BIGSERIAL",
+     "why": "Correct. BIGSERIAL is 64-bit, for tables that may exceed two billion rows."
+    }
+   ],
+   "answer": 3,
+   "hint": "Billions of rows outgrow a 32-bit counter.",
+   "explain": "Use BIGSERIAL for high-volume tables; UUIDs when IDs are generated outside the database.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You delete a conversation that still has messages referencing it, and the messages FK has no ON DELETE clause. What happens?",
+   "options": [
+    {
+     "text": "The messages are deleted too",
+     "why": "That's CASCADE, which you must specify."
+    },
+    {
+     "text": "The messages' conversation_id becomes NULL",
+     "why": "That's SET NULL."
+    },
+    {
+     "text": "The messages get the column's default value",
+     "why": "That's SET DEFAULT."
+    },
+    {
+     "text": "The delete is prevented",
+     "why": "Correct. RESTRICT is the default and blocks the delete when referencing rows exist."
+    }
+   ],
+   "answer": 3,
+   "hint": "Without ON DELETE, a referenced parent can't be removed.",
+   "explain": "RESTRICT is the default referential action.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A table has a composite index on `(conversation_id, created_at)`.",
+   "rows": [
+    {
+     "text": "The index helps WHERE conversation_id = 42.",
+     "answer": true,
+     "why": "The index serves filters on its leading column."
+    },
+    {
+     "text": "The index helps WHERE created_at > '2024-01-01' with no conversation_id filter.",
+     "answer": false,
+     "why": "It can't serve filters on trailing columns alone."
+    },
+    {
+     "text": "Every extra index adds overhead to inserts, updates and deletes.",
+     "answer": true,
+     "why": "Indexes speed reads but cost storage and write work."
+    }
+   ],
+   "hint": "A composite index helps filters that start with its leading column. Every index costs on writes.",
+   "explain": "Column order in composite indexes matters; be selective on write-heavy tables.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-017",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You must add a category column and an index on it together, so that either both changes apply or neither does. What should you do?",
+   "options": [
+    {
+     "text": "Run both statements inside BEGIN … COMMIT",
+     "why": "Correct. Most DDL in PostgreSQL is transactional, so you can ROLLBACK if a statement fails."
+    },
+    {
+     "text": "Use DROP TABLE … CASCADE and recreate the table",
+     "why": "Dropping the table loses data."
+    },
+    {
+     "text": "Run them separately; DDL can't be rolled back in PostgreSQL",
+     "why": "PostgreSQL DDL is mostly transactional, unlike some databases."
+    },
+    {
+     "text": "Add the column with ON DELETE CASCADE",
+     "why": "ON DELETE CASCADE is a foreign key action, not a transaction."
+    }
+   ],
+   "answer": 0,
+   "hint": "Group the changes so they succeed or fail together.",
+   "explain": "Wrap related schema changes in a transaction.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-018",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A tasks table has a status column that may only hold 'pending', 'completed' or 'failed'. You want the database itself to reject any other value. What should you add?",
+   "options": [
+    {
+     "text": "NOT NULL",
+     "why": "NOT NULL stops nulls, but any other text would still be accepted."
+    },
+    {
+     "text": "An index on status",
+     "why": "Indexes speed up queries. They don't validate values."
+    },
+    {
+     "text": "DEFAULT 'pending'",
+     "why": "A default fills in a missing value. It doesn't reject other values."
+    },
+    {
+     "text": "CHECK (status IN ('pending', 'completed', 'failed'))",
+     "why": "Correct. A CHECK constraint validates values against a condition."
+    }
+   ],
+   "answer": 3,
+   "hint": "Which constraint validates a value against a condition?",
+   "explain": "Constraints enforce rules on data: NOT NULL prevents nulls, DEFAULT provides a value, and CHECK validates values against a condition such as status IN (…).",
+   "origin": "new"
+  },
+  {
+   "id": "lp5m1-019",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You need the status field from a JSONB column as text, to compare with 'active'. Which expression should you use?",
+   "options": [
+    {
+     "text": "metadata->'status'",
+     "why": "-> returns JSON, not text."
+    },
+    {
+     "text": "metadata ? 'status'",
+     "why": "? checks that the key exists."
+    },
+    {
+     "text": "metadata @> 'status'",
+     "why": "@> tests containment of a JSON value."
+    },
+    {
+     "text": "metadata->>'status'",
+     "why": "Correct. ->> extracts the element as text."
+    }
+   ],
+   "answer": 3,
+   "hint": "One arrow returns JSON, and the double arrow returns text.",
+   "explain": "-> for JSON, ->> for text, ? for key existence, @> for containment.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-020",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "This query fails with \"column msg_date does not exist\": `SELECT DATE(created_at) AS msg_date FROM messages WHERE msg_date > '2024-01-01'`. Why?",
+   "options": [
+    {
+     "text": "WHERE runs before SELECT, so the alias isn't defined yet",
+     "why": "Correct. Repeat the expression in WHERE, or use the alias in ORDER BY."
+    },
+    {
+     "text": "Aliases can't contain an underscore in PostgreSQL",
+     "why": "Underscores are fine in aliases; the problem is when WHERE runs."
+    },
+    {
+     "text": "The column has to be cast to TIMESTAMPTZ first",
+     "why": "Casting doesn't create the alias for WHERE."
+    },
+    {
+     "text": "DATE() isn't a supported function in PostgreSQL",
+     "why": "DATE() works; the alias is the problem."
+    }
+   ],
+   "answer": 0,
+   "hint": "Clauses don't run in the order you write them.",
+   "explain": "Only clauses after SELECT (ORDER BY, LIMIT/OFFSET) can use SELECT aliases.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-021",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An API pages through millions of messages 20 at a time, and page 1,000 has become very slow with OFFSET. What should you use instead?",
+   "options": [
+    {
+     "text": "Keyset pagination on (created_at, id) from the last row",
+     "why": "Correct. Keyset pagination filters from the last seen values and stays fast at any depth; id breaks ties."
+    },
+    {
+     "text": "A recursive CTE that walks the messages in order",
+     "why": "Recursive CTEs are for hierarchies."
+    },
+    {
+     "text": "ORDER BY created_at NULLS LAST with the same OFFSET",
+     "why": "NULL ordering doesn't fix deep pagination."
+    },
+    {
+     "text": "A larger OFFSET with LIMIT 200 to cut round trips",
+     "why": "Bigger pages still scan and discard skipped rows."
+    }
+   ],
+   "answer": 0,
+   "hint": "OFFSET reads and discards every skipped row.",
+   "explain": "OFFSET scans and discards skipped rows; keyset pagination doesn't.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-022",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A checkpoint write uses `INSERT … ON CONFLICT (task_id, step_number) DO UPDATE SET checkpoint_data = EXCLUDED.checkpoint_data RETURNING id, (xmax = 0) AS is_new`.",
+   "rows": [
+    {
+     "text": "EXCLUDED refers to the values that would have been inserted.",
+     "answer": true,
+     "why": "EXCLUDED is the pseudo-table of proposed values."
+    },
+    {
+     "text": "is_new is true when the row was updated rather than inserted.",
+     "answer": false,
+     "why": "xmax = 0 is true for newly inserted rows."
+    },
+    {
+     "text": "RETURNING gives back the id in the same round trip.",
+     "answer": true,
+     "why": "RETURNING avoids a separate query."
+    },
+    {
+     "text": "Using DO NOTHING instead would update the existing checkpoint.",
+     "answer": false,
+     "why": "DO NOTHING skips the conflicting row."
+    }
+   ],
+   "hint": "EXCLUDED is the row you tried to insert, and RETURNING saves a round trip.",
+   "explain": "Upserts make checkpoint writes idempotent; RETURNING tells you what happened.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-023",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A dashboard must list every conversation with its message count, including conversations that have no messages yet. Which join keeps the conversations with zero messages?",
+   "options": [
+    {
+     "text": "conversations INNER JOIN message_stats",
+     "why": "An inner join drops conversations that have no matching messages."
+    },
+    {
+     "text": "conversations CROSS JOIN message_stats",
+     "why": "A cross join pairs every row with every row, which isn't a count per conversation."
+    },
+    {
+     "text": "message_stats WHERE conversation_id IS NOT NULL",
+     "why": "This only returns conversations that have messages."
+    },
+    {
+     "text": "conversations LEFT JOIN message_stats",
+     "why": "Correct. A LEFT JOIN keeps every row from the left table, even with no match."
+    }
+   ],
+   "answer": 3,
+   "hint": "You need every row from one side, whether or not the other side matches.",
+   "explain": "A LEFT JOIN returns every row from the left table with matching rows from the right, filling non-matches with NULL, so conversations with zero messages stay in the result.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp5m1-024",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You need only the conversations that have more than 100 messages, using GROUP BY conversation_id and COUNT(*). Where does the condition COUNT(*) > 100 go?",
+   "options": [
+    {
+     "text": "In the ORDER BY clause",
+     "why": "ORDER BY sorts results. It doesn't filter them."
+    },
+    {
+     "text": "In a LIMIT 100 clause",
+     "why": "LIMIT caps how many rows come back. It doesn't test counts."
+    },
+    {
+     "text": "In the WHERE clause before GROUP BY",
+     "why": "WHERE filters rows before grouping, so the count doesn't exist yet."
+    },
+    {
+     "text": "In a HAVING clause after GROUP BY",
+     "why": "Correct. HAVING filters groups after aggregation."
+    }
+   ],
+   "answer": 3,
+   "hint": "Rows are filtered before grouping. Groups are filtered after.",
+   "explain": "WHERE filters rows before GROUP BY; HAVING filters groups after aggregation. Aliases from SELECT are visible only to ORDER BY and LIMIT/OFFSET.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp5m1-025",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A search box should find messages that contain \"azure\" whatever the capitalization, such as \"Azure\" or \"AZURE\". Which operator does Learn suggest?",
+   "options": [
+    {
+     "text": "ILIKE '%azure%'",
+     "why": "Correct. ILIKE does case-insensitive pattern matching without LOWER()."
+    },
+    {
+     "text": "SIMILAR TO 'Azure'",
+     "why": "This is case-sensitive pattern matching, and it needs the whole string to match."
+    },
+    {
+     "text": "LIKE '%azure%'",
+     "why": "LIKE is case-sensitive, so \"Azure\" wouldn't match."
+    },
+    {
+     "text": "= 'azure'",
+     "why": "Equality needs the whole value to match exactly."
+    }
+   ],
+   "answer": 0,
+   "hint": "There's a case-insensitive version of LIKE.",
+   "explain": "The ILIKE operator provides case-insensitive pattern matching without functions like LOWER(), which suits user-facing search.",
+   "origin": "new"
+  },
+  {
+   "id": "lp5m1-026",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A nightly job loads 2 million chat messages into PostgreSQL from Python. Which approach does Learn say is fastest?",
+   "options": [
+    {
+     "text": "One INSERT per row in a loop",
+     "why": "Individual inserts maximize round trips."
+    },
+    {
+     "text": "executemany with all 2 million rows",
+     "why": "executemany suits hundreds to a few thousand rows."
+    },
+    {
+     "text": "The COPY command through cursor.copy()",
+     "why": "Correct. COPY is often 2–10 times faster for 10,000+ rows."
+    },
+    {
+     "text": "An INSERT … ON CONFLICT for each row",
+     "why": "Per-row upserts are slower still."
+    }
+   ],
+   "answer": 2,
+   "hint": "Bulk loads are fastest with PostgreSQL's dedicated copy protocol.",
+   "explain": "Batch with executemany for moderate sizes; use COPY for large loads.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-027",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Match each psycopg error to the handling Learn recommends.",
+   "choices": [
+    "Retry with exponential backoff",
+    "Roll back; don't retry",
+    "Roll back and retry"
+   ],
+   "items": [
+    {
+     "text": "OperationalError from a dropped connection",
+     "answer": 0,
+     "why": "Transient connection failures are retry candidates."
+    },
+    {
+     "text": "UniqueViolation on an email column",
+     "answer": 1,
+     "why": "Constraint violations need code or data changes, not retries."
+    },
+    {
+     "text": "DeadlockDetected",
+     "answer": 2,
+     "why": "PostgreSQL terminates one transaction; roll back and retry."
+    }
+   ],
+   "hint": "Transient errors are worth retrying. Data errors aren't.",
+   "explain": "Retry transient failures and deadlocks; don't retry constraint or syntax errors.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m1-028",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A FastAPI service opens a new PostgreSQL connection per request and builds queries with f-strings. Which two changes follow Learn's guidance? (Select two.)",
+   "options": [
+    {
+     "text": "Borrow connections from a psycopg_pool ConnectionPool",
+     "why": "Correct. Pools avoid the cost of creating connections for every request."
+    },
+    {
+     "text": "Use %s placeholders with a parameters tuple",
+     "why": "Correct. Parameterized queries prevent SQL injection."
+    },
+    {
+     "text": "Retry UniqueViolation errors with backoff",
+     "why": "Constraint violations shouldn't be retried."
+    },
+    {
+     "text": "Raise statement_timeout to several hours for safety",
+     "why": "Web apps typically use short timeouts (5–30 seconds)."
+    }
+   ],
+   "answer": [
+    0,
+    1
+   ],
+   "hint": "Reuse connections, and never build SQL from strings.",
+   "explain": "Pool connections, parameterize queries, set sensible timeouts, and retry only transient errors.",
+   "origin": "lab500"
+  }
+ ]
+}

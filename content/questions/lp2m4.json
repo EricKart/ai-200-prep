@@ -1,0 +1,828 @@
+{
+ "module": "lp2m4",
+ "title": "Run AI-generated code securely in Azure Container Apps dynamic sessions",
+ "questions": [
+  {
+   "id": "lp2m4-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What isolates each allocated dynamic session from the host and from other sessions?",
+   "options": [
+    {
+     "text": "A namespace per user",
+     "why": "Learn describes Hyper-V isolation, not namespaces."
+    },
+    {
+     "text": "The backend API's own process boundary",
+     "why": "The point is to run code outside the backend process."
+    },
+    {
+     "text": "An environment per session",
+     "why": "Sessions come from one pool, not one environment each."
+    },
+    {
+     "text": "A Hyper-V-isolated sandbox",
+     "why": "Correct. Each session runs in its own Hyper-V-isolated sandbox."
+    }
+   ],
+   "answer": 3,
+   "hint": "Each session gets a strong isolation boundary from a Windows virtualization technology.",
+   "explain": "Session pools allocate prewarmed, Hyper-V-isolated sandboxes in milliseconds.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An agent writes short Python snippets to analyze an uploaded CSV and plot a chart. Which pool type should you choose?",
+   "options": [
+    {
+     "text": "A custom container pool, because isolation requires it",
+     "why": "Both pool types provide isolation; that alone doesn't require a custom image."
+    },
+    {
+     "text": "A separate container app for each request",
+     "why": "The pool already provides isolation without per-request apps."
+    },
+    {
+     "text": "A custom container pool with your own Python image",
+     "why": "A custom image adds maintenance you don't need here."
+    },
+    {
+     "text": "The built-in code interpreter pool",
+     "why": "Correct. The built-in interpreter covers CSV analysis, calculations and charts."
+    }
+   ],
+   "answer": 3,
+   "hint": "Short Python, CSVs and charts, with no native dependencies. Choose the least complex option.",
+   "explain": "Choose the least complex option that meets the execution contract.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Agents must run a licensed document converter that ships as a native binary. What do you need?",
+   "options": [
+    {
+     "text": "The built-in code interpreter pool with outbound network access enabled for downloads",
+     "why": "Egress doesn't change what the built-in runtime supports."
+    },
+    {
+     "text": "The built-in code interpreter with the binary uploaded to /mnt/data",
+     "why": "The built-in interpreter isn't right for native executables or proprietary libraries."
+    },
+    {
+     "text": "SessionsPythonREPLTool, because it supports native executables",
+     "why": "The LangChain tool uses the same built-in interpreter."
+    },
+    {
+     "text": "A custom container session pool in a workload profiles-enabled environment",
+     "why": "Correct. Custom container pools suit specialized packages and require a workload profiles environment."
+    }
+   ],
+   "answer": 3,
+   "hint": "A native binary isn't available in the platform-managed runtime. You'd bring your own image, which needs a certain environment type.",
+   "explain": "Native binaries, proprietary tools, other languages or custom protocols call for a custom container pool.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. You're building a custom container session pool for a document tool.",
+   "rows": [
+    {
+     "text": "You must expose the application on the configured target port.",
+     "answer": true,
+     "why": "Application ingress on the target port is your responsibility."
+    },
+    {
+     "text": "Azure Container Apps builds and patches your custom image for you.",
+     "answer": false,
+     "why": "Image maintenance is your responsibility."
+    },
+    {
+     "text": "A request to the pool endpoint path /api/convert reaches /api/convert in the session container.",
+     "answer": true,
+     "why": "The path after the endpoint is forwarded to the container's target port."
+    },
+    {
+     "text": "Custom containers lose Hyper-V isolation compared with the built-in interpreter.",
+     "answer": false,
+     "why": "Custom container pools still provide Hyper-V isolation."
+    }
+   ],
+   "hint": "With a custom image, you own the image, the port and the API. The pool forwards the path unchanged.",
+   "explain": "You own the image, ingress, logging and health checks; the pool still provides allocation, isolation and cleanup.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A LangChain agent needs Python execution, but the backend must upload source files first, download specific artifacts and control identifier mapping. Which integration fits best?",
+   "options": [
+    {
+     "text": "Direct REST calls to the pool management API",
+     "why": "Correct. Direct REST gives full control of file exchange, responses and identifier mapping."
+    },
+    {
+     "text": "A custom container pool that wraps the LangChain agent",
+     "why": "The runtime need is Python, which the built-in interpreter covers."
+    },
+    {
+     "text": "SessionsPythonREPLTool from langchain-azure-dynamic-sessions",
+     "why": "The adapter suits agents that mainly need a Python tool, with less explicit control."
+    },
+    {
+     "text": "Running the code inside the agent process for speed",
+     "why": "Running generated code beside the API is exactly what sessions avoid."
+    }
+   ],
+   "answer": 0,
+   "hint": "The backend needs fine control over files and identifiers. Is an adapter or the raw API better for that?",
+   "explain": "Choose direct REST for complete control; choose the LangChain tool when an agent mainly needs Python execution.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A developer proposes running the agent's generated Python with exec() inside the API container, to avoid adding another service. What is the main risk Learn points out?",
+   "options": [
+    {
+     "text": "The code would run slower than in a session because sessions use GPUs",
+     "why": "Sessions aren't described as GPU-backed. The issue is the security boundary."
+    },
+    {
+     "text": "exec() can't import third-party packages, so most generated analysis code would fail at runtime",
+     "why": "Python's exec can import packages. The concern is isolation, not features."
+    },
+    {
+     "text": "It shares the API's resources and could read its files, variables or credentials",
+     "why": "Correct. A long-running app container isn't an equivalent boundary to a Hyper-V-isolated session."
+    },
+    {
+     "text": "The API container can't return files, so charts would be lost",
+     "why": "An API can return files. The issue is what untrusted code can reach."
+    }
+   ],
+   "answer": 2,
+   "hint": "Think about what generated code can see and use when it runs in the same process as your API.",
+   "explain": "If generated code runs beside the API, it can compete for the API's resources and might access its files, environment variables or credentials. Sessions run code in a separate Hyper-V-isolated sandbox.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m4-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You're building a custom container image for a session pool that runs a document converter. Which two responsibilities are yours, not the platform's? (Select two.)",
+   "options": [
+    {
+     "text": "Delete idle sessions when the cooldown ends",
+     "why": "Automatic cleanup is still provided by the pool."
+    },
+    {
+     "text": "Provide Hyper-V isolation between sessions",
+     "why": "The pool provides Hyper-V isolation for custom containers too."
+    },
+    {
+     "text": "Write application logs to standard output or standard error",
+     "why": "Correct. Logging from the custom app is your responsibility."
+    },
+    {
+     "text": "Provide health endpoints that show whether the container can accept work",
+     "why": "Correct. Health checks are part of the custom environment you own."
+    }
+   ],
+   "answer": [
+    2,
+    3
+   ],
+   "hint": "The platform still gives you the pool, isolation and cleanup. Think about what your own image must do.",
+   "explain": "For custom container pools, Azure Container Apps provides the pool, rapid allocation, Hyper-V isolation and automatic cleanup. You own image maintenance, ingress on the target port, logging to stdout/stderr, and health checks.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m4-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Each tenant of a learning platform needs its own isolated workspace that runs a specialized development environment, not just Python snippets. Which pool type fits?",
+   "options": [
+    {
+     "text": "A custom container session pool with the tenant's own image",
+     "why": "Correct. An isolated tenant workspace with a specialized environment calls for a custom container."
+    },
+    {
+     "text": "The built-in code interpreter pool, because it's already isolated",
+     "why": "Isolation alone doesn't decide the pool type. The interpreter API doesn't provide a specialized environment."
+    },
+    {
+     "text": "A code interpreter pool with egress enabled",
+     "why": "Network access doesn't turn the interpreter into a specialized workspace."
+    },
+    {
+     "text": "One container app per tenant, created on each request",
+     "why": "That adds startup and lifecycle work that a session pool already handles."
+    }
+   ],
+   "answer": 0,
+   "hint": "Both pool types are isolated. What decides the choice is the runtime each tenant needs.",
+   "explain": "Choose a custom container when each tenant needs a specialized application or development environment rather than the interpreter API. Runtime and protocol requirements usually decide the pool type.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m4-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What is the default outbound network behavior for dynamic sessions?",
+   "options": [
+    {
+     "text": "Outbound traffic is allowed and logged",
+     "why": "Egress isn't allowed by default."
+    },
+    {
+     "text": "Outbound traffic follows the backend's settings",
+     "why": "Egress is a pool-level setting, not inherited from the backend."
+    },
+    {
+     "text": "Outbound network traffic is blocked",
+     "why": "Correct. Sessions block egress by default."
+    },
+    {
+     "text": "Allowed to Azure only",
+     "why": "Learn says sessions block outbound traffic by default."
+    }
+   ],
+   "answer": 2,
+   "hint": "Generated code shouldn't be able to reach the internet unless you allow it.",
+   "explain": "Blocking egress stops generated code from downloading programs or sending data out.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Fifty users are online, but usually only about ten analyze documents at the same moment. What is a sensible starting value for maximum concurrent sessions?",
+   "options": [
+    {
+     "text": "About 10, then confirm with load testing",
+     "why": "Correct. Size from concurrent use, then load test the boundary."
+    },
+    {
+     "text": "1, to minimize cost",
+     "why": "One session would force everyone to wait."
+    },
+    {
+     "text": "50, one session for each user who is online",
+     "why": "Learn says to base it on expected concurrency, not users online."
+    },
+    {
+     "text": "500, to leave a lot of headroom",
+     "why": "An oversized limit removes the cost and safety boundary."
+    }
+   ],
+   "answer": 0,
+   "hint": "Size the limit for concurrent use, not for registered users.",
+   "explain": "The maximum also acts as a cost and downstream safety boundary, so start near real concurrency.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "One team's trusted workload needs to call an external API from its sessions; another team runs untrusted AI-generated code. Which two actions follow Learn's guidance? (Select two.)",
+   "options": [
+    {
+     "text": "Enable egress on one shared pool and filter in code",
+     "why": "Egress is a pool-level choice, so a shared pool would expose the untrusted code."
+    },
+    {
+     "text": "Put the two workloads in separate session pools",
+     "why": "Correct. Use different pools for code with different egress, identity or data-access needs."
+    },
+    {
+     "text": "Give both pools the backend's identity for runtime access",
+     "why": "Don't reuse the backend's broader identity for runtime access."
+    },
+    {
+     "text": "Enable egress only on the trusted workload's pool",
+     "why": "Correct. Egress is pool-wide, so enable it only where it's justified."
+    }
+   ],
+   "answer": [
+    1,
+    3
+   ],
+   "hint": "Egress is set per pool. Mixing trust levels in one pool weakens it.",
+   "explain": "Separate trust levels into different pools and keep egress disabled for untrusted code.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A Python code interpreter pool has a 300-second cooldown and egress disabled.",
+   "rows": [
+    {
+     "text": "Each new request to a session resets its idle timer.",
+     "answer": true,
+     "why": "Every request resets the idle timer."
+    },
+    {
+     "text": "The cooldown guarantees that results are kept for 300 seconds after the last request, so no other storage is needed.",
+     "answer": false,
+     "why": "Don't rely on the cooldown as durable retention; a session can disappear after inactivity or a failure."
+    },
+    {
+     "text": "Uploading an API key into the session keeps it hidden from the code that runs there.",
+     "answer": false,
+     "why": "Code in a session can access that session's files, environment variables and credentials."
+    },
+    {
+     "text": "End users should never receive the token for the Session Executor identity.",
+     "answer": true,
+     "why": "The backend uses that identity; end users never receive its token."
+    }
+   ],
+   "hint": "Requests reset the idle timer. The cooldown isn't storage, and session code can read what you upload.",
+   "explain": "Cooldown resets on each request but isn't durable storage; anything placed in a session is visible to its code.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-013",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Users of a custom container session pool wait several seconds for the first response because the image's app is slow to start. Interactive latency matters more than idle cost. What should you adjust?",
+   "options": [
+    {
+     "text": "Shorten the cooldown period",
+     "why": "A shorter cooldown removes idle sessions sooner, which can make first responses slower."
+    },
+    {
+     "text": "Enable egress so that the container can preload packages",
+     "why": "Egress is a security decision, and it doesn't fix a slow startup."
+    },
+    {
+     "text": "Increase readySessionInstances to keep started environments waiting",
+     "why": "Correct. Ready instances reduce allocation latency because the app is already running, at the cost of more idle compute."
+    },
+    {
+     "text": "Increase maxConcurrentSessions so that more sessions can be allocated at once",
+     "why": "That raises the ceiling on parallel sessions. It doesn't make allocation faster."
+    }
+   ],
+   "answer": 2,
+   "hint": "Which setting keeps environments running before anyone asks for them?",
+   "explain": "A custom container pool can keep ready session instances. A higher ready count improves responsiveness but keeps more compute running when demand is low, so measure startup time first.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m4-014",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Code in a custom container session must read one blob container that's protected by Microsoft Entra ID. The backend already has a managed identity with broad access. What should you do?",
+   "options": [
+    {
+     "text": "Upload the backend's access token as a file into the session",
+     "why": "Anything in the session is readable by the code you run, so this exposes the token."
+    },
+    {
+     "text": "Give the session a separate identity scoped to that one blob container",
+     "why": "Correct. Untrusted code can request tokens for the session identity, so it should have the smallest possible scope."
+    },
+    {
+     "text": "Reuse the backend's identity so that there's only one identity to manage",
+     "why": "Generated code could then request tokens with the backend's broader access."
+    },
+    {
+     "text": "Enable egress on the pool so that the code can sign in with a user's password",
+     "why": "Egress doesn't solve identity, and putting credentials in the session exposes them."
+    }
+   ],
+   "answer": 1,
+   "hint": "The code in the session can use whatever identity the session has. How much access should that be?",
+   "explain": "If a session needs runtime access, use a separate identity with the smallest possible scope. Don't reuse the backend's broader identity, because untrusted code in the session can request tokens for it.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m4-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Your backend calls the session pool management API with a managed identity. Which token audience must it request?",
+   "options": [
+    {
+     "text": "https://management.azure.com",
+     "why": "That's the Azure Resource Manager audience, not the dynamic sessions API."
+    },
+    {
+     "text": "https://dynamicsessions.io",
+     "why": "Correct. The token audience must be https://dynamicsessions.io."
+    },
+    {
+     "text": "https://containerapps.io",
+     "why": "That isn't the dynamic sessions audience."
+    },
+    {
+     "text": "https://vault.azure.net",
+     "why": "That's for Key Vault."
+    }
+   ],
+   "answer": 1,
+   "hint": "Tokens for the pool management API are issued for a specific audience URL.",
+   "explain": "Request a token for https://dynamicsessions.io/.default; DefaultAzureCredential handles caching and renewal.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Where does a code interpreter session place files you upload, so later executions with the same identifier can read them?",
+   "options": [
+    {
+     "text": "/home/data",
+     "why": "/home is the App Service shared volume, not the session upload location."
+    },
+    {
+     "text": "/var/session",
+     "why": "Learn names /mnt/data."
+    },
+    {
+     "text": "/tmp/uploads",
+     "why": "Learn names /mnt/data."
+    },
+    {
+     "text": "/mnt/data",
+     "why": "Correct. Code interpreter sessions put uploads in /mnt/data."
+    }
+   ],
+   "answer": 3,
+   "hint": "Uploaded files land in one fixed folder that later executions can read.",
+   "explain": "Uploads go to /mnt/data and stay available while the session exists.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-017",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A chat app maps each conversation to a dynamic session.",
+   "rows": [
+    {
+     "text": "The browser should send the session identifier it wants to use.",
+     "answer": false,
+     "why": "Don't accept an arbitrary identifier from the client; generate it on the server."
+    },
+    {
+     "text": "A random UUID generated on the server is a suitable identifier.",
+     "answer": true,
+     "why": "A random UUID is unpredictable and meets the identifier format."
+    },
+    {
+     "text": "Knowing a session identifier is enough to call the pool API.",
+     "answer": false,
+     "why": "The identifier alone doesn't authenticate; every request needs the backend's token."
+    }
+   ],
+   "hint": "Identifiers route to state. Who should create them, and are they enough on their own?",
+   "explain": "Identifiers are sensitive routing keys: server-generated, mapped server-side, never trusted from clients.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "The team registered one SessionsPythonREPLTool instance as a shared singleton for all users. Users report seeing each other's files. What should you change?",
+   "options": [
+    {
+     "text": "Shorten the pool cooldown so files are deleted sooner",
+     "why": "A shorter cooldown doesn't separate users who share one session."
+    },
+    {
+     "text": "Switch to a custom container session pool so that each user gets stronger isolation",
+     "why": "Isolation is per session; the issue is that everyone uses the same session."
+    },
+    {
+     "text": "Enable egress so each user can store files externally",
+     "why": "Egress doesn't separate session state."
+    },
+    {
+     "text": "Create a separate tool and agent context for each user or conversation",
+     "why": "Correct. One tool instance reuses one session identifier, so it must not be shared across users."
+    }
+   ],
+   "answer": 3,
+   "hint": "A singleton tool reuses one session identifier for everybody.",
+   "explain": "The tool generates one identifier per instance. Separate instances per user keep files and Python state apart.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-019",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your backend's managed identity must call one session pool's management API and no other pools. Which role assignment does Learn show?",
+   "options": [
+    {
+     "text": "Reader role on the session pool, so the backend can see the pool's endpoint",
+     "why": "Reader can view the pool but can't call the management API to run code."
+    },
+    {
+     "text": "Azure ContainerApps Session Executor, scoped to that session pool",
+     "why": "Correct. This role lets the identity call the pool API, and pool scope keeps it out of unrelated pools."
+    },
+    {
+     "text": "Azure ContainerApps Session Executor, scoped to the subscription",
+     "why": "Subscription scope would let the identity execute code in unrelated pools."
+    },
+    {
+     "text": "Contributor on the resource group that holds the pool",
+     "why": "Contributor manages resources. It's broader than needed and isn't the role for executing code."
+    }
+   ],
+   "answer": 1,
+   "hint": "There's a specific role for calling the pool, and you can choose how widely to assign it.",
+   "explain": "The calling identity needs the Azure ContainerApps Session Executor role. Assign it at the session pool scope so the identity can't execute code in unrelated pools.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m4-020",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A user asks the agent to analyze a 400 MB export in a code interpreter session. The upload fails. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Split the file into chunks and upload each chunk under a different session identifier",
+     "why": "Different identifiers address different sessions, so the chunks wouldn't be together."
+    },
+    {
+     "text": "Send a smaller approved input, or use a custom architecture",
+     "why": "Correct. The code interpreter upload limit is 128 MB, so redesign the task or the architecture."
+    },
+    {
+     "text": "Increase the cooldown period so that the upload has more time",
+     "why": "The cooldown is about idle time. It doesn't change the file size limit."
+    },
+    {
+     "text": "Enable egress so that the session downloads the file itself",
+     "why": "Egress is a security trade-off. Learn's guidance for the size limit is to redesign the input or architecture."
+    }
+   ],
+   "answer": 1,
+   "hint": "Code interpreter uploads have a size limit, well under 400 MB.",
+   "explain": "The code interpreter file upload limit is 128 MB. For larger data, give the session a smaller approved input or use a custom execution architecture.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m4-021",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "The backend downloads files the generated code created and saves each one locally under the file name the session reported. What's the risk, and the fix?",
+   "options": [
+    {
+     "text": "File names expire with the cooldown; rename them to UUIDs inside the session",
+     "why": "The risk is on the backend's file system, not in the session."
+    },
+    {
+     "text": "The session could delete the file first; download it before running code",
+     "why": "Files are produced by the code, so you can't download them before it runs."
+    },
+    {
+     "text": "Large files could time out, so download every generated file together in one batched request",
+     "why": "Timeouts are a separate concern. The danger is an untrusted name choosing where data is written."
+    },
+    {
+     "text": "Path traversal: validate each name and encode it as one URL path segment",
+     "why": "Correct. Never build a local path from an untrusted file name without validating it, and encode the name in the URL."
+    }
+   ],
+   "answer": 3,
+   "hint": "The generated code chooses the file name. What could a malicious name do on your server?",
+   "explain": "Encode the service-side file name as a single URL path segment, and never construct a local destination from an untrusted file name without validation, because path traversal could overwrite an unintended file.",
+   "origin": "new"
+  },
+  {
+   "id": "lp2m4-022",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "match",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Classify each outcome from a dynamic session call.",
+   "choices": [
+    "Transport failure",
+    "Execution failure",
+    "Validation failure"
+   ],
+   "items": [
+    {
+     "text": "The pool API returns 403 because the identity lacks the role",
+     "answer": 0,
+     "why": "Authentication and authorization errors stop the API operation from completing."
+    },
+    {
+     "text": "The request succeeds, but the Python code raises an exception",
+     "answer": 1,
+     "why": "The session ran the payload, but the code failed."
+    },
+    {
+     "text": "The code finishes, but the required chart file wasn't produced",
+     "answer": 2,
+     "why": "Output that omits a required artifact is a validation failure."
+    }
+   ],
+   "hint": "Did the API call fail, did the code fail, or did the code finish but produce the wrong output?",
+   "explain": "Keep transport, execution, validation and success distinct for monitoring and callers.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-023",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "After a user's 20-minute break, analysis code reports that /mnt/data/operational-data.csv doesn't exist, although the backend used the same identifier. What should the backend do?",
+   "options": [
+    {
+     "text": "Generate a new identifier and ask the user to upload the file again",
+     "why": "The backend already has the source in durable storage and can recover itself."
+    },
+    {
+     "text": "Return an error telling the user the session identifier is invalid",
+     "why": "The identifier is fine; the original session simply expired."
+    },
+    {
+     "text": "Increase the pool's cooldown to 24 hours so that the file stays available between user breaks",
+     "why": "Cooldown isn't a retention guarantee, and longer retention raises risk for untrusted code."
+    },
+    {
+     "text": "Retrieve the source from durable storage, upload it again and rerun the idempotent step",
+     "why": "Correct. The session expired; restore inputs from durable storage and rerun safely."
+    }
+   ],
+   "answer": 3,
+   "hint": "The session expired, and the identifier now gets a new, empty session.",
+   "explain": "After cooldown, the same identifier can map to a new empty session. Design workflows to recognize missing temporary state.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-024",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A request that runs generated code which posts a message to an external system times out on the client side. What should the backend do?",
+   "options": [
+    {
+     "text": "Retry immediately, because 504 is in the transient set",
+     "why": "The operation isn't idempotent, so an automatic retry could post the message twice."
+    },
+    {
+     "text": "Retry three times with jitter, then report success",
+     "why": "Retries don't make a non-idempotent operation safe, and success can't be assumed."
+    },
+    {
+     "text": "Not retry automatically; check the outcome first",
+     "why": "Correct. A timeout is ambiguous; don't repeat side-effecting code without verifying the state."
+    },
+    {
+     "text": "Delete the session, then run the same code in a new one",
+     "why": "Running it again elsewhere still duplicates the side effect."
+    }
+   ],
+   "answer": 2,
+   "hint": "Code with side effects might already have run.",
+   "explain": "Retry only bounded, idempotent operations after evaluating the observed state.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-025",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A conversation ends, and the backend wants the session's temporary data gone now.",
+   "rows": [
+    {
+     "text": "The backend can send DELETE …/session?identifier=… before the cooldown expires.",
+     "answer": true,
+     "why": "The backend can delete a code interpreter session early."
+    },
+    {
+     "text": "A 204 No Content response confirms the environment no longer exists.",
+     "answer": true,
+     "why": "Treat 204 No Content as confirmation of deletion."
+    },
+    {
+     "text": "It's safe to delete while another request for the same conversation is still running.",
+     "answer": false,
+     "why": "Don't delete a session while another request for the conversation is running."
+    },
+    {
+     "text": "If the DELETE fails, the backend can quietly report cleanup as done, because cooldown will handle it.",
+     "answer": false,
+     "why": "Report the failure in telemetry; data or capacity may remain until cooldown."
+    }
+   ],
+   "hint": "Deleting ends the session right away. Think about requests still in flight.",
+   "explain": "Clean up intentionally, confirm with 204, and keep failed deletions visible.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp2m4-026",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You want to tell a user that their analysis workspace will expire soon. How can the backend get the session's creation, last-access and expiry details?",
+   "options": [
+    {
+     "text": "Query the Container Apps environment's system logs for the session's events",
+     "why": "System logs aren't the documented way to read one session's expiry."
+    },
+    {
+     "text": "Call GET …/session?identifier=<id> on the pool's management endpoint",
+     "why": "Correct. The session query returns those details, though the backend must still handle the session disappearing."
+    },
+    {
+     "text": "Read /mnt/data/session.json inside the session",
+     "why": "Session lifecycle data isn't exposed as a file in /mnt/data."
+    },
+    {
+     "text": "Run az containerapp sessionpool show for the pool",
+     "why": "That returns pool properties such as the management endpoint, not one session's status."
+    }
+   ],
+   "answer": 1,
+   "hint": "The pool management API can describe a session by its identifier.",
+   "explain": "GET <POOL_MANAGEMENT_ENDPOINT>/session?identifier=<SESSION_ID> returns creation, last-access and expiration information. It's useful for diagnostics and user messaging, but the session can still disappear before the next call.",
+   "origin": "new"
+  }
+ ]
+}

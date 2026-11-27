@@ -1,0 +1,820 @@
+{
+ "module": "lp8m2",
+ "title": "Manage application settings with Azure App Configuration",
+ "questions": [
+  {
+   "id": "lp8m2-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An app's managed identity only needs to read settings and feature flags from App Configuration. Which role should it get?",
+   "options": [
+    {
+     "text": "Key Vault Secrets User on a vault",
+     "why": "That's for Key Vault secrets."
+    },
+    {
+     "text": "App Configuration Data Owner",
+     "why": "Data Owner is for operators and pipelines that change settings."
+    },
+    {
+     "text": "App Configuration Data Reader",
+     "why": "Correct. Read-only access to key-values, feature flags and Key Vault references."
+    },
+    {
+     "text": "Contributor on the resource group",
+     "why": "Contributor manages the resource, not least-privilege data reads."
+    }
+   ],
+   "answer": 2,
+   "hint": "Reading settings and flags only: the read-only data role.",
+   "explain": "Readers for apps, Owners for operators.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What is the endpoint format for an App Configuration store named docpipe-config?",
+   "options": [
+    {
+     "text": "https://docpipe-config.azconfig.io",
+     "why": "Correct. Stores use https://<store-name>.azconfig.io."
+    },
+    {
+     "text": "https://docpipe-config.config.azure.com",
+     "why": "That isn't the App Configuration domain."
+    },
+    {
+     "text": "https://docpipe-config.vault.azure.net",
+     "why": "That's a Key Vault URL."
+    },
+    {
+     "text": "https://docpipe-config.azurewebsites.net",
+     "why": "That's App Service."
+    }
+   ],
+   "answer": 0,
+   "hint": "App Configuration endpoints use their own domain.",
+   "explain": "Pass the endpoint and a credential to load().",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An app calls `load(endpoint=…, credential=DefaultAzureCredential())` with no selectors.",
+   "rows": [
+    {
+     "text": "It loads keys labelled Production as well as unlabelled keys.",
+     "answer": false,
+     "why": "Without a selector, only null-label keys load."
+    },
+    {
+     "text": "Keys are case-insensitive, so openai:endpoint matches OpenAI:Endpoint.",
+     "answer": false,
+     "why": "Keys are case-sensitive."
+    },
+    {
+     "text": "A key plus its value can be up to 10 KB.",
+     "answer": true,
+     "why": "That's the combined size limit."
+    },
+    {
+     "text": "The returned object can be used like a Python dictionary.",
+     "answer": true,
+     "why": "load() returns a dictionary-like Mapping."
+    }
+   ],
+   "hint": "No selector means null-label keys only. Keys are case-sensitive. There's a size limit.",
+   "explain": "Use SettingSelector to choose keys and labels.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Several apps share one store, and this app's keys all start with DocPipeline:. The code should use short names like OpenAI:Endpoint. What should you use?",
+   "options": [
+    {
+     "text": "A separate App Configuration store for each key",
+     "why": "A store per key isn't how prefixes are handled."
+    },
+    {
+     "text": "A label_filter set to the value DocPipeline",
+     "why": "Labels are variants, not key prefixes."
+    },
+    {
+     "text": "Tags named DocPipeline on every one of the keys",
+     "why": "Tags don't shorten key names."
+    },
+    {
+     "text": "key_filter DocPipeline:* plus trim_prefixes",
+     "why": "Correct. Filter by prefix, then trim it for cleaner names."
+    }
+   ],
+   "answer": 3,
+   "hint": "Filter on the app's prefix, then remove it from the names the code sees.",
+   "explain": "key_filter narrows what loads; trim_prefixes simplifies names.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An operator updates three model settings and wants running apps to pick up all three together, not one at a time. What's the pattern?",
+   "options": [
+    {
+     "text": "Add a label called Refresh to the three keys",
+     "why": "Labels don't trigger refresh."
+    },
+    {
+     "text": "Set refresh_interval to 0 so every key refreshes instantly",
+     "why": "The provider still needs refresh() calls and a watched key; per-key instant refresh isn't the pattern."
+    },
+    {
+     "text": "Restart each app instance after every single change",
+     "why": "Restarts aren't needed with dynamic refresh."
+    },
+    {
+     "text": "Change the settings, then the Sentinel key",
+     "why": "Correct. A sentinel change triggers a reload of the whole configuration for consistency."
+    }
+   ],
+   "answer": 3,
+   "hint": "Change the settings, then touch one key that tells apps to reload.",
+   "explain": "Sentinel key + refresh_on + refresh(): changes take effect together.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Dynamic refresh is configured with refresh_interval=60, but the app never sees updated values. The code only calls load() at startup. What's missing?",
+   "options": [
+    {
+     "text": "Calls to config.refresh() in the app",
+     "why": "Correct. The provider's refresh() must be called explicitly."
+    },
+    {
+     "text": "The App Configuration Data Owner role",
+     "why": "Reading doesn't need Data Owner."
+    },
+    {
+     "text": "A second load() call every 60 seconds",
+     "why": "Reloading by hand isn't the provider's refresh mechanism."
+    },
+    {
+     "text": "A label_filter set to the null label",
+     "why": "Labels aren't the issue."
+    }
+   ],
+   "answer": 0,
+   "hint": "Refresh doesn't happen by itself. The app must ask for it.",
+   "explain": "refresh() checks the watch keys if the interval has elapsed; otherwise it returns immediately.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A setting Pipeline:Stages holds a JSON array, but the app receives it as a plain string and has to parse it by hand. What should you set on the key-value?",
+   "options": [
+    {
+     "text": "Content type application/json",
+     "why": "Correct. The provider then parses the value as a JSON object."
+    },
+    {
+     "text": "A key name ending in .json",
+     "why": "The key's name doesn't tell the provider how to parse the value."
+    },
+    {
+     "text": "A label named json",
+     "why": "Labels create variants of a key. They don't change how the value is parsed."
+    },
+    {
+     "text": "A tag type=json",
+     "why": "Tags are metadata for filtering. They don't affect parsing."
+    }
+   ],
+   "answer": 0,
+   "hint": "One optional property tells the provider how to interpret the value.",
+   "explain": "Each setting has a key, value, optional label, optional content type and tags. Setting content type to application/json tells the provider to parse the value as a JSON object.",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m2-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An app connects to App Configuration with a connection string stored in an environment variable. Security wants no connection strings at all. What should the app use?",
+   "options": [
+    {
+     "text": "Its managed identity with the App Configuration Data Reader role",
+     "why": "Correct. A managed identity removes the connection string and its rotation burden."
+    },
+    {
+     "text": "The store's access key in local.settings.json",
+     "why": "That's another shared secret, not an identity."
+    },
+    {
+     "text": "Anonymous access with an IP allow list",
+     "why": "App Configuration isn't meant for anonymous access, and IPs aren't identities."
+    },
+    {
+     "text": "A connection string stored in Key Vault instead",
+     "why": "That still uses a connection string that grants full access to the store."
+    }
+   ],
+   "answer": 0,
+   "hint": "Remove the secret entirely by authenticating as the app itself.",
+   "explain": "Managed identities remove connection strings from configuration. The app identity needs App Configuration Data Reader to read key-values, feature flags and Key Vault references.",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m2-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A new document classification stage starts producing wrong labels in production. What lets operators turn it off in seconds without redeploying?",
+   "options": [
+    {
+     "text": "A new label on the Pipeline:BatchSize key",
+     "why": "Labels vary values per environment, not stage on/off."
+    },
+    {
+     "text": "A feature flag used as a kill switch",
+     "why": "Correct. Disable the flag and the pipeline skips the stage."
+    },
+    {
+     "text": "A Key Vault reference for the stage",
+     "why": "Key Vault references point to secrets."
+    },
+    {
+     "text": "A code rollback through the pipeline",
+     "why": "Rollbacks take minutes or hours."
+    }
+   ],
+   "answer": 1,
+   "hint": "Turning something off in seconds without a deployment is a flag's job.",
+   "explain": "Feature flags decouple feature lifecycle from deployment.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Defaults are stored with no label and production overrides with the Production label. In which order should the SettingSelectors be passed?",
+   "options": [
+    {
+     "text": "Production alone, with no defaults",
+     "why": "Keys without overrides would be missing."
+    },
+    {
+     "text": "Production first, then null label",
+     "why": "Defaults would then override production values."
+    },
+    {
+     "text": "Null label first, then Production",
+     "why": "Correct. Later selectors override earlier ones, so overrides go last."
+    },
+    {
+     "text": "The null label alone, with a Production tag",
+     "why": "Tags don't select labels."
+    }
+   ],
+   "answer": 2,
+   "hint": "Later selectors override earlier ones, so defaults go first.",
+   "explain": "Stack defaults, then environment-specific overrides.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An app loads settings with `feature_flag_enabled=True` and `feature_flag_refresh_enabled=True`.",
+   "rows": [
+    {
+     "text": "Changing a feature flag also triggers a refresh of regular settings.",
+     "answer": false,
+     "why": "The two refreshes are independent."
+    },
+    {
+     "text": "FeatureManager comes with the provider package, with no extra install.",
+     "answer": false,
+     "why": "Install featuremanagement separately."
+    },
+    {
+     "text": "is_enabled(\"UseNewEmbeddingsModel\") returns a boolean for the flag's state.",
+     "answer": true,
+     "why": "FeatureManager evaluates flags at runtime."
+    }
+   ],
+   "hint": "Flag refresh and setting refresh are separate. FeatureManager is a separate package.",
+   "explain": "Flags and settings refresh independently when refresh() is called.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-012",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "How does App Configuration store feature flags internally?",
+   "options": [
+    {
+     "text": "In a separate store that FeatureManager alone reads",
+     "why": "Flags live in the same store."
+    },
+    {
+     "text": "Keys prefixed .appconfig.featureflag/",
+     "why": "Correct. The libraries hide these details behind simple flag names."
+    },
+    {
+     "text": "As labels named Enabled and Disabled on keys",
+     "why": "Labels are environment variants, not flag states."
+    },
+    {
+     "text": "As Key Vault secrets with a FeatureFlag tag",
+     "why": "Flags aren't Key Vault secrets."
+    }
+   ],
+   "answer": 1,
+   "hint": "Feature flags are stored as ordinary key-values under a reserved prefix.",
+   "explain": "Prefix .appconfig.featureflag/ with content type application/vnd.microsoft.appconfig.ff+json.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-013",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Which two scenarios does Learn list as feature flag patterns for AI apps? (Select two.)",
+   "options": [
+    {
+     "text": "Progressive rollout of a new embeddings model",
+     "why": "Correct. Gate the new model's code path before full rollout."
+    },
+    {
+     "text": "Rotating a Cosmos DB connection string",
+     "why": "Rotation is a Key Vault concern."
+    },
+    {
+     "text": "Storing the Azure OpenAI API key",
+     "why": "Secrets belong in Key Vault."
+    },
+    {
+     "text": "Staged activation of pipeline stages",
+     "why": "Correct. Enable stages one at a time."
+    }
+   ],
+   "answer": [
+    0,
+    3
+   ],
+   "hint": "Learn lists a set of flag patterns for AI apps. Two of these match it.",
+   "explain": "Rollouts, kill switches, A/B tests and staged activation.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-014",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The team wants to compare the current embedding configuration with an experimental one on live requests, sending some requests down each path. Which feature flag pattern from Learn fits?",
+   "options": [
+    {
+     "text": "A sentinel key",
+     "why": "The sentinel key triggers a configuration refresh. It isn't a feature flag pattern."
+    },
+    {
+     "text": "A/B testing configurations",
+     "why": "Correct. Flags can route different requests through different paths so that you can compare results."
+    },
+    {
+     "text": "A kill switch",
+     "why": "A kill switch turns a stage off in an emergency. It doesn't compare two paths."
+    },
+    {
+     "text": "Staged pipeline activation",
+     "why": "Staged activation turns stages on one at a time. It doesn't compare configurations."
+    }
+   ],
+   "answer": 1,
+   "hint": "Two paths running side by side so that you can compare their results.",
+   "explain": "Learn's feature flag patterns for AI apps: progressive model rollouts, kill switches, A/B testing configurations, and staged pipeline activation.",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m2-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "OpenAI:ApiKey is a Key Vault reference. Loading fails with an error naming the vault and secret, although other settings load fine. What's most likely missing?",
+   "options": [
+    {
+     "text": "Key Vault Secrets User on that vault",
+     "why": "Correct. Store access works, but resolving the reference needs vault access."
+    },
+    {
+     "text": "A label on the OpenAI:ApiKey key itself",
+     "why": "Labels don't affect resolution permissions."
+    },
+    {
+     "text": "App Configuration Data Owner on the store",
+     "why": "Reading settings needs Data Reader, which already works."
+    },
+    {
+     "text": "The featuremanagement package installed",
+     "why": "Feature management is unrelated."
+    }
+   ],
+   "answer": 0,
+   "hint": "The reference resolves in Key Vault, so the identity needs a secrets role there too.",
+   "explain": "The identity needs a role on App Configuration and on every referenced vault.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You create a reference with `--secret-identifier https://my-keyvault.vault.azure.net/secrets/openai-api-key` (no version). What happens when the secret rotates?",
+   "options": [
+    {
+     "text": "App Configuration copies the new value into the store",
+     "why": "App Configuration stores only the pointer."
+    },
+    {
+     "text": "Nothing; versionless identifiers are pinned to the first version",
+     "why": "Versionless means latest, not first."
+    },
+    {
+     "text": "The reference breaks until you update it",
+     "why": "Versionless references keep working after rotation."
+    },
+    {
+     "text": "The app gets the new value on its next load or secret refresh",
+     "why": "Correct. Omitting the version resolves the latest version."
+    }
+   ],
+   "answer": 3,
+   "hint": "A versionless reference follows rotation.",
+   "explain": "Omit the version so rotated secrets are picked up automatically.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-017",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An app loads settings with `keyvault_credential=DefaultAzureCredential()` and `secret_refresh_interval=3600`.",
+   "rows": [
+    {
+     "text": "App Configuration stores the actual secret value for OpenAI:ApiKey.",
+     "answer": false,
+     "why": "It stores only the reference URI."
+    },
+    {
+     "text": "Application code needs a separate SecretClient to read OpenAI:ApiKey.",
+     "answer": false,
+     "why": "The provider resolves references transparently."
+    },
+    {
+     "text": "Secrets can be re-resolved hourly while settings are checked more often.",
+     "answer": true,
+     "why": "secret_refresh_interval is independent of refresh_interval."
+    },
+    {
+     "text": "Secret refresh happens only when the app calls refresh().",
+     "answer": true,
+     "why": "The refresh call triggers re-resolution once the interval elapses."
+    }
+   ],
+   "hint": "App Configuration stores a pointer. The provider resolves it.",
+   "explain": "One load() returns settings and resolved secrets; each has its own refresh cadence.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Production and Development must use different OpenAI API keys stored in different vaults, under the same key name OpenAI:ApiKey. How?",
+   "options": [
+    {
+     "text": "Two keys named OpenAI:ApiKey:Prod and OpenAI:ApiKey:Dev in code",
+     "why": "Environment-specific key names are what labels avoid."
+    },
+    {
+     "text": "Store both secret values directly in App Configuration",
+     "why": "Secrets shouldn't be stored directly in App Configuration."
+    },
+    {
+     "text": "Two labelled references for OpenAI:ApiKey",
+     "why": "Correct. Labels work on references just like other keys."
+    },
+    {
+     "text": "Use tags to choose the vault at runtime",
+     "why": "Tags don't select values at load time."
+    }
+   ],
+   "answer": 2,
+   "hint": "Labels work for references too.",
+   "explain": "Label references to point to environment-specific vaults.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-019",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A configuration has 80 Key Vault references and secret_refresh_interval of 10 seconds across 30 instances. What should you consider?",
+   "options": [
+    {
+     "text": "Total Key Vault requests against its limits",
+     "why": "Correct. Each resolution is a Key Vault request; choose an interval that fits limits and rotation."
+    },
+    {
+     "text": "Nothing; references are cached by App Configuration",
+     "why": "Each resolution generates a request to Key Vault."
+    },
+    {
+     "text": "App Configuration's 10 KB value limit",
+     "why": "The pointer is small; the issue is request volume."
+    },
+    {
+     "text": "Moving the references into feature flags",
+     "why": "Feature flags aren't for secrets."
+    }
+   ],
+   "answer": 0,
+   "hint": "Many references, frequent refresh and many instances multiply into Key Vault calls.",
+   "explain": "Align secret refresh with your rotation schedule and Key Vault limits.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-020",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A Key Vault reference was created with --secret-identifier that ends in a version ID. The secret rotates monthly, but the app keeps loading the old value. Why?",
+   "options": [
+    {
+     "text": "App Configuration caches secret values for 30 days",
+     "why": "App Configuration stores only the pointer, not the secret value."
+    },
+    {
+     "text": "The app's identity lacks App Configuration Data Owner",
+     "why": "Reading references needs Data Reader. A missing role would fail, not return old values."
+    },
+    {
+     "text": "The reference is pinned to that secret version",
+     "why": "Correct. Including a version in the URI pins the reference; leave it out to follow rotation."
+    },
+    {
+     "text": "Key Vault references refresh only when the store is restarted",
+     "why": "Stores aren't restarted, and the provider re-resolves versionless references."
+    }
+   ],
+   "answer": 2,
+   "hint": "Look at the end of the secret URI.",
+   "explain": "--secret-identifier accepts the full URI; appending a version pins the reference to that version. Use a versionless URI so the app gets the new value on its next load or secret refresh.",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m2-021",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Settings load, but every Key Vault reference fails to resolve. The app identity has App Configuration Data Reader on the store. What else does it need?",
+   "options": [
+    {
+     "text": "Key Vault Secrets User on the referenced vault",
+     "why": "Correct. References resolve in Key Vault, so the identity needs permissions on both services."
+    },
+    {
+     "text": "Key Vault Contributor on the vault",
+     "why": "Contributor is control-plane only, so it can't read secret values."
+    },
+    {
+     "text": "Nothing, because App Configuration reads the secret for the app",
+     "why": "App Configuration stores only the pointer. The app's identity reads the secret."
+    },
+    {
+     "text": "App Configuration Data Owner on the store",
+     "why": "Data Owner adds write access to the store. It doesn't grant access to the vault."
+    }
+   ],
+   "answer": 0,
+   "hint": "The secret lives in a different service from the setting.",
+   "explain": "For Key Vault references to resolve, the application identity needs permissions on both App Configuration (Data Reader) and Key Vault (Key Vault Secrets User).",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m2-022",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Match each setting to where Learn says it belongs.",
+   "choices": [
+    "App Configuration value",
+    "App Configuration feature flag",
+    "Key Vault via reference"
+   ],
+   "items": [
+    {
+     "text": "Embedding dimensions: 1536",
+     "answer": 0,
+     "why": "Non-sensitive behavior setting."
+    },
+    {
+     "text": "EnableBatchProcessing on/off",
+     "answer": 1,
+     "why": "A runtime toggle."
+    },
+    {
+     "text": "Storage account access key",
+     "answer": 2,
+     "why": "Grants access to a resource."
+    }
+   ],
+   "hint": "Ask whether the value grants access or only changes behavior.",
+   "explain": "If the value alone grants access, it belongs in Key Vault.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-023",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team reviews its configuration design.",
+   "rows": [
+    {
+     "text": "Storing the Azure OpenAI API key directly as an App Configuration value is fine because the store is encrypted.",
+     "answer": false,
+     "why": "Secrets miss Key Vault's per-access audit, rotation and HSM protection."
+    },
+    {
+     "text": "Putting batch sizes in Key Vault is a good way to secure them.",
+     "answer": false,
+     "why": "Non-sensitive values in Key Vault waste its capabilities and risk throttling."
+    },
+    {
+     "text": "Keeping a copy of a connection string in both services without a reference can cause drift.",
+     "answer": true,
+     "why": "Use a reference so there's one source of truth."
+    }
+   ],
+   "hint": "Credentials belong in Key Vault, behavior in App Configuration.",
+   "explain": "Each service for its intended purpose, linked by references.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-024",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Which App Configuration capability lets operators roll back the whole configuration to a known point in time?",
+   "options": [
+    {
+     "text": "Key-value snapshots",
+     "why": "Correct. Snapshots support point-in-time rollback."
+    },
+    {
+     "text": "Purge protection",
+     "why": "Purge protection is a Key Vault feature."
+    },
+    {
+     "text": "Secret versioning",
+     "why": "Secret versioning is Key Vault's."
+    },
+    {
+     "text": "Event Grid subscriptions",
+     "why": "Event Grid delivers events; it doesn't roll back config."
+    }
+   ],
+   "answer": 0,
+   "hint": "One App Configuration feature captures a whole configuration at a point in time.",
+   "explain": "App Configuration: labels, flags, snapshots, dynamic refresh.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-025",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Compliance requires a record of which identity read each credential and when. Why does this push the credential into Key Vault?",
+   "options": [
+    {
+     "text": "App Configuration can't store strings longer than 1 KB",
+     "why": "The limit is 10 KB for key + value, and size isn't the reason."
+    },
+    {
+     "text": "Key Vault tracks each access; App Config RBAC is store-level",
+     "why": "Correct. Per-object access tracking needs Key Vault."
+    },
+    {
+     "text": "Key Vault values refresh faster than App Configuration",
+     "why": "Refresh speed isn't the criterion."
+    },
+    {
+     "text": "App Configuration doesn't support managed identities",
+     "why": "App Configuration supports managed identity."
+    }
+   ],
+   "answer": 1,
+   "hint": "Key Vault logs every access to each secret.",
+   "explain": "Per-access audit, rotation and expiry are Key Vault strengths.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m2-026",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Which value belongs in Key Vault rather than App Configuration, according to Learn's placement rule?",
+   "options": [
+    {
+     "text": "The model deployment name text-embedding-ada-002",
+     "why": "A deployment name controls behavior without granting access."
+    },
+    {
+     "text": "A database connection string that contains a password",
+     "why": "Correct. Values that grant access or contain credentials are sensitive and belong in Key Vault."
+    },
+    {
+     "text": "The Azure OpenAI endpoint URL",
+     "why": "An endpoint URL alone doesn't grant access, so it's an App Configuration value."
+    },
+    {
+     "text": "The pipeline's retry count",
+     "why": "Retry counts control behavior, so they belong in App Configuration."
+    }
+   ],
+   "answer": 1,
+   "hint": "The test is whether the value grants access to a resource.",
+   "explain": "The key criterion is whether a value grants access or contains credentials. Endpoints, deployment names, dimensions, batch sizes and flags go to App Configuration; API keys and connection strings with credentials go to Key Vault.",
+   "origin": "new"
+  }
+ ]
+}

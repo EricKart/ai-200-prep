@@ -1,0 +1,17 @@
+name: Lesson, lab or cheat-sheet fix
+description: A typo, broken step, outdated command or unclear explanation
+labels: [content-fix]
+body:
+  - type: input
+    id: where
+    attributes:
+      label: Page or file
+      placeholder: labs/lp7-service-bus or https://aryantripathi.dev/ai-200/...
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong, and what should it say?
+    validations:
+      required: true

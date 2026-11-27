@@ -1,0 +1,778 @@
+{
+ "module": "lp8m1",
+ "title": "Manage application secrets with Azure Key Vault",
+ "questions": [
+  {
+   "id": "lp8m1-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A RAG API's managed identity needs to read an Azure OpenAI key from Key Vault at runtime, and nothing else. Which role should it get?",
+   "options": [
+    {
+     "text": "Key Vault Reader",
+     "why": "Reader sees metadata but not secret values."
+    },
+    {
+     "text": "Key Vault Contributor",
+     "why": "Contributor is control plane only and can't read secrets."
+    },
+    {
+     "text": "Key Vault Secrets Officer",
+     "why": "Officer can create and delete secrets, more than needed."
+    },
+    {
+     "text": "Key Vault Secrets User",
+     "why": "Correct. Read-only access to secret values for application identities."
+    }
+   ],
+   "answer": 3,
+   "hint": "Read secret values and nothing else: the narrowest data-plane secrets role.",
+   "explain": "Least privilege: apps read with Secrets User; pipelines manage with Secrets Officer.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What is the maximum size of a Key Vault secret value?",
+   "options": [
+    {
+     "text": "1 MB",
+     "why": "Learn gives a smaller limit."
+    },
+    {
+     "text": "25 KB",
+     "why": "Correct. Secrets store strings up to 25 KB."
+    },
+    {
+     "text": "256 KB",
+     "why": "256 KB is the Service Bus Standard message limit."
+    },
+    {
+     "text": "4 KB",
+     "why": "Learn gives a larger limit."
+    }
+   ],
+   "answer": 1,
+   "hint": "Key Vault secrets have a fixed size limit in kilobytes.",
+   "explain": "Secrets are opaque strings up to 25 KB with an optional content_type.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Compliance requires that encryption keys be protected by FIPS 140-3 Level 3 hardware security modules. Which tier do you need?",
+   "options": [
+    {
+     "text": "Standard",
+     "why": "Standard uses software protection validated to FIPS 140 Level 1."
+    },
+    {
+     "text": "Free",
+     "why": "Learn describes Standard and Premium only."
+    },
+    {
+     "text": "Premium",
+     "why": "Correct. Premium protects keys in FIPS 140-3 Level 3 HSMs."
+    },
+    {
+     "text": "Basic",
+     "why": "Learn describes Standard and Premium only."
+    }
+   ],
+   "answer": 2,
+   "hint": "FIPS 140-3 Level 3 means hardware security modules.",
+   "explain": "Choose Premium when regulations mandate HSM-protected keys.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A pipeline must encrypt training data and sign model artifacts without the key material ever leaving the vault. Which object type should you use?",
+   "options": [
+    {
+     "text": "Secrets",
+     "why": "Secrets return their value to the caller."
+    },
+    {
+     "text": "Keys",
+     "why": "Correct. Keys perform cryptographic operations server-side."
+    },
+    {
+     "text": "Certificates",
+     "why": "Certificates manage X.509 lifecycles; the need here is raw crypto operations."
+    },
+    {
+     "text": "Tags",
+     "why": "Tags are metadata, not credentials."
+    }
+   ],
+   "answer": 1,
+   "hint": "Encrypting and signing inside the vault uses one object type.",
+   "explain": "Secrets for strings, keys for cryptography, certificates for TLS.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A production vault is created with default settings.",
+   "rows": [
+    {
+     "text": "Soft delete can be turned off later to save storage.",
+     "answer": false,
+     "why": "Soft delete is on by default and can't be disabled."
+    },
+    {
+     "text": "The soft-delete retention period can be shortened after creation.",
+     "answer": false,
+     "why": "Retention is set at creation and can't be changed."
+    },
+    {
+     "text": "Purge protection is enabled automatically.",
+     "answer": false,
+     "why": "Purge protection is optional; consider enabling it on production vaults."
+    },
+    {
+     "text": "A deleted secret can be recovered within the retention period.",
+     "answer": true,
+     "why": "Soft-deleted objects are recoverable during retention."
+    }
+   ],
+   "hint": "Soft delete is on and can't be turned off. Purge protection is optional.",
+   "explain": "Soft delete (7–90 days, default 90) plus optional purge protection.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A vault was accidentally deleted and then recovered from soft delete. Apps now get authorization errors, and rotation events stopped. Why?",
+   "options": [
+    {
+     "text": "Recovered vaults start with purge protection disabled",
+     "why": "Purge protection isn't the cause of these errors."
+    },
+    {
+     "text": "Secrets are given new names after a vault recovery",
+     "why": "Names don't change."
+    },
+    {
+     "text": "Recovery restores keys but leaves the secrets out",
+     "why": "Recovery restores the vault's objects."
+    },
+    {
+     "text": "Role assignments and Event Grid subscriptions aren't restored",
+     "why": "Correct. They're deleted with the vault and must be recreated manually."
+    }
+   ],
+   "answer": 3,
+   "hint": "Recovering a vault doesn't bring back everything that pointed at it.",
+   "explain": "After recovering a vault, recreate its role assignments and Event Grid subscriptions.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A platform engineer has Key Vault Contributor on a vault and can create and update it, but gets authorization errors when reading a secret value. Why?",
+   "options": [
+    {
+     "text": "The vault must be on the Premium tier for users to read secrets",
+     "why": "Tier controls key protection. It doesn't decide who can read secrets."
+    },
+    {
+     "text": "Contributor is a control-plane role with no data-plane access",
+     "why": "Correct. Managing the vault resource and reading its secrets are separate permissions."
+    },
+    {
+     "text": "Secrets are readable by managed identities, not by user accounts",
+     "why": "Users and pipelines can read secrets with the right data-plane role."
+    },
+    {
+     "text": "Contributor can read secrets only after soft delete is turned off",
+     "why": "Soft delete can't be turned off, and it isn't related to read access."
+    }
+   ],
+   "answer": 1,
+   "hint": "Azure separates managing a resource from using the data inside it.",
+   "explain": "Key Vault Contributor is a control-plane role: it manages the vault resource but doesn't grant data-plane operations such as reading secrets. Use data-plane roles such as Key Vault Secrets User or Secrets Officer.",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m1-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A monitoring tool must check which secrets exist in a vault and read their properties, such as expiry dates, but must never see secret values. Which role fits?",
+   "options": [
+    {
+     "text": "Key Vault Secrets Officer",
+     "why": "Secrets Officer can create, update and delete secrets, which is far more than needed."
+    },
+    {
+     "text": "Key Vault Secrets User",
+     "why": "Secrets User can read secret values, which this tool must not do."
+    },
+    {
+     "text": "Key Vault Reader",
+     "why": "Correct. It grants read access to vault metadata, such as secret names and properties, without revealing values."
+    },
+    {
+     "text": "Key Vault Administrator",
+     "why": "Administrator grants all data-plane operations on keys, secrets and certificates."
+    }
+   ],
+   "answer": 2,
+   "hint": "You want names and properties, but no values.",
+   "explain": "Key Vault Reader reads vault metadata (names, properties) without values. Secrets User reads values; Secrets Officer manages secrets; Administrator has all data-plane operations; Contributor is control-plane only.",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m1-009",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A CI/CD pipeline creates, updates and deletes secrets as part of credential rotation. Which built-in role should its identity get?",
+   "options": [
+    {
+     "text": "Key Vault Contributor",
+     "why": "Contributor manages the vault resource, not the secrets inside it."
+    },
+    {
+     "text": "Key Vault Reader",
+     "why": "Reader sees metadata only."
+    },
+    {
+     "text": "Key Vault Secrets User",
+     "why": "Secrets User is read-only, so the pipeline couldn't create new versions."
+    },
+    {
+     "text": "Key Vault Secrets Officer",
+     "why": "Correct. It grants full management of secrets for operators and pipelines that manage the secret lifecycle."
+    }
+   ],
+   "answer": 3,
+   "hint": "The pipeline manages the lifecycle of secrets, not the vault itself.",
+   "explain": "Assign Key Vault Secrets Officer to operators or CI/CD pipelines responsible for secret lifecycle; Key Vault Secrets User to apps that only read credentials.",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m1-010",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "At startup, a service must confirm that five required secrets exist without reading their values. Which method should it call?",
+   "options": [
+    {
+     "text": "get_secret() for each name",
+     "why": "That retrieves the values themselves."
+    },
+    {
+     "text": "list_properties_of_secret_versions()",
+     "why": "That lists versions of one secret."
+    },
+    {
+     "text": "list_properties_of_secrets()",
+     "why": "Correct. It returns metadata such as name and enabled status, not values."
+    },
+    {
+     "text": "set_secret() with empty values",
+     "why": "Writing secrets would overwrite them."
+    }
+   ],
+   "answer": 2,
+   "hint": "One method lists secrets and their properties without returning values.",
+   "explain": "Validate configuration early by listing secret properties.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which URL format does a SecretClient use for a vault named kv-ragpipeline-prod?",
+   "options": [
+    {
+     "text": "https://kv-ragpipeline-prod.vault.azure.net/",
+     "why": "Correct. Vault URLs follow https://<vault-name>.vault.azure.net/."
+    },
+    {
+     "text": "https://vault.azure.net/kv-ragpipeline-prod",
+     "why": "The vault name is a subdomain, not a path."
+    },
+    {
+     "text": "https://kv-ragpipeline-prod.azurewebsites.net/vault",
+     "why": "That's an App Service domain."
+    },
+    {
+     "text": "https://kv-ragpipeline-prod.keyvault.windows.net/",
+     "why": "That isn't the Key Vault domain."
+    }
+   ],
+   "answer": 0,
+   "hint": "Each vault has its own DNS name under vault.azure.net.",
+   "explain": "Find it on the vault's overview page or with az keyvault show --query properties.vaultUri.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each exception to the right response.",
+   "choices": [
+    "Fix the configuration; don't retry",
+    "Check the identity's RBAC role",
+    "Retry; it may be transient"
+   ],
+   "items": [
+    {
+     "text": "ResourceNotFoundError for openai-api-key",
+     "answer": 0,
+     "why": "The secret name doesn't exist in the vault."
+    },
+    {
+     "text": "HttpResponseError: the caller isn't authorized",
+     "answer": 1,
+     "why": "HttpResponseError covers authentication and authorization failures."
+    },
+    {
+     "text": "ServiceRequestError: DNS timeout",
+     "answer": 2,
+     "why": "Network-level problems may resolve on retry."
+    }
+   ],
+   "hint": "Missing secret, missing permission, or a network problem: each needs a different response.",
+   "explain": "Distinguish configuration errors from transient network failures.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A FastAPI service on Container Apps uses DefaultAzureCredential with a SecretClient.",
+   "rows": [
+    {
+     "text": "In Azure, ManagedIdentityCredential authenticates the app without stored credentials.",
+     "answer": true,
+     "why": "Managed identity is the recommended method on Azure compute."
+    },
+    {
+     "text": "The service should create a new SecretClient for every request.",
+     "answer": false,
+     "why": "Create it once at startup and reuse it."
+    },
+    {
+     "text": "It's fine to log secret.value for debugging.",
+     "answer": false,
+     "why": "Log the name and version, not the value."
+    }
+   ],
+   "hint": "Managed identity in Azure. Reuse the client. Never log values.",
+   "explain": "One reusable client, managed identity, no secret values in logs.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-014",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "On a developer laptop, AZURE_CLIENT_ID, AZURE_TENANT_ID and AZURE_CLIENT_SECRET are set from an old test, and the developer is also signed in with az login. Which credential does DefaultAzureCredential use first?",
+   "options": [
+    {
+     "text": "EnvironmentCredential (variables)",
+     "why": "Correct. EnvironmentCredential is first in the chain and wins if the variables are set."
+    },
+    {
+     "text": "AzureCliCredential (from az login)",
+     "why": "Azure CLI comes later in the chain."
+    },
+    {
+     "text": "ManagedIdentityCredential (identity)",
+     "why": "There's no managed identity on a laptop, and it comes after Environment."
+    },
+    {
+     "text": "AzurePowerShellCredential (session)",
+     "why": "PowerShell is last."
+    }
+   ],
+   "answer": 0,
+   "hint": "DefaultAzureCredential tries credentials in a fixed order. Environment variables come early.",
+   "explain": "The chain tries Environment, Workload Identity, Managed Identity, then CLI, azd and PowerShell.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-015",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A FastAPI app uses the async SecretClient with an async DefaultAzureCredential. During shutdown, the logs warn about unclosed sessions. What does Learn recommend?",
+   "options": [
+    {
+     "text": "Ignore the warning, because Python closes sessions on exit",
+     "why": "Unclosed sessions can leak resources. Close them explicitly."
+    },
+    {
+     "text": "Switch to the synchronous client, which never needs closing",
+     "why": "Learn's guidance for async apps is to close the async client and credential."
+    },
+    {
+     "text": "Close both the client and the credential, for example with async with or await close()",
+     "why": "Correct. Both are async context managers that should be closed when you're done."
+    },
+    {
+     "text": "Create a new client per request so that nothing stays open",
+     "why": "Reusing one client is the recommendation. Per-request clients add overhead."
+    }
+   ],
+   "answer": 2,
+   "hint": "Both async objects hold network resources that need to be released.",
+   "explain": "The async SecretClient and credential are async context managers. Use async with, or call await client.close() and await credential.close(), for example in the app's shutdown hook.",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m1-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "How many days before a secret's expiration does the SecretNearExpiry event fire?",
+   "options": [
+    {
+     "text": "30",
+     "why": "Correct. It fires thirty days before expiration."
+    },
+    {
+     "text": "7",
+     "why": "Learn gives a longer window."
+    },
+    {
+     "text": "60",
+     "why": "Learn gives 30."
+    },
+    {
+     "text": "90",
+     "why": "90 is a typical expiry length, not the warning window."
+    }
+   ],
+   "answer": 0,
+   "hint": "Key Vault gives a warning window before a secret expires.",
+   "explain": "Combine a 90-day expiry with SecretNearExpiry for a 30-day rotation window.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-017",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A secret named cosmosdb-connection-string has an expires_on date that passed yesterday.",
+   "rows": [
+    {
+     "text": "get_secret() now fails because the secret expired.",
+     "answer": false,
+     "why": "Expiration is informational; expired secrets can still be retrieved."
+    },
+    {
+     "text": "Calling set_secret() with the same name overwrites the old value in place.",
+     "answer": false,
+     "why": "It creates a new version."
+    },
+    {
+     "text": "get_secret() without a version returns the latest enabled version.",
+     "answer": true,
+     "why": "The default is the latest enabled version."
+    },
+    {
+     "text": "Disabling an old version stops apps retrieving it, even by version ID.",
+     "answer": true,
+     "why": "enabled=False prevents retrieval of that version."
+    }
+   ],
+   "hint": "Expiry doesn't stop reads. Writing the same name creates a new version.",
+   "explain": "Versions accumulate; expiry signals staleness but doesn't block reads.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Rotate a Cosmos DB key with the dual-credential approach. Put the steps in order.",
+   "steps": [
+    "Generate a new secondary key on the service",
+    "Store the new key as a new secret version in Key Vault",
+    "Wait until every app instance uses the new value",
+    "Regenerate the old primary key on the service"
+   ],
+   "hint": "Two keys: switch to the new one everywhere before regenerating the old one.",
+   "explain": "At least one valid credential exists throughout the rotation.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-019",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "After a key rotation, some instances still use the old key and get 401s from the downstream service. What does Learn recommend in application code?",
+   "options": [
+    {
+     "text": "Call get_secret() before each downstream request",
+     "why": "That floods Key Vault and risks throttling."
+    },
+    {
+     "text": "Pin the secret version in the app configuration",
+     "why": "Pinning prevents picking up the rotated version."
+    },
+    {
+     "text": "Restart the app instances on a schedule",
+     "why": "Restarts don't target the failure and still leave gaps."
+    },
+    {
+     "text": "On auth failure, refetch the secret and retry",
+     "why": "Correct. One extra Key Vault call only when the credential is rejected."
+    }
+   ],
+   "answer": 3,
+   "hint": "When the downstream service rejects the key, try the latest secret once more.",
+   "explain": "Retry-on-auth-failure gives zero-downtime rotation without coordination.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-020",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You want rotation without human steps for an API key that expires every 90 days. What should you set up?",
+   "options": [
+    {
+     "text": "Purge protection with a 30-day retention period",
+     "why": "Purge protection prevents deletion; it doesn't rotate."
+    },
+    {
+     "text": "A monthly calendar reminder for the operations team",
+     "why": "That's manual rotation."
+    },
+    {
+     "text": "SecretNearExpiry → Function → new version",
+     "why": "Correct. The handler generates the credential and stores it as a new version."
+    },
+    {
+     "text": "A second vault that mirrors the first one's secrets",
+     "why": "Mirroring doesn't rotate anything."
+    }
+   ],
+   "answer": 2,
+   "hint": "An expiry event can start a function that creates the new version.",
+   "explain": "Automated rotation: SecretNearExpiry → Event Grid → Function → new secret version.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-021",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "All app instances now use the newly rotated database credential. You want to make sure nothing can keep using the previous version. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Purge the old version from soft delete",
+     "why": "Versions aren't purged individually. You disable them."
+    },
+    {
+     "text": "Set a new tag on the secret named version=old",
+     "why": "Tags are metadata, so they don't stop anyone reading a version."
+    },
+    {
+     "text": "Disable the previous version with update_secret_properties(enabled=False)",
+     "why": "Correct. A disabled version can't be retrieved, which enforces use of the new credential."
+    },
+    {
+     "text": "Delete the whole secret and recreate it",
+     "why": "That removes every version, including the current one, and breaks the apps."
+    }
+   ],
+   "answer": 2,
+   "hint": "Old versions stay readable until you change one of their properties.",
+   "explain": "After a successful rotation, consider disabling previous versions with update_secret_properties(..., enabled=False) so no instance can keep using the old credential. list_properties_of_secret_versions() helps audit versions.",
+   "origin": "new"
+  },
+  {
+   "id": "lp8m1-022",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An inference API calls get_secret() on every request and starts receiving HTTP 429 during spikes. What's the main fix?",
+   "options": [
+    {
+     "text": "Cache the secret in memory with a TTL",
+     "why": "Correct. Caching turns thousands of vault calls into a few refreshes."
+    },
+    {
+     "text": "Move the vault to the Premium tier",
+     "why": "Tier doesn't raise these throttling limits."
+    },
+    {
+     "text": "Retry each 429 immediately without delay",
+     "why": "Retry with exponential backoff and jitter; immediate retries make it worse."
+    },
+    {
+     "text": "Create a new SecretClient per request",
+     "why": "New clients add overhead and don't reduce calls."
+    }
+   ],
+   "answer": 0,
+   "hint": "Calling the vault on every request causes throttling. Keep secrets for a short while.",
+   "explain": "Key Vault allows up to 4,000 GETs per vault per 10 seconds.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-023",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which Key Vault event should an app subscribe to so it can invalidate its cache as soon as a secret is rotated?",
+   "options": [
+    {
+     "text": "SecretExpired (after expiry)",
+     "why": "That fires after expiry passes."
+    },
+    {
+     "text": "SecretNearExpiry (30 days out)",
+     "why": "That fires 30 days before expiry, used to trigger rotation."
+    },
+    {
+     "text": "SecretNewVersionCreated",
+     "why": "Correct. It fires when a new secret version is stored."
+    },
+    {
+     "text": "Microsoft.Storage.BlobCreated",
+     "why": "That's a Blob Storage event."
+    }
+   ],
+   "answer": 2,
+   "hint": "A new version means rotation. Which event announces it?",
+   "explain": "Combine event-driven invalidation with a time-based fallback.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-024",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An API key rotates every week, and the team needs fresh credentials soon after rotation. Which cache setup fits Learn's guidance?",
+   "options": [
+    {
+     "text": "No cache; call Key Vault on each request",
+     "why": "Uncached reads risk throttling."
+    },
+    {
+     "text": "5–15 minute TTL plus Event Grid",
+     "why": "Correct. High-rotation secrets need short TTLs and Event Grid."
+    },
+    {
+     "text": "A 30–60 minute TTL without events",
+     "why": "That's for monthly or quarterly rotation."
+    },
+    {
+     "text": "Startup preload refreshed every few hours",
+     "why": "That's for annual or static secrets."
+    }
+   ],
+   "answer": 1,
+   "hint": "A short TTL, with events to invalidate early.",
+   "explain": "Match cache lifetime to rotation frequency and revocation risk.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp8m1-025",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team considers caching secrets in a shared Azure Managed Redis instance for 50 replicas.",
+   "rows": [
+    {
+     "text": "It can cut Key Vault calls to one per refresh cycle regardless of replica count.",
+     "answer": true,
+     "why": "One process fetches; others read the shared cache."
+    },
+    {
+     "text": "It adds no new security considerations, because Redis is inside Azure.",
+     "answer": false,
+     "why": "Secrets now live in another place needing access control and encryption."
+    },
+    {
+     "text": "Per-process caching makes Key Vault calls independent of the number of instances.",
+     "answer": false,
+     "why": "Per-process calls scale linearly with instances; a shared cache makes them independent."
+    },
+    {
+     "text": "Retrying 429s should use exponential backoff with random jitter.",
+     "answer": true,
+     "why": "Jitter avoids a thundering herd."
+    }
+   ],
+   "hint": "A shared cache cuts calls but adds its own risks.",
+   "explain": "Shared caches reduce calls but add complexity and exposure.",
+   "origin": "lab500"
+  }
+ ]
+}

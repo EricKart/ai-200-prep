@@ -1,0 +1,724 @@
+{
+ "module": "lp7m4",
+ "title": "Orchestrate durable AI workflows with Azure Durable Functions",
+ "questions": [
+  {
+   "id": "lp7m4-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An orchestrator needs to call a classification model for each document. Where should the model call go?",
+   "options": [
+    {
+     "text": "Directly in the orchestrator",
+     "why": "Orchestrators must stay deterministic and avoid external calls."
+    },
+    {
+     "text": "In an activity function",
+     "why": "Correct. Activities perform nondeterministic work such as model calls."
+    },
+    {
+     "text": "In the client function",
+     "why": "Clients start and manage orchestrations."
+    },
+    {
+     "text": "In an entity function",
+     "why": "Entities manage small pieces of durable state."
+    }
+   ],
+   "answer": 1,
+   "hint": "Orchestrators coordinate. The function type that does real I/O is a different one.",
+   "explain": "The orchestrator schedules activities and records only their results.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which API gives an orchestrator a replay-safe current time?",
+   "options": [
+    {
+     "text": "datetime.now() in Python",
+     "why": "Language-native time APIs change between replays."
+    },
+    {
+     "text": "context.current_utc_datetime",
+     "why": "Correct. It returns the same value during replay."
+    },
+    {
+     "text": "time.time() from the time module",
+     "why": "Nondeterministic across replays."
+    },
+    {
+     "text": "datetime.utcnow() in Python",
+     "why": "Nondeterministic across replays."
+    }
+   ],
+   "answer": 1,
+   "hint": "The context object gives you a time value that's the same on every replay.",
+   "explain": "Use context.current_utc_datetime and context.new_uuid() in orchestrators.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A developer reviews an orchestrator function.",
+   "rows": [
+    {
+     "text": "Using time.sleep(60) to pause between steps is acceptable.",
+     "answer": false,
+     "why": "Blocking waits aren't allowed; use durable timers."
+    },
+    {
+     "text": "Branching on the result returned by an activity is acceptable.",
+     "answer": true,
+     "why": "Results of durable tasks are safe inputs to decisions."
+    },
+    {
+     "text": "Calling uuid.uuid4() for an operation ID is acceptable.",
+     "answer": false,
+     "why": "Use context.new_uuid() for a deterministic identifier."
+    },
+    {
+     "text": "Passing a blob URL instead of the whole document to an activity is recommended.",
+     "answer": true,
+     "why": "Pass references to keep history small."
+    }
+   ],
+   "hint": "No sleeping, no random IDs in the orchestrator. Branching on results is fine.",
+   "explain": "Orchestrators coordinate deterministically; activities do the I/O.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Logs show the same \"Starting classification\" orchestrator message five times for one workflow, although the activity ran once. Why, and what's the fix?",
+   "options": [
+    {
+     "text": "The client started five orchestrations; use a fixed instance ID",
+     "why": "One instance replaying explains this."
+    },
+    {
+     "text": "Application Insights duplicates logs; turn off sampling for it",
+     "why": "Duplicates come from replay, not sampling."
+    },
+    {
+     "text": "The activity ran five times; add a retry policy to it",
+     "why": "The activity ran once; the duplicates come from replay."
+    },
+    {
+     "text": "Replay reruns the log line; check context.is_replaying",
+     "why": "Correct. Replay can run orchestrator log statements again."
+    }
+   ],
+   "answer": 3,
+   "hint": "Orchestrator code runs again during replay, and so do its log lines.",
+   "explain": "Activity logs reflect real work; orchestrator logs can repeat during replay.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-005",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Orchestrations that pass full extracted text and model responses between steps have become slow, and history storage is growing. What does Learn recommend?",
+   "options": [
+    {
+     "text": "Move the model calls into the orchestrator to avoid passing data",
+     "why": "Model calls in the orchestrator break determinism."
+    },
+    {
+     "text": "Switch the storage provider to Azure Storage",
+     "why": "The provider choice doesn't fix oversized history."
+    },
+    {
+     "text": "Store content in Blob Storage; pass references",
+     "why": "Correct. Large payloads increase storage operations, replay time and memory."
+    },
+    {
+     "text": "Compress the payloads inside the orchestrator with a random salt",
+     "why": "Random values don't belong in orchestrators, and the payload stays in history."
+    }
+   ],
+   "answer": 2,
+   "hint": "Everything passed between steps is saved in history. Keep it small.",
+   "explain": "Activities read and write large content; orchestrators get IDs, URLs and scores.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You're starting a new Durable Functions application and choosing a storage provider. Which one does Microsoft recommend for new apps?",
+   "options": [
+    {
+     "text": "The Azure Storage provider",
+     "why": "It's still available for existing apps or when you want to manage storage yourself, but it isn't the recommendation for new apps."
+    },
+    {
+     "text": "Azure Cache for Redis",
+     "why": "Redis isn't a Durable Functions storage provider."
+    },
+    {
+     "text": "Azure Cosmos DB as a custom provider",
+     "why": "Learn's recommendation for new apps is the managed Durable Task Scheduler."
+    },
+    {
+     "text": "Durable Task Scheduler",
+     "why": "Correct. It's the recommended managed storage provider for new Durable Functions apps."
+    }
+   ],
+   "answer": 3,
+   "hint": "Microsoft now offers a managed backend built specifically for durable task state.",
+   "explain": "For new Durable Functions applications, Microsoft recommends Durable Task Scheduler as the managed storage provider. The Azure Storage provider remains for existing apps or self-managed storage.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m4-007",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An orchestrator passes a model API key to each activity as part of the activity input, so that activities can call the model. What's wrong with this design?",
+   "options": [
+    {
+     "text": "Activities can't receive string inputs",
+     "why": "Activities take serializable inputs, including strings."
+    },
+    {
+     "text": "The key makes the orchestrator non-deterministic",
+     "why": "The key is the same every time. The problem is where it's stored."
+    },
+    {
+     "text": "Inputs are saved in orchestration history, so the key is stored there; use managed identity and Key Vault instead",
+     "why": "Correct. Don't place secrets in orchestration inputs or outputs."
+    },
+    {
+     "text": "Nothing, as long as the key is rotated every month",
+     "why": "Rotation helps, but the secret would still be kept in durable history."
+    }
+   ],
+   "answer": 2,
+   "hint": "Think about where Durable Functions keeps inputs and outputs.",
+   "explain": "Orchestration inputs and outputs are serialized into durable history. Don't put secrets, access tokens or model credentials there; use managed identities and a service such as Azure Key Vault.",
+   "origin": "new"
+  },
+  {
+   "id": "lp7m4-008",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An orchestrator must classify 20 independent images in parallel and then summarise. What should it do?",
+   "options": [
+    {
+     "text": "Yield each call_activity in a loop, one after another",
+     "why": "Yielding each call immediately runs them sequentially."
+    },
+    {
+     "text": "Create 20 tasks, then yield task_all",
+     "why": "Correct. Schedule all tasks first, then wait for the group."
+    },
+    {
+     "text": "Call the model 20 times directly in the orchestrator",
+     "why": "Model calls belong in activities."
+    },
+    {
+     "text": "Start 20 separate client functions",
+     "why": "Clients start orchestrations; this is fan-out inside one orchestration."
+    }
+   ],
+   "answer": 1,
+   "hint": "Create all the tasks first, then wait for all of them together.",
+   "explain": "Fan-out: create tasks without yielding; fan-in: yield task_all.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An orchestrator yields `context.task_all(tasks)` for five document tasks, and task 3 finishes first.",
+   "rows": [
+    {
+     "text": "The result list has task 3's result first.",
+     "answer": false,
+     "why": "Results match the order of the task list."
+    },
+    {
+     "text": "If one activity fails, task_all surfaces a failure to the orchestrator.",
+     "answer": true,
+     "why": "The orchestrator can then fail, compensate or route the batch."
+    },
+    {
+     "text": "Each activity should return the full extracted text for aggregation.",
+     "answer": false,
+     "why": "Return compact fields and a result URL."
+    }
+   ],
+   "hint": "Results come back in task order. One failure surfaces. Keep outputs small.",
+   "explain": "Ordered results, explicit failure handling, compact outputs.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-010",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A batch of 10,000 documents fans out all at once and the model endpoint starts throttling. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Return the model responses to the orchestrator to retry them there",
+     "why": "Large responses bloat history and retries belong to activities."
+    },
+    {
+     "text": "Increase the function app's instance memory to 4,096 MB",
+     "why": "Memory doesn't change the model's rate limits."
+    },
+    {
+     "text": "Process bounded batches, one batch at a time",
+     "why": "Correct. Bounded batches limit scheduled work to fit downstream quotas."
+    },
+    {
+     "text": "Add time.sleep() between activity calls in the orchestrator",
+     "why": "Never sleep in an orchestrator; use durable timers if a pause is needed."
+    }
+   ],
+   "answer": 2,
+   "hint": "Too much at once hits quotas. Limit how many run together.",
+   "explain": "Choose batch size from model quotas, item duration and concurrency.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-011",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A claim archive of a million documents makes one orchestrator's fan-in a bottleneck. Which design helps?",
+   "options": [
+    {
+     "text": "Running all aggregation inside the client function",
+     "why": "Clients manage orchestrations; they don't aggregate durable results."
+    },
+    {
+     "text": "A parent with sub-orchestrations per partition",
+     "why": "Correct. Each child handles a partition and returns counts and locations."
+    },
+    {
+     "text": "Removing fan-in and letting activities write a shared counter",
+     "why": "Shared counters lose the durable coordination."
+    },
+    {
+     "text": "One orchestrator that loads every individual result for aggregation",
+     "why": "That's the bottleneck being fixed."
+    }
+   ],
+   "answer": 1,
+   "hint": "One orchestrator can only aggregate so much. Split the work into child orchestrations.",
+   "explain": "Introduce sub-orchestrations when batch size or aggregation cost justifies them.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-012",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An orchestration must wait up to 48 hours for an adjuster's decision, then take a timeout path. What should it use?",
+   "options": [
+    {
+     "text": "An activity that blocks until the adjuster answers",
+     "why": "An activity would hold a worker for days."
+    },
+    {
+     "text": "A loop that polls the approval table every minute",
+     "why": "Polling from the orchestrator is inefficient; events resume it."
+    },
+    {
+     "text": "task_any() racing the event against a timer",
+     "why": "Correct. Whichever completes first decides the path."
+    },
+    {
+     "text": "time.sleep() for 48 hours, then check the database",
+     "why": "Blocking waits aren't allowed in orchestrators."
+    }
+   ],
+   "answer": 2,
+   "hint": "Wait for an event or a deadline, whichever comes first.",
+   "explain": "Human interaction pattern: wait_for_external_event + create_timer + task_any.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-013",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An approval orchestration races an ApprovalResponse event against a 48-hour timer.",
+   "rows": [
+    {
+     "text": "The suspended orchestration holds a worker for the full 48 hours.",
+     "answer": false,
+     "why": "It doesn't hold a worker or active invocation while waiting."
+    },
+    {
+     "text": "If the event wins, the orchestrator should cancel the pending timer.",
+     "answer": true,
+     "why": "Every pending timer must be waited for or cancelled before exit."
+    },
+    {
+     "text": "An event sent before the orchestrator starts waiting is lost.",
+     "answer": false,
+     "why": "Early events are persisted and consumed later."
+    },
+    {
+     "text": "Knowing the instance ID is enough proof that the caller may approve.",
+     "answer": false,
+     "why": "Authenticate and authorize callers; the ID is just an address."
+    }
+   ],
+   "hint": "Waiting costs almost nothing. Cancel the timer you didn't need, and secure the endpoint.",
+   "explain": "Durable waits are cheap, but endpoints must still be secured.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-014",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A reviewer double-clicks Approve and two ApprovalResponse events arrive; a stale review link also sends an old decision. How should the workflow cope?",
+   "options": [
+    {
+     "text": "Accept whichever of the events arrives last",
+     "why": "Arrival order alone isn't a reliable policy."
+    },
+    {
+     "text": "Accept every event and create one approval record for each",
+     "why": "Duplicates would create duplicate approvals."
+    },
+    {
+     "text": "Use request ID and version; record the first valid decision once",
+     "why": "Correct. Versioned, idempotent recording handles duplicates and out-of-order responses."
+    },
+    {
+     "text": "Turn off at-least-once delivery for the external events",
+     "why": "At-least-once delivery isn't something you switch off."
+    }
+   ],
+   "answer": 2,
+   "hint": "Expect duplicates and old decisions. Accept the first valid one.",
+   "explain": "Design for duplicates and stale responses explicitly.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A client function raises the ApprovalResponse event after authorizing the reviewer. What should its HTTP response be?",
+   "options": [
+    {
+     "text": "204 No Content after the orchestration completes",
+     "why": "The client doesn't wait for completion."
+    },
+    {
+     "text": "409 Conflict",
+     "why": "Nothing conflicts in the normal path."
+    },
+    {
+     "text": "202 Accepted",
+     "why": "Correct. Event delivery resumes the orchestration asynchronously."
+    },
+    {
+     "text": "200 OK with the final claim result",
+     "why": "The final result isn't available yet."
+    }
+   ],
+   "answer": 2,
+   "hint": "Raising an event is asynchronous, so don't promise the outcome yet.",
+   "explain": "Raising an event is asynchronous; return 202 and let callers track status.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-016",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An HTTP-triggered client function receives a reviewer's approval for orchestration instance claim-482. Which call delivers it to the waiting orchestration?",
+   "options": [
+    {
+     "text": "client.start_new(\"approval\", instance_id, data)",
+     "why": "start_new starts a new instance. It doesn't deliver an event to a running one."
+    },
+    {
+     "text": "client.terminate(instance_id, \"approved\")",
+     "why": "terminate stops the orchestration instead of letting it continue."
+    },
+    {
+     "text": "context.wait_for_external_event(\"ApprovalResponse\")",
+     "why": "That's what the orchestrator calls to wait. A client function can't use it."
+    },
+    {
+     "text": "client.raise_event(instance_id, \"ApprovalResponse\", data)",
+     "why": "Correct. raise_event sends a named external event to that instance, and the name must match what the orchestrator waits for."
+    }
+   ],
+   "answer": 3,
+   "hint": "The orchestrator waits for a named event. Which client method sends one?",
+   "explain": "A client function uses raise_event(instance_id, event_name, data) to send a named external event to a specific instance. The orchestrator waits with wait_for_external_event(name).",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m4-017",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A caller starts a long document workflow over HTTP and needs a way to check its progress later. What does Learn say an HTTP-triggered client function often returns?",
+   "options": [
+    {
+     "text": "The final result, after waiting for the orchestration to finish",
+     "why": "Long workflows would hit HTTP timeouts. The client returns quickly with tracking information."
+    },
+    {
+     "text": "The orchestrator's replay history",
+     "why": "History is internal state, not something to hand to callers."
+    },
+    {
+     "text": "Status URLs that the caller can use to track the workflow",
+     "why": "Correct. Client functions start orchestrations and often return status URLs for long-running workflows."
+    },
+    {
+     "text": "A function key for the orchestrator",
+     "why": "Keys don't track progress, and you shouldn't give them out this way."
+    }
+   ],
+   "answer": 2,
+   "hint": "The work takes a long time. What lets the caller come back and ask how it's going?",
+   "explain": "Client functions start orchestrations, query status, terminate them and send external events. An HTTP-triggered client often returns status URLs for tracking a long-running workflow.",
+   "origin": "new"
+  },
+  {
+   "id": "lp7m4-018",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "match",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Match each failure to the handling Learn recommends.",
+   "choices": [
+    "Bounded retry",
+    "Terminal outcome after validation",
+    "Explicit business branch"
+   ],
+   "items": [
+    {
+     "text": "The model endpoint returns a throttling response",
+     "answer": 0,
+     "why": "Transient failures can succeed later."
+    },
+    {
+     "text": "The upload is an unsupported content type",
+     "answer": 1,
+     "why": "Permanent failures won't succeed on retry."
+    },
+    {
+     "text": "Classification confidence is below the threshold",
+     "answer": 2,
+     "why": "Expected decisions aren't infrastructure errors."
+    }
+   ],
+   "hint": "Throttling is transient, bad input is terminal, and low confidence is a business rule.",
+   "explain": "Classify failures before retrying.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-019",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An activity writes a result blob, then the host crashes before the result is recorded, so the activity runs again. How should it avoid a duplicate?",
+   "options": [
+    {
+     "text": "Generate a new uuid.uuid4() blob name on each attempt",
+     "why": "A new ID per attempt makes each retry look like new work."
+    },
+    {
+     "text": "Name the blob with a stable operation ID; skip if present",
+     "why": "Correct. The retry recognizes the existing result and returns the same URL."
+    },
+    {
+     "text": "Write the result from the orchestrator instead of the activity",
+     "why": "Orchestrators must not do I/O."
+    },
+    {
+     "text": "Disable retries for the activity so it can't run twice",
+     "why": "Retries are needed for transient failures."
+    }
+   ],
+   "answer": 1,
+   "hint": "Use a stable identifier so a repeated write lands in the same place.",
+   "explain": "Pass an operation ID (from input or context.new_uuid()) for idempotent writes.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-020",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A step races a processing activity against a 10-minute durable timer, and the timer wins.",
+   "rows": [
+    {
+     "text": "The running activity is cancelled automatically.",
+     "answer": false,
+     "why": "A winning timer doesn't cancel a started activity."
+    },
+    {
+     "text": "The workflow should ignore a late result after its terminal deadline.",
+     "answer": true,
+     "why": "Design to ignore late results and keep writes idempotent."
+    },
+    {
+     "text": "A model-call timeout means the whole claim must be marked invalid.",
+     "answer": false,
+     "why": "Choose the narrowest timeout; retry, fall back or send to manual review."
+    }
+   ],
+   "hint": "A timer winning doesn't stop work already started.",
+   "explain": "Timeouts bound waiting; they don't undo work already in flight.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-021",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Document processing exhausts its retries after a provisional summary was published. What should the orchestrator do?",
+   "options": [
+    {
+     "text": "Retry the activity forever until it finally succeeds",
+     "why": "Retries must be bounded."
+    },
+    {
+     "text": "Delete every audit record of the provisional summary",
+     "why": "Preserve audit evidence; compensation is a new business action."
+    },
+    {
+     "text": "Run an idempotent compensation activity, then rethrow",
+     "why": "Correct. Compensate the earlier side effect and keep a Failed terminal status."
+    },
+    {
+     "text": "Catch the exception and report the workflow as Completed",
+     "why": "Hiding the failure misreports the outcome."
+    }
+   ],
+   "answer": 2,
+   "hint": "Retries are exhausted. Undo what was published, then fail honestly.",
+   "explain": "Compensation addresses completed side effects without pretending to roll back.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m4-022",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An activity should run at most 3 times, waiting 5 seconds before the first retry. Which Python code is correct?",
+   "options": [
+    {
+     "text": "context.call_activity(\"Classify\", df.RetryOptions(5_000, 3), doc)",
+     "why": "Plain call_activity doesn't apply a retry policy."
+    },
+    {
+     "text": "context.call_activity_with_retry(\"Classify\", df.RetryOptions(5_000, 3), doc)",
+     "why": "Correct. RetryOptions takes the first retry interval in milliseconds, then the max number of attempts."
+    },
+    {
+     "text": "context.call_activity_with_retry(\"Classify\", df.RetryOptions(3, 5_000), doc)",
+     "why": "The arguments are swapped: that's a 3 ms first interval and 5,000 attempts."
+    },
+    {
+     "text": "context.call_activity_with_retry(\"Classify\", df.RetryOptions(5, 3), doc)",
+     "why": "The interval is in milliseconds, so 5 means 5 ms, not 5 seconds."
+    }
+   ],
+   "answer": 1,
+   "hint": "Check the units of the first argument, and which call accepts a retry policy.",
+   "explain": "df.RetryOptions(first_retry_interval_in_milliseconds, max_number_of_attempts) is used with context.call_activity_with_retry().",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m4-023",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A retried activity creates its operation ID with uuid.uuid4(), and duplicate result blobs appear. What's the best fix?",
+   "options": [
+    {
+     "text": "Create the ID in the orchestrator with context.new_uuid() and pass it to the activity",
+     "why": "Correct. The ID stays the same across retries and replays, so repeated writes land in the same place."
+    },
+    {
+     "text": "Write the result blob with overwrite=True",
+     "why": "With a new ID each time, each retry writes a different blob, so overwriting doesn't help."
+    },
+    {
+     "text": "Lower the retry policy to a single attempt",
+     "why": "Activities can still run more than once, and you lose resilience."
+    },
+    {
+     "text": "Call uuid.uuid4() in the orchestrator and pass it in",
+     "why": "uuid4 in an orchestrator gives a new value on each replay, which breaks determinism."
+    }
+   ],
+   "answer": 0,
+   "hint": "The ID has to be the same every time the step runs, and that includes replays.",
+   "explain": "Activities run at least once, so the operation ID must be stable. Create it deterministically in the orchestrator with context.new_uuid() (or derive it from input) and pass it to the activity.",
+   "origin": "ca4"
+  }
+ ]
+}

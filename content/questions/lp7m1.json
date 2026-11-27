@@ -1,0 +1,792 @@
+{
+ "module": "lp7m1",
+ "title": "Queue and process AI operations with Azure Service Bus",
+ "questions": [
+  {
+   "id": "lp7m1-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Inference requests arrive in bursts of 5,000 per minute, but the GPU pool can handle an average of 1,000 per minute. Which pattern lets you size workers for the average without dropping requests?",
+   "options": [
+    {
+     "text": "A larger API thread pool",
+     "why": "More threads just block on the same slow inference."
+    },
+    {
+     "text": "Receive-and-delete mode",
+     "why": "That's a receive mode, and it risks losing messages."
+    },
+    {
+     "text": "Synchronous calls with longer timeouts",
+     "why": "Synchronous calls still overwhelm processors during spikes."
+    },
+    {
+     "text": "Load leveling with a queue",
+     "why": "Correct. The queue absorbs the burst and workers drain it at a steady rate."
+    }
+   ],
+   "answer": 3,
+   "hint": "A queue can absorb bursts so the workers process at a steady pace.",
+   "explain": "Load leveling removes the need to provision compute for peak traffic.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What is the maximum message size in the Service Bus Standard tier?",
+   "options": [
+    {
+     "text": "100 MB",
+     "why": "100 MB is Premium over AMQP."
+    },
+    {
+     "text": "256 KB",
+     "why": "Correct. Standard supports messages up to 256 KB."
+    },
+    {
+     "text": "64 KB",
+     "why": "Standard allows more than this."
+    },
+    {
+     "text": "1 MB",
+     "why": "1 MB is Premium over HTTP."
+    }
+   ],
+   "answer": 1,
+   "hint": "Standard has a much smaller message limit than Premium.",
+   "explain": "Standard 256 KB; Premium up to 100 MB with AMQP (1 MB HTTP).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. Five worker instances read from the same Service Bus queue.",
+   "rows": [
+    {
+     "text": "Each message is delivered to exactly one of the workers.",
+     "answer": true,
+     "why": "Competing consumers: one message, one consumer."
+    },
+    {
+     "text": "Adding a sixth worker requires changing the producer's code.",
+     "answer": false,
+     "why": "Adding workers increases throughput without code changes."
+    },
+    {
+     "text": "If a worker crashes mid-processing, its unacknowledged messages become available again.",
+     "answer": true,
+     "why": "Unacknowledged messages are redelivered."
+    }
+   ],
+   "hint": "Competing consumers: each message goes to one worker, and unfinished messages come back.",
+   "explain": "The competing consumers pattern scales AI processing horizontally.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-004",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "All inference processors are offline for a 20-minute deployment, but the API must keep accepting requests. Which property of queue-based messaging makes this work?",
+   "options": [
+    {
+     "text": "Load leveling: the queue processes messages itself",
+     "why": "The queue stores messages; it doesn't process them."
+    },
+    {
+     "text": "Sessions: messages wait in FIFO order per session",
+     "why": "Sessions are about ordering, not offline tolerance."
+    },
+    {
+     "text": "Fan-out: each message is copied to every processor",
+     "why": "Fan-out is a topic feature and doesn't explain offline tolerance."
+    },
+    {
+     "text": "Temporal decoupling: messages wait for processors",
+     "why": "Correct. Producers and consumers needn't be online at the same time."
+    }
+   ],
+   "answer": 3,
+   "hint": "Producers and consumers don't have to be online at the same time.",
+   "explain": "Messages persist durably until consumers come back online.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-005",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An AI pipeline sends 20 MB scanned documents through Service Bus, must use private endpoints, and needs predictable latency. Which tier fits?",
+   "options": [
+    {
+     "text": "Basic, with sessions on",
+     "why": "Learn covers the Standard and Premium tiers only."
+    },
+    {
+     "text": "Standard, using the claim-check pattern",
+     "why": "Claim-check handles size, but private endpoints and predictable latency still need Premium."
+    },
+    {
+     "text": "Standard, with batching on",
+     "why": "Batching doesn't raise the 256 KB limit or add private endpoints."
+    },
+    {
+     "text": "The Premium tier, dedicated",
+     "why": "Correct. Premium offers dedicated resources, up to 100 MB via AMQP, predictable latency and private endpoints."
+    }
+   ],
+   "answer": 3,
+   "hint": "Large messages, private endpoints and predictable latency all point to dedicated capacity.",
+   "explain": "Premium: dedicated capacity, large messages, VNet integration, private endpoints and availability zones.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A developer creates a ServiceBusReceiver for an inference queue without setting receive_mode. Messages aren't removed when they're received, and the code must settle each one. Which mode is the receiver using?",
+   "options": [
+    {
+     "text": "Read-and-release",
+     "why": "There's no such receive mode in Service Bus."
+    },
+    {
+     "text": "Peek-lock, the default",
+     "why": "Correct. Peek-lock locks the message and waits for the consumer to settle it."
+    },
+    {
+     "text": "Defer-and-lock",
+     "why": "There's no such receive mode. Deferral is a settlement action."
+    },
+    {
+     "text": "Receive-and-delete, the default",
+     "why": "Receive-and-delete removes messages on delivery, and it isn't the default."
+    }
+   ],
+   "answer": 1,
+   "hint": "One mode removes messages straight away. The other waits for you to say what happened.",
+   "explain": "Peek-lock is the default and recommended mode: the message is locked, not removed, until the consumer completes, abandons, dead-letters or defers it. Receive-and-delete removes it on delivery.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m1-007",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "When a document analysis completes, a notification service, an audit service and a dashboard must each receive the result independently. What should you use?",
+   "options": [
+    {
+     "text": "A queue with sessions enabled",
+     "why": "Sessions order messages; they don't fan out."
+    },
+    {
+     "text": "Three messages to one queue",
+     "why": "Sending three messages couples the producer to every consumer."
+    },
+    {
+     "text": "A topic with three subscriptions",
+     "why": "Correct. Each subscription gets its own copy and processes independently."
+    },
+    {
+     "text": "A queue with three competing consumers",
+     "why": "Competing consumers each get different messages, not copies."
+    }
+   ],
+   "answer": 2,
+   "hint": "Three services each need their own copy.",
+   "explain": "Topics fan out; queues give each message to one consumer.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which subscription filter type is most efficient for exact-match routing on a property value?",
+   "options": [
+    {
+     "text": "A SQL filter",
+     "why": "SQL filters are flexible but less efficient for exact matches."
+    },
+    {
+     "text": "A correlation filter",
+     "why": "Correct. Correlation filters match specific values efficiently."
+    },
+    {
+     "text": "The FalseFilter",
+     "why": "FalseFilter rejects every message."
+    },
+    {
+     "text": "The TrueFilter",
+     "why": "TrueFilter accepts every message."
+    }
+   ],
+   "answer": 1,
+   "hint": "One filter type is built for exact matches on properties and is cheaper to evaluate.",
+   "explain": "Boolean, SQL and correlation filters run at the broker.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-009",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A multi-step pipeline must process extraction before classification for each document, while different documents run in parallel. Which feature helps?",
+   "options": [
+    {
+     "text": "Duplicate detection on the message ID",
+     "why": "Duplicate detection drops repeats; it doesn't order messages."
+    },
+    {
+     "text": "Sessions, with the document ID as the session ID",
+     "why": "Correct. Sessions give FIFO, single-receiver processing per session group."
+    },
+    {
+     "text": "Receive-and-delete mode",
+     "why": "That mode only changes acknowledgment, and risks loss."
+    },
+    {
+     "text": "A TrueFilter on the subscription",
+     "why": "TrueFilter accepts everything; it doesn't order."
+    }
+   ],
+   "answer": 1,
+   "hint": "Per-document order with parallelism across documents: group the messages by an ID.",
+   "explain": "Group related messages with a session ID for ordered processing.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. Inference results go to a topic with subscriptions **notifications**, **audit** and **high-priority** (filter: priority = 'high').",
+   "rows": [
+    {
+     "text": "Messages that don't match the high-priority filter are never delivered to that subscription.",
+     "answer": true,
+     "why": "Filters are evaluated at the broker."
+    },
+    {
+     "text": "Completing a message on the audit subscription removes it from the notifications subscription.",
+     "answer": false,
+     "why": "Each subscription keeps its own copy."
+    },
+    {
+     "text": "A new retraining subscription can be added later without changing the producer.",
+     "answer": true,
+     "why": "New subscriptions don't affect the publisher."
+    },
+    {
+     "text": "The producer has to know how many subscriptions exist.",
+     "answer": false,
+     "why": "Topics decouple the sender from the receivers."
+    }
+   ],
+   "hint": "Each subscription is its own queue. Filters run at the broker. Subscriptions can be added later.",
+   "explain": "Topics give independent copies, broker-side filtering and easy extension.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-011",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "In the Python SDK, how do you read messages from the audit subscription of the inference-results topic?",
+   "options": [
+    {
+     "text": "get_queue_receiver(queue_name=\"audit\") on the same client",
+     "why": "audit is a subscription, not a queue."
+    },
+    {
+     "text": "get_subscription_receiver(topic_name=\"inference-results\", subscription_name=\"audit\")",
+     "why": "Correct. Subscription receivers connect to a specific subscription of a topic."
+    },
+    {
+     "text": "get_queue_receiver(queue_name=\"inference-results/audit\") on the client",
+     "why": "Queue receivers are for queues, not topic subscriptions."
+    },
+    {
+     "text": "get_topic_sender(topic_name=\"inference-results\") followed by .receive()",
+     "why": "Senders send; they don't receive."
+    }
+   ],
+   "answer": 1,
+   "hint": "The same client gives you a receiver for a subscription when you name the topic and subscription.",
+   "explain": "Same ServiceBusClient; get_subscription_receiver for subscriptions.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-012",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The urgent-review subscription should receive only messages whose application property priority is 'high' or whose confidence is below 0.5. Consumer code must not filter. What should you configure?",
+   "options": [
+    {
+     "text": "A separate namespace for urgent requests",
+     "why": "A namespace doesn't route messages by property."
+    },
+    {
+     "text": "An if-check in the consumer after each message arrives",
+     "why": "That's filtering in the consumer, which wastes deliveries and isn't allowed here."
+    },
+    {
+     "text": "A correlation filter on the priority property",
+     "why": "Correlation filters do exact matches. They can't express \"below 0.5\" or an OR."
+    },
+    {
+     "text": "A SQL filter rule on that subscription",
+     "why": "Correct. SQL filters evaluate expressions on message properties at the broker."
+    }
+   ],
+   "answer": 3,
+   "hint": "You need an expression with OR and a comparison, evaluated before delivery.",
+   "explain": "Subscription filters run at the broker. Boolean filters accept or reject all; SQL filters evaluate SQL-like expressions over properties; correlation filters do efficient exact matches.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m1-013",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Support engineers need to trace one user's request from the API through the processor to the results store. Which message property should carry the shared ID?",
+   "options": [
+    {
+     "text": "time_to_live",
+     "why": "time_to_live controls expiry."
+    },
+    {
+     "text": "content_type",
+     "why": "content_type describes the body's encoding."
+    },
+    {
+     "text": "sequence_number",
+     "why": "sequence_number is assigned by the broker per entity."
+    },
+    {
+     "text": "correlation_id",
+     "why": "Correct. correlation_id gives end-to-end tracking across the pipeline."
+    }
+   ],
+   "answer": 3,
+   "hint": "One property exists to tie related messages together across services.",
+   "explain": "Set correlation_id from the client or API request ID and search logs and DLQs by it.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-014",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A Standard-tier pipeline must send 8 MB PDF files for summarization without changing tier. What should the producer do?",
+   "options": [
+    {
+     "text": "Compress the PDF and set a longer time_to_live",
+     "why": "TTL doesn't change size limits."
+    },
+    {
+     "text": "Split each PDF across many messages with the same message_id",
+     "why": "Reusing message_id with duplicate detection can drop messages, and reassembly is complex."
+    },
+    {
+     "text": "Use ServiceBusMessageBatch so the size limit doesn't apply",
+     "why": "Batches are still bounded by the tier's maximum size."
+    },
+    {
+     "text": "Upload each PDF to Blob Storage; send its URI",
+     "why": "Correct. The claim-check pattern keeps messages small and works in any tier."
+    }
+   ],
+   "answer": 3,
+   "hint": "Too big for the tier: store the file somewhere else and send a pointer.",
+   "explain": "Claim-check: store the payload, send a reference.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A queue has duplicate detection enabled and dead-lettering on message expiration turned on.",
+   "rows": [
+    {
+     "text": "Two different requests sent with the same message_id inside the detection window might be treated as duplicates.",
+     "answer": true,
+     "why": "Service Bus uses message_id to discard duplicates within the window."
+    },
+    {
+     "text": "A real-time request with time_to_live of 5 minutes that isn't processed in time can end up in the dead-letter queue.",
+     "answer": true,
+     "why": "Expired messages go to the DLQ when dead-lettering on expiration is enabled."
+    },
+    {
+     "text": "Setting content_type to application/json makes Service Bus validate the JSON body.",
+     "answer": false,
+     "why": "content_type signals the encoding to clients and processors."
+    }
+   ],
+   "hint": "Duplicate detection looks at message_id. Expired messages can be dead-lettered.",
+   "explain": "Generate unique message IDs and pick TTLs that match how time-sensitive the request is.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A batch sender calls add_message() in a loop and gets MessageSizeExceededError partway through 2,000 messages. What does Learn's pattern do?",
+   "options": [
+    {
+     "text": "Retry add_message() on the same batch until it succeeds",
+     "why": "The same batch stays full."
+    },
+    {
+     "text": "Drop the message that didn't fit and continue",
+     "why": "Dropping messages loses requests."
+    },
+    {
+     "text": "Switch to Premium so the batch has no limit",
+     "why": "Premium raises the size limit, but batches still have a maximum."
+    },
+    {
+     "text": "Send the full batch, then start a new one",
+     "why": "Correct. Send the current batch and start a new one so every message is sent."
+    }
+   ],
+   "answer": 3,
+   "hint": "A batch knows the size limit. When it's full, send it and start another.",
+   "explain": "ServiceBusMessageBatch respects the tier's size limit; roll over to a new batch.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-017",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "After duplicate detection is turned on for a queue, some distinct inference requests silently disappear. What's the most likely cause?",
+   "options": [
+    {
+     "text": "Producers share one correlation_id across every stage",
+     "why": "correlation_id is for tracing, and duplicate detection doesn't use it."
+    },
+    {
+     "text": "Messages don't set content_type to application/json",
+     "why": "content_type is informational. It doesn't cause drops."
+    },
+    {
+     "text": "Producers reuse one message_id for different requests",
+     "why": "Correct. Duplicate detection drops messages whose message_id it has already seen within the window."
+    },
+    {
+     "text": "The queue's max_delivery_count is too low",
+     "why": "Delivery count affects retries of received messages, not messages vanishing on send."
+    }
+   ],
+   "answer": 2,
+   "hint": "Duplicate detection decides what counts as \"the same\" by one property.",
+   "explain": "Duplicate detection uses message_id to discard repeats within the detection window. Generate a unique message_id per message; use correlation_id for tracing.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m1-018",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Real-time classification results are useless after five minutes, and the team needs to see which requests weren't processed in time. What should you configure?",
+   "options": [
+    {
+     "text": "A 5-minute time_to_live plus dead-lettering on message expiration",
+     "why": "Correct. Expired messages then go to the DLQ, where you can see which requests were late."
+    },
+    {
+     "text": "A 5-minute lock duration plus abandon on timeout",
+     "why": "Lock duration controls processing time per delivery, not the request's useful lifetime."
+    },
+    {
+     "text": "Defer each message for up to 5 minutes",
+     "why": "Deferral postpones processing. It doesn't express when a request becomes useless."
+    },
+    {
+     "text": "A 5-minute time_to_live plus max_delivery_count of 1",
+     "why": "The TTL expires stale requests, but without dead-lettering on expiration you lose sight of them."
+    }
+   ],
+   "answer": 0,
+   "hint": "One setting gives each request a lifetime. Another keeps a record of the ones that ran out.",
+   "explain": "Set time_to_live to match how time-sensitive a request is, and enable dead-lettering on message expiration so expired requests are visible in the DLQ.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m1-019",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A message contains malformed JSON that will never parse, however often it's retried. Which settlement should the processor use?",
+   "options": [
+    {
+     "text": "abandon_message() for a retry",
+     "why": "Abandoning retries a message that will never succeed."
+    },
+    {
+     "text": "dead_letter_message() with a reason",
+     "why": "Correct. Dead-letter it with a reason and description for investigation."
+    },
+    {
+     "text": "complete_message() on it",
+     "why": "Completing hides the failure as a success."
+    },
+    {
+     "text": "defer_message() until later",
+     "why": "Deferring is for messages you expect to handle later."
+    }
+   ],
+   "answer": 1,
+   "hint": "A message that can never be processed shouldn't be retried.",
+   "explain": "Dead-letter permanent failures immediately; abandon transient ones.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-020",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What is the default max_delivery_count for a Service Bus queue?",
+   "options": [
+    {
+     "text": "5",
+     "why": "Learn suggests 3–5 as a lower setting, not the default."
+    },
+    {
+     "text": "10",
+     "why": "Correct. The default is 10."
+    },
+    {
+     "text": "100",
+     "why": "That isn't the default."
+    },
+    {
+     "text": "3",
+     "why": "Learn suggests 3–5 as a lower setting, not the default."
+    }
+   ],
+   "answer": 1,
+   "hint": "There's a default number of delivery attempts before dead-lettering.",
+   "explain": "Exceeding it dead-letters the message with MaxDeliveryCountExceeded.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-021",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each processing outcome to the settlement call.",
+   "choices": [
+    "complete_message()",
+    "abandon_message()",
+    "dead_letter_message()",
+    "defer_message()"
+   ],
+   "items": [
+    {
+     "text": "The result was written to the results store",
+     "answer": 0,
+     "why": "Normal success path."
+    },
+    {
+     "text": "The model service timed out; a retry may work",
+     "answer": 1,
+     "why": "Transient error: release the lock for redelivery."
+    },
+    {
+     "text": "The request names a model that isn't supported",
+     "answer": 2,
+     "why": "Will never succeed: dead-letter with a reason."
+    },
+    {
+     "text": "A required dependency isn't available yet; handle it later by sequence number",
+     "answer": 3,
+     "why": "Defer, then receive_deferred_messages()."
+    }
+   ],
+   "hint": "Done, try again, never, or later by sequence number.",
+   "explain": "Peek-lock lets the processor report each outcome explicitly.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-022",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team inspects a queue's dead-letter queue.",
+   "rows": [
+    {
+     "text": "The DLQ must be created before messages can be dead-lettered.",
+     "answer": false,
+     "why": "It exists automatically for every queue and subscription."
+    },
+    {
+     "text": "Messages stay in the DLQ until someone receives and completes them.",
+     "answer": true,
+     "why": "DLQ messages persist until explicitly handled."
+    },
+    {
+     "text": "Messages dead-lettered after too many deliveries carry the reason MaxDeliveryCountExceeded.",
+     "answer": true,
+     "why": "That's the reason Service Bus sets."
+    },
+    {
+     "text": "Building the path <queue>/$deadletterqueue by hand is the recommended way to read it.",
+     "answer": false,
+     "why": "Use sub_queue=ServiceBusSubQueue.DEAD_LETTER."
+    }
+   ],
+   "hint": "Every queue gets a DLQ automatically. Messages stay there until handled, and the SDK can build the path for you.",
+   "explain": "Monitor DLQ counts and reprocess only after fixing the root cause.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-023",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Summarizing a long document takes about 3 minutes, and the same messages are being processed twice. The queue uses default settings. What is the cause and the fix?",
+   "options": [
+    {
+     "text": "Receive-and-delete mode is redelivering; switch to peek-lock",
+     "why": "Receive-and-delete never redelivers; peek-lock is already the default."
+    },
+    {
+     "text": "Duplicate detection is off; turn it on to stop the second delivery",
+     "why": "Duplicate detection drops duplicate sends, not redeliveries after lock expiry."
+    },
+    {
+     "text": "The 1-minute lock expires during processing; use AutoLockRenewer",
+     "why": "Correct. The lock (1 minute by default, 5 maximum) expires and another consumer receives the message; renew it."
+    },
+    {
+     "text": "max_delivery_count is 10; lower it to 1",
+     "why": "That would dead-letter messages after one attempt instead of fixing the lock."
+    }
+   ],
+   "answer": 2,
+   "hint": "The default lock is shorter than the processing time.",
+   "explain": "Renew locks (renew_message_lock or AutoLockRenewer) or use a two-phase approach for long work.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-024",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "After fixing a parser bug, you want to retry 2,000 dead-lettered requests. What is the correct reprocessing pattern?",
+   "options": [
+    {
+     "text": "Abandon each DLQ message so it returns to the main queue",
+     "why": "Abandoning in the DLQ doesn't move it back to the main queue."
+    },
+    {
+     "text": "Delete the queue and recreate it to clear out the DLQ",
+     "why": "That loses every message."
+    },
+    {
+     "text": "Set max_delivery_count to 0 so the DLQ empties by itself",
+     "why": "That isn't how DLQ messages are released."
+    },
+    {
+     "text": "Resend a copy to the original queue, then complete the DLQ message",
+     "why": "Correct. Resubmit a new message with the same body and properties, then complete the DLQ copy."
+    }
+   ],
+   "answer": 3,
+   "hint": "Don't move the original. Send a copy, then complete the dead-lettered one.",
+   "explain": "Confirm the fix first, or messages will cycle back into the DLQ.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m1-025",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Each scanned document takes about 8 minutes to process, and other workers start processing the same message partway through. What is the best fix?",
+   "options": [
+    {
+     "text": "Set the queue's lock duration to 10 minutes",
+     "why": "Queue lock duration can be at most 5 minutes, so 10 isn't possible."
+    },
+    {
+     "text": "Switch the receiver to receive-and-delete mode",
+     "why": "That removes the message on delivery, so a crash would lose the document."
+    },
+    {
+     "text": "Raise max_delivery_count to 20",
+     "why": "More attempts don't stop the lock from expiring mid-processing."
+    },
+    {
+     "text": "Register each message with AutoLockRenewer for 10 minutes",
+     "why": "Correct. AutoLockRenewer keeps renewing the lock in the background, which keeps other workers from getting the message."
+    }
+   ],
+   "answer": 3,
+   "hint": "The lock can't be set long enough on the queue. Something has to keep extending it while you work.",
+   "explain": "Queue lock duration defaults to 1 minute and can be set to at most 5. For longer work, renew the lock (renew_message_lock or AutoLockRenewer) or use a two-phase approach.",
+   "origin": "ca4"
+  }
+ ]
+}

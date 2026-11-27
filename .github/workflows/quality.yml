@@ -1,0 +1,80 @@
+name: quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "30 3 * * 1" # weekly link check, Monday 09:00 IST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  content:
+    name: Content gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch main for the stable-id check
+        run: git fetch origin main || true
+      - name: Question, mock, lesson, lab and brand gates
+        run: node tools/check.mjs --report
+      - name: Generated files are up to date
+        run: |
+          node tools/build-md.mjs
+          git diff --exit-code -- practice/ || (echo "::error::Run 'npm run build:md' and commit the result" && exit 1)
+
+  lint:
+    name: Markdown and spelling
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: "**/*.md"
+      - uses: codespell-project/actions-codespell@v2
+        with:
+          skip: "*.json,./labs/*/app/requirements.txt"
+
+  links:
+    name: Links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: lycheeverse/lychee-action@v1
+        with:
+          args: --no-progress --max-concurrency 4 --accept 200,429 "**/*.md" course.json
+          fail: true
+
+  secrets:
+    name: Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  labs:
+    name: Lab scripts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ShellCheck
+        run: find labs -name '*.sh' -print0 | xargs -0 -r shellcheck -S warning
+      - name: PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          $files = Get-ChildItem labs -Recurse -Filter *.ps1
+          $issues = $files | ForEach-Object { Invoke-ScriptAnalyzer -Path $_.FullName -Severity Error,Warning -ExcludeRule PSAvoidUsingWriteHost }
+          $issues | Format-Table -AutoSize
+          if ($issues) { exit 1 }

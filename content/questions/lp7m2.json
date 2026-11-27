@@ -1,0 +1,800 @@
+{
+ "module": "lp7m2",
+ "title": "Develop event-driven AI workflows with Azure Event Grid",
+ "questions": [
+  {
+   "id": "lp7m2-001",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "New documents arrive in Blob Storage, and an embeddings pipeline currently polls the container every five minutes. What should replace the polling?",
+   "options": [
+    {
+     "text": "A custom topic",
+     "why": "The pipeline consumes this event; Blob Storage publishes it through a system topic."
+    },
+    {
+     "text": "A Service Bus queue polled each minute",
+     "why": "That's still polling."
+    },
+    {
+     "text": "A webhook that lists the container",
+     "why": "Listing on a timer is still polling."
+    },
+    {
+     "text": "An Event Grid subscription to BlobCreated",
+     "why": "Correct. The system topic pushes a BlobCreated event as soon as the blob appears."
+    }
+   ],
+   "answer": 3,
+   "hint": "Stop asking the container whether something is new. Let the platform tell you.",
+   "explain": "Reactive data processing: subscribe to storage events instead of polling.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which statement about Event Grid system topics is true?",
+   "options": [
+    {
+     "text": "You publish your application's events to them",
+     "why": "Only the Azure service publishes to a system topic."
+    },
+    {
+     "text": "They support pull delivery and nothing else",
+     "why": "Learn doesn't limit system topics to pull delivery."
+    },
+    {
+     "text": "They're created automatically for Azure services",
+     "why": "Correct. They appear when you subscribe to a supported Azure resource's events."
+    },
+    {
+     "text": "They require you to define the event schema",
+     "why": "System topic schemas are predefined by the service."
+    }
+   ],
+   "answer": 2,
+   "hint": "Azure services publish through topics that Event Grid creates for them.",
+   "explain": "System topics: Azure services. Custom topics: your code.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each requirement to the event handler Learn describes.",
+   "choices": [
+    "Azure Functions",
+    "Azure Event Hubs",
+    "Service Bus queue",
+    "Webhook"
+   ],
+   "items": [
+    {
+     "text": "Lightweight, stateless processing with automatic scaling",
+     "answer": 0,
+     "why": "Functions suit stateless event processing."
+    },
+    {
+     "text": "Feed events into a high-throughput streaming pipeline",
+     "answer": 1,
+     "why": "Event Hubs ingests high-throughput streams."
+    },
+    {
+     "text": "Ordered or transactional processing",
+     "answer": 2,
+     "why": "Service Bus suits guaranteed ordering or transactions."
+    },
+    {
+     "text": "Send events to a custom inference endpoint over HTTP",
+     "answer": 3,
+     "why": "Webhooks reach any HTTP endpoint."
+    }
+   ],
+   "hint": "Match each processing need to the handler built for it.",
+   "explain": "Choose the handler by processing requirements.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-004",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A content moderation platform uses Event Grid.",
+   "rows": [
+    {
+     "text": "Uploads trigger Microsoft.Storage.BlobCreated events from a system topic.",
+     "answer": true,
+     "why": "Blob Storage publishes through a system topic."
+    },
+    {
+     "text": "The classifier can publish com.contoso.ai.ContentClassified to the same system topic.",
+     "answer": false,
+     "why": "You can't publish to system topics; use a custom topic."
+    },
+    {
+     "text": "Notification and analytics services can each subscribe to the custom topic independently.",
+     "answer": true,
+     "why": "Multiple subscriptions fan out events."
+    },
+    {
+     "text": "Each event should carry the full uploaded image.",
+     "answer": false,
+     "why": "Events are lightweight notifications; subscribers fetch the resource."
+    }
+   ],
+   "hint": "Azure events come through system topics. Your own events go to custom topics.",
+   "explain": "System topics for Azure events, custom topics for your own; keep events small.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-005",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A consumer can't accept incoming HTTP requests and wants to read events at its own pace. Which option fits?",
+   "options": [
+    {
+     "text": "A system topic with a webhook",
+     "why": "Webhooks are push delivery."
+    },
+    {
+     "text": "Pull delivery from a namespace topic",
+     "why": "Correct. Namespace topics support pull delivery, so the consumer reads on demand."
+    },
+    {
+     "text": "Push delivery to a webhook endpoint it hosts",
+     "why": "Webhooks need an HTTP endpoint that accepts requests."
+    },
+    {
+     "text": "A custom topic with push delivery to Functions",
+     "why": "That's push delivery."
+    }
+   ],
+   "answer": 1,
+   "hint": "If the consumer can't receive HTTP, it has to go and fetch events.",
+   "explain": "Push sends to an endpoint; pull lets the consumer connect and read.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-006",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A team is designing a new set of AI pipeline events and must choose an event schema. They want an open, protocol-independent standard that works beyond Azure. Which schema does Learn recommend?",
+   "options": [
+    {
+     "text": "Event Grid schema",
+     "why": "The Event Grid schema remains for backward compatibility. It's not the recommendation for new work."
+    },
+    {
+     "text": "Event Hubs Avro",
+     "why": "Avro is a serialization format, not an Event Grid event schema."
+    },
+    {
+     "text": "Custom JSON with no required attributes",
+     "why": "Without standard attributes, subscribers can't rely on id, source or type."
+    },
+    {
+     "text": "CloudEvents v1.0",
+     "why": "Correct. CloudEvents v1.0 is an open CNCF standard and the recommended schema for new implementations."
+    }
+   ],
+   "answer": 3,
+   "hint": "One schema is an open standard from the Cloud Native Computing Foundation.",
+   "explain": "CloudEvents v1.0 is recommended for new implementations: an open, protocol-independent CNCF standard. The Event Grid schema is kept for backward compatibility and can't represent CloudEvents extension attributes.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m2-007",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which CloudEvents attribute should subscribers use to detect and deduplicate repeated deliveries?",
+   "options": [
+    {
+     "text": "The id attribute of each event",
+     "why": "Correct. id uniquely identifies each event."
+    },
+    {
+     "text": "type attribute",
+     "why": "type categorizes the event."
+    },
+    {
+     "text": "subject attribute",
+     "why": "subject is a filterable path."
+    },
+    {
+     "text": "source attribute",
+     "why": "source identifies the originating system."
+    }
+   ],
+   "answer": 0,
+   "hint": "Event Grid may deliver the same event more than once. Which attribute is unique per event?",
+   "explain": "Event Grid is at-least-once, so handlers dedupe on id.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A subscription should receive only events from the embeddings pipeline, whose subjects look like `/pipelines/embeddings/batch-42`. Which filter fits?",
+   "options": [
+    {
+     "text": "--included-event-types /pipelines/embeddings",
+     "why": "Event types aren't subject paths."
+    },
+    {
+     "text": "subjectEndsWith /embeddings",
+     "why": "The subject doesn't end with /embeddings."
+    },
+    {
+     "text": "StringContains on the id attribute",
+     "why": "id is a unique identifier, not a routing path."
+    },
+    {
+     "text": "subjectBeginsWith /pipelines/embeddings/",
+     "why": "Correct. A prefix filter routes events from a specific pipeline."
+    }
+   ],
+   "answer": 3,
+   "hint": "The subjects share a prefix. Filter on how the subject starts.",
+   "explain": "Set hierarchical subjects so subscribers can filter by prefix or suffix.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-009",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Your topic publishes CloudEvents, and a legacy handler only accepts the Event Grid schema. What happens if you set the subscription's delivery schema to the Event Grid schema?",
+   "options": [
+    {
+     "text": "Event Grid converts it, dropping extension attributes",
+     "why": "Learn says this conversion isn't supported at all."
+    },
+    {
+     "text": "That conversion isn't supported for CloudEvents topics",
+     "why": "Correct. CloudEvents-to-Event Grid conversion isn't supported because of extension attributes."
+    },
+    {
+     "text": "The topic switches its input schema automatically",
+     "why": "Input schema is set on the topic and doesn't change automatically."
+    },
+    {
+     "text": "Both formats arrive in one payload",
+     "why": "Event Grid doesn't do this."
+    }
+   ],
+   "answer": 1,
+   "hint": "Conversion works in one direction only.",
+   "explain": "Event Grid schema → CloudEvents works; the reverse doesn't.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A subscription has two advanced filters: `data.status StringIn [flagged, failed]` and `data.confidence NumberGreaterThan 0.9`.",
+   "rows": [
+    {
+     "text": "An event with status flagged and confidence 0.95 is delivered.",
+     "answer": true,
+     "why": "It meets both conditions (AND between conditions)."
+    },
+    {
+     "text": "An event with status failed and confidence 0.5 is delivered.",
+     "answer": false,
+     "why": "Both conditions must match; 0.5 fails the second."
+    },
+    {
+     "text": "An event with status failed and confidence 0.97 is delivered.",
+     "answer": true,
+     "why": "Within a condition's values, OR applies: failed matches."
+    },
+    {
+     "text": "A subscription can have up to 100 advanced filter conditions.",
+     "answer": false,
+     "why": "The limit is 25 conditions per subscription."
+    }
+   ],
+   "hint": "Conditions combine with AND; values inside one condition combine with OR.",
+   "explain": "AND between conditions, OR within each condition's values.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-011",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A review service should receive only InferenceCompleted events from the content-moderation pipeline. How do type and subject filters on one subscription combine?",
+   "options": [
+    {
+     "text": "An event has to match both of the filters",
+     "why": "Correct. A subscription with both filters only receives events matching all criteria."
+    },
+    {
+     "text": "A subscription allows one filter type at most",
+     "why": "You can combine type and subject filtering."
+    },
+    {
+     "text": "An event that matches either filter is delivered",
+     "why": "Filters on the same subscription combine with AND."
+    },
+    {
+     "text": "The subject filter replaces the type filter",
+     "why": "Both filters apply."
+    }
+   ],
+   "answer": 0,
+   "hint": "Type says what happened, and subject says where. Both must match.",
+   "explain": "Use type filtering for what happened and subject filtering for where.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-012",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Only inference results with a confidence above 0.9 should reach the auto-approve handler. Confidence is a number in the event's data. Which subscription filter does this?",
+   "options": [
+    {
+     "text": "Event type filter: com.contoso.ai.HighConfidence",
+     "why": "That only works if the publisher creates a separate event type, which it doesn't."
+    },
+    {
+     "text": "Subject filter: subjectEndsWith confidence-0.9",
+     "why": "Subject filters match text in the subject, not numbers in the data."
+    },
+    {
+     "text": "Advanced filter: data.confidence NumberGreaterThan 0.9",
+     "why": "Correct. Advanced filters compare values inside the event data."
+    },
+    {
+     "text": "Output batching with a preferred batch size of 0.9 KB",
+     "why": "Batching groups deliveries. It doesn't filter events."
+    }
+   ],
+   "answer": 2,
+   "hint": "The value is a number inside data. Which filter type can compare numbers?",
+   "explain": "Advanced filters match on values in the event data, with operators such as NumberGreaterThan and StringIn. Type and subject filters don't evaluate numeric payload values.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m2-013",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An inference handler takes about 2 minutes per event, and Event Grid keeps retrying events that were actually processed. What should the handler do?",
+   "options": [
+    {
+     "text": "Return 400 so Event Grid stops retrying",
+     "why": "400 means \"don't retry\" for a malformed request, not for success."
+    },
+    {
+     "text": "Increase Event Grid's timeout to 5 minutes",
+     "why": "The 30-second wait isn't something you raise."
+    },
+    {
+     "text": "Return 202 Accepted at once, then process",
+     "why": "Correct. 202 counts as successful delivery; Event Grid waits only 30 seconds."
+    },
+    {
+     "text": "Return 503 after the work is finished",
+     "why": "503 signals overload and triggers retries."
+    }
+   ],
+   "answer": 2,
+   "hint": "Event Grid waits only a short time. Acknowledge first, then do the slow work.",
+   "explain": "Acknowledge early with 202 when processing takes longer than 30 seconds.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-014",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What is Event Grid's default maximum number of delivery attempts?",
+   "options": [
+    {
+     "text": "1,440",
+     "why": "1,440 is the default event TTL in minutes."
+    },
+    {
+     "text": "24",
+     "why": "24 isn't the default."
+    },
+    {
+     "text": "30",
+     "why": "Correct. Default max attempts is 30 (range 1–30)."
+    },
+    {
+     "text": "10",
+     "why": "10 is the Service Bus default max delivery count."
+    }
+   ],
+   "answer": 2,
+   "hint": "Default maximum delivery attempts is a round number.",
+   "explain": "Max attempts default 30; event TTL default 1,440 minutes (24 hours).",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An event subscription uses default settings and its webhook returns errors.",
+   "rows": [
+    {
+     "text": "If the webhook returns 400 Bad Request, Event Grid retries with backoff.",
+     "answer": false,
+     "why": "400 isn't retried."
+    },
+    {
+     "text": "If it returns 503, Event Grid retries following its backoff schedule.",
+     "answer": true,
+     "why": "Transient errors are retried."
+    },
+    {
+     "text": "Events that exhaust retries are kept in Blob Storage automatically.",
+     "answer": false,
+     "why": "Dead-lettering is disabled by default; without it, events are dropped."
+    },
+    {
+     "text": "The handler might receive the same event twice.",
+     "answer": true,
+     "why": "At-least-once delivery means possible duplicates."
+    }
+   ],
+   "hint": "Some status codes are retried and some aren't. Exhausted events aren't kept unless you enable it.",
+   "explain": "Return accurate status codes, make handlers idempotent and configure dead-lettering.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A real-time moderation subscription should stop retrying stale events after 30 minutes. A teammate also sets max attempts to 10. What happens?",
+   "options": [
+    {
+     "text": "TTL wins first, after about six attempts",
+     "why": "Correct. Whichever limit comes first stops retries; only about six attempts fit in 30 minutes."
+    },
+    {
+     "text": "All 10 attempts run, then it stops",
+     "why": "The TTL expires before 10 attempts."
+    },
+    {
+     "text": "TTL is ignored once max attempts is set",
+     "why": "Both limits apply."
+    },
+    {
+     "text": "Event Grid retries every 3 minutes to fit 10 attempts",
+     "why": "The backoff schedule doesn't stretch to fit."
+    }
+   ],
+   "answer": 0,
+   "hint": "Retries stop at whichever limit comes first: attempts or the event's TTL.",
+   "explain": "Retry stops at the first of max attempts or event TTL.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-017",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Dead-lettered events show lastDeliveryOutcome = NotFound for all of them since yesterday's deployment. What's the most likely issue?",
+   "options": [
+    {
+     "text": "The handler endpoint URL changed",
+     "why": "Correct. Learn ties a batch of NotFound outcomes to a changed handler URL."
+    },
+    {
+     "text": "The TTL is too long",
+     "why": "TTL length doesn't produce NotFound."
+    },
+    {
+     "text": "The inference service is overloaded",
+     "why": "Overload shows up as TimedOut or Busy."
+    },
+    {
+     "text": "Events are too large",
+     "why": "413 isn't a NotFound outcome."
+    }
+   ],
+   "answer": 0,
+   "hint": "NotFound for every event after a deployment points at the destination.",
+   "explain": "Use deadLetterReason and lastDeliveryOutcome to diagnose systemic failures.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which response from an event handler does Event Grid treat as a successful delivery?",
+   "options": [
+    {
+     "text": "503 Service Unavailable",
+     "why": "503 tells Event Grid to retry. It isn't a success."
+    },
+    {
+     "text": "202 Accepted",
+     "why": "Correct. Event Grid treats 200, 201, 202, 203 and 204 as success."
+    },
+    {
+     "text": "400 Bad Request",
+     "why": "400 is a permanent error. Event Grid doesn't retry it, and it isn't a success."
+    },
+    {
+     "text": "413 Request Entity Too Large",
+     "why": "413 is a permanent error, not a success."
+    }
+   ],
+   "answer": 1,
+   "hint": "Success is in the 2xx range.",
+   "explain": "Event Grid treats 200–204 as successful delivery. 400 and 413 are permanent errors (not retried); 503 triggers retries with backoff.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m2-019",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You enable dead-lettering on an event subscription so that undeliverable events are kept. Where does Event Grid write them?",
+   "options": [
+    {
+     "text": "To an Azure Storage queue",
+     "why": "Event Grid dead-letters to Blob Storage, not Storage queues."
+    },
+    {
+     "text": "To a Log Analytics table",
+     "why": "Logs can record delivery failures, but the events themselves go to Blob Storage."
+    },
+    {
+     "text": "To a Service Bus dead-letter queue created automatically",
+     "why": "Event Grid doesn't use Service Bus for its dead-letter location."
+    },
+    {
+     "text": "To an Azure Blob Storage container that already exists",
+     "why": "Correct. Dead-lettered events go to a Blob container you specify, which must exist beforehand."
+    }
+   ],
+   "answer": 3,
+   "hint": "Dead-lettering is off by default, and you must point it at existing storage.",
+   "explain": "Dead-lettering is off by default. When enabled, undeliverable events go to an Azure Blob Storage container you specify (it must exist). They carry properties such as deadLetterReason and lastDeliveryOutcome.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m2-020",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A webhook handler returns 400 whenever its vector database is briefly unavailable, and those events are never processed. What's the right fix?",
+   "options": [
+    {
+     "text": "Enable output batching on the subscription",
+     "why": "Batching groups events. It doesn't change how errors are retried."
+    },
+    {
+     "text": "Raise max delivery attempts from 10 to 30",
+     "why": "More attempts don't help when the status code stops retries completely."
+    },
+    {
+     "text": "Return 503 during the outage so that Event Grid retries",
+     "why": "Correct. 503 triggers retries with backoff, while 400 means a permanent problem and is never retried."
+    },
+    {
+     "text": "Return 401 so that Event Grid retries in five minutes",
+     "why": "401 isn't retried for webhook endpoints, so the events would still be lost."
+    }
+   ],
+   "answer": 2,
+   "hint": "The handler is telling Event Grid the event is bad, when really the database is down for a moment.",
+   "explain": "Return accurate status codes: 400 means a permanent payload problem and isn't retried; use 503 for temporary outages so Event Grid retries with exponential backoff. Make handlers idempotent.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m2-021",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A subscription uses output batching with up to 100 events per delivery. The handler fails on one event in a batch. How does Event Grid respond?",
+   "options": [
+    {
+     "text": "It splits the batch in half and retries each half",
+     "why": "Event Grid doesn't split batches on failure."
+    },
+    {
+     "text": "It retries the whole batch of 100 events",
+     "why": "Correct. Batch delivery is all or nothing, so handlers must be idempotent."
+    },
+    {
+     "text": "It retries the failed event alone",
+     "why": "Event Grid doesn't track success per event inside a batch."
+    },
+    {
+     "text": "It dead-letters only the failed event",
+     "why": "Without per-event acknowledgment, it can't single out one event."
+    }
+   ],
+   "answer": 1,
+   "hint": "The handler acknowledges a batch with one response.",
+   "explain": "Output batching is all-or-none: if any event fails, Event Grid retries the whole batch. Keep handlers idempotent and batches small enough to finish within the 30-second timeout.",
+   "origin": "ca4"
+  },
+  {
+   "id": "lp7m2-022",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A Container Apps service publishes custom events with a managed identity. Which role should the identity have on the custom topic?",
+   "options": [
+    {
+     "text": "Storage Blob Data Contributor",
+     "why": "That's for Blob Storage."
+    },
+    {
+     "text": "Azure Service Bus Data Sender",
+     "why": "That's for Service Bus."
+    },
+    {
+     "text": "Event Grid Contributor",
+     "why": "Learn names Data Sender for publishing."
+    },
+    {
+     "text": "Event Grid Data Sender",
+     "why": "Correct. Grant the managed identity Event Grid Data Sender on the topic."
+    }
+   ],
+   "answer": 3,
+   "hint": "Production publishers should use Entra ID, with the role that allows sending.",
+   "explain": "Entra ID with managed identity is the recommended production auth.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-023",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An inference result is a 3 MB JSON document. What should the InferenceCompleted event's data contain?",
+   "options": [
+    {
+     "text": "A link to the stored result plus a summary",
+     "why": "Correct. Reference results, add metadata and a summary for fast decisions."
+    },
+    {
+     "text": "The full 3 MB result, so nothing is fetched",
+     "why": "Don't embed full results in events."
+    },
+    {
+     "text": "The result split across several events",
+     "why": "Splitting isn't the recommended design."
+    },
+    {
+     "text": "Nothing; subscribers query the model again",
+     "why": "Subscribers shouldn't recompute results."
+    }
+   ],
+   "answer": 0,
+   "hint": "Events describe what happened and where to find the details.",
+   "explain": "Events describe what happened and where to find details.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-024",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A CI/CD pipeline publishes a CloudEvent to a custom topic with curl. Which two settings does Learn show? (Select two.)",
+   "options": [
+    {
+     "text": "A Bearer token for https://dynamicsessions.io",
+     "why": "That audience is for dynamic sessions, not Event Grid."
+    },
+    {
+     "text": "Content-Type: application/x-www-form-urlencoded",
+     "why": "Form encoding isn't used for CloudEvents."
+    },
+    {
+     "text": "An aeg-sas-key header with the topic key",
+     "why": "Correct. Learn's REST example authenticates with aeg-sas-key."
+    },
+    {
+     "text": "Content-Type: application/cloudevents+json; charset=utf-8",
+     "why": "Correct. That's the content type for a single CloudEvent."
+    }
+   ],
+   "answer": [
+    2,
+    3
+   ],
+   "hint": "Learn's curl example uses the CloudEvents content type and a header that carries the key.",
+   "explain": "The REST API returns 200 OK when the event is accepted.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m2-025",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A pipeline publishes five StageCompleted events using EventGridPublisherClient.",
+   "rows": [
+    {
+     "text": "Passing a list of five CloudEvents sends them in one HTTP request.",
+     "answer": true,
+     "why": "Batch publishing sends a list in a single request."
+    },
+    {
+     "text": "Each event should include a pipeline run ID so subscribers can correlate stages.",
+     "answer": true,
+     "why": "Include identifiers for correlation."
+    },
+    {
+     "text": "The producer must know which subscribers will receive the events.",
+     "answer": false,
+     "why": "Producers don't need to know who subscribes."
+    }
+   ],
+   "hint": "One request can carry several events. Correlation IDs tie the stages together.",
+   "explain": "Publish at natural checkpoints with correlation IDs; subscribers come and go independently.",
+   "origin": "lab500"
+  }
+ ]
+}

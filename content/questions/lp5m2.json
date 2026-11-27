@@ -1,0 +1,811 @@
+{
+ "module": "lp5m2",
+ "title": "Implement vector search with Azure Database for PostgreSQL",
+ "questions": [
+  {
+   "id": "lp5m2-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which pgvector operator calculates cosine distance?",
+   "options": [
+    {
+     "text": "<->",
+     "why": "<-> is L2 (Euclidean) distance."
+    },
+    {
+     "text": "<#>",
+     "why": "<#> is negative inner product."
+    },
+    {
+     "text": "<=>",
+     "why": "Correct. <=> is cosine distance."
+    },
+    {
+     "text": "@>",
+     "why": "@> is the JSONB containment operator."
+    }
+   ],
+   "answer": 2,
+   "hint": "pgvector has three distance operators. Cosine is the one with an equals sign.",
+   "explain": "<-> L2, <=> cosine, <#> negative inner product.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You enable vector search on an Azure Database for PostgreSQL database. Which command adds pgvector?",
+   "options": [
+    {
+     "text": "az postgres flexible-server parameter set --name vector.enabled",
+     "why": "Learn enables pgvector with CREATE EXTENSION."
+    },
+    {
+     "text": "CREATE EXTENSION IF NOT EXISTS vector;",
+     "why": "Correct. The extension name is vector."
+    },
+    {
+     "text": "ALTER DATABASE SET vector = on;",
+     "why": "Extensions aren't enabled with a database setting like this."
+    },
+    {
+     "text": "CREATE EXTENSION IF NOT EXISTS pgvector_search;",
+     "why": "That isn't the extension's name."
+    }
+   ],
+   "answer": 1,
+   "hint": "Extensions are added with a CREATE statement, and the extension's name is short.",
+   "explain": "Run CREATE EXTENSION with a role such as azure_pg_admin.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-003",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Inserts into `embedding vector(1536)` fail after the team switched to a sentence transformer model. What's the likely cause?",
+   "options": [
+    {
+     "text": "Sentence transformer vectors need the <#> operator to insert",
+     "why": "Operators are for queries, not inserts."
+    },
+    {
+     "text": "Its 384-dimension output doesn't match vector(1536)",
+     "why": "Correct. Sentence transformers typically output 384 dimensions; mismatched counts cause insert errors."
+    },
+    {
+     "text": "pgvector needs a halfvec column for non-OpenAI models",
+     "why": "halfvec is about precision, not model vendors."
+    },
+    {
+     "text": "The extension has to be re-created after any model change",
+     "why": "The extension doesn't need re-creating."
+    }
+   ],
+   "answer": 1,
+   "hint": "vector(n) must match the model's output size.",
+   "explain": "vector(n) must match the model's output dimension.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A query uses `ORDER BY embedding <=> $1 LIMIT 10` on a vector(1536) column.",
+   "rows": [
+    {
+     "text": "Rows with smaller values are more similar to the query.",
+     "answer": true,
+     "why": "Smaller distance means more similar."
+    },
+    {
+     "text": "A cosine distance of 2 means the vectors point in opposite directions.",
+     "answer": true,
+     "why": "Cosine distance ranges from 0 (identical direction) to 2 (opposite)."
+    },
+    {
+     "text": "Storing the column as halfvec(1536) would double the storage.",
+     "answer": false,
+     "why": "halfvec halves the storage."
+    },
+    {
+     "text": "The <#> operator returns cosine similarity, where larger is better.",
+     "answer": false,
+     "why": "<#> is negative inner product; like the other operators, smaller is better."
+    }
+   ],
+   "hint": "For distances, smaller means closer. Cosine distance runs from 0 to 2. halfvec saves space.",
+   "explain": "pgvector distances: smaller is closer; vector type ≈ 4 bytes per dimension.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-005",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A model produces sparse embeddings with about 3,000 non-zero values out of 30,000 dimensions, and you want an HNSW index. What should you know?",
+   "options": [
+    {
+     "text": "sparsevec can't be indexed at all, so store it as vector(30000)",
+     "why": "sparsevec can be indexed within the limit."
+    },
+    {
+     "text": "HNSW handles any number of non-zero elements on sparsevec",
+     "why": "There's a 1,000 non-zero element limit."
+    },
+    {
+     "text": "HNSW on sparsevec allows up to 1,000 non-zero elements",
+     "why": "Correct. Learn notes the 1,000 non-zero element limit for HNSW on sparsevec."
+    },
+    {
+     "text": "halfvec is required for sparse embeddings above 1,000 values",
+     "why": "halfvec is for dense half-precision vectors."
+    }
+   ],
+   "answer": 2,
+   "hint": "HNSW on sparse vectors has a limit on non-zero elements.",
+   "explain": "sparsevec stores only non-zero values; HNSW supports up to 1,000 of them.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "match",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Match each pgvector operator to the distance it calculates.",
+   "choices": [
+    "L2 (Euclidean) distance",
+    "Cosine distance",
+    "Negative inner product"
+   ],
+   "items": [
+    {
+     "text": "<->",
+     "answer": 0,
+     "why": "<-> is L2 (Euclidean) distance, used with vector_l2_ops."
+    },
+    {
+     "text": "<=>",
+     "answer": 1,
+     "why": "<=> is cosine distance, used with vector_cosine_ops."
+    },
+    {
+     "text": "<#>",
+     "answer": 2,
+     "why": "<#> is negative inner product, used with vector_ip_ops for maximum inner product search."
+    }
+   ],
+   "hint": "One operator has a hash mark, one has an equals sign, and one has a dash.",
+   "explain": "pgvector operators: <-> L2 distance, <=> cosine distance, <#> negative inner product. For all three, smaller results mean closer vectors.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp5m2-007",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Queries use the <=> operator. Which operator class should the HNSW index use?",
+   "options": [
+    {
+     "text": "gin_trgm_ops",
+     "why": "That's for trigram text search, not vectors."
+    },
+    {
+     "text": "vector_l2_ops",
+     "why": "vector_l2_ops matches <->."
+    },
+    {
+     "text": "vector_cosine_ops",
+     "why": "Correct. vector_cosine_ops matches <=>."
+    },
+    {
+     "text": "vector_ip_ops",
+     "why": "vector_ip_ops matches <#>."
+    }
+   ],
+   "answer": 2,
+   "hint": "The operator class must match the operator used in queries.",
+   "explain": "Operator class and query operator must match, or PostgreSQL falls back to a sequential scan.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You create an IVFFlat index on a new, empty table and then load 500,000 vectors. Search results are poor. Why?",
+   "options": [
+    {
+     "text": "IVFFlat can't index more than 100,000 vectors",
+     "why": "Learn gives no such limit."
+    },
+    {
+     "text": "IVFFlat needs existing data to train its clusters",
+     "why": "Correct. An IVFFlat index created on an empty table isn't usable; load data first."
+    },
+    {
+     "text": "IVFFlat has to be created with CONCURRENTLY",
+     "why": "CONCURRENTLY avoids blocking; it doesn't fix untrained clusters."
+    },
+    {
+     "text": "IVFFlat requires the vector_ip_ops operator class",
+     "why": "Any matching operator class works."
+    }
+   ],
+   "answer": 1,
+   "hint": "IVFFlat builds its clusters from data that already exists.",
+   "explain": "Load data, then create IVFFlat. HNSW, by contrast, can start on an empty table.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-009",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A product search app uses HNSW with default settings.",
+   "rows": [
+    {
+     "text": "The default number of connections per node (m) is 16.",
+     "answer": true,
+     "why": "m defaults to 16."
+    },
+    {
+     "text": "The default hnsw.ef_search value is 40.",
+     "answer": true,
+     "why": "Start with the default of 40."
+    },
+    {
+     "text": "Raising ef_search to 100–200 typically lowers recall.",
+     "answer": false,
+     "why": "Values of 100–200 typically achieve 99%+ recall."
+    }
+   ],
+   "hint": "HNSW defaults: 16 connections per node and a search list of 40. A bigger search list raises recall.",
+   "explain": "m and ef_construction shape the graph; ef_search sets query-time width.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "EXPLAIN ANALYZE shows Seq Scan for `SELECT id FROM documents ORDER BY embedding <-> $1`, although an HNSW index with vector_l2_ops exists on a large table. What is most likely missing?",
+   "options": [
+    {
+     "text": "A LIMIT clause on the query",
+     "why": "Correct. Vector indexes are most effective with ORDER BY and LIMIT; Learn lists the missing LIMIT as a cause of Seq Scan."
+    },
+    {
+     "text": "A GIN index on the content column",
+     "why": "GIN indexes help full-text search, not vector ordering."
+    },
+    {
+     "text": "An IVFFlat index as well",
+     "why": "A second index type isn't needed."
+    },
+    {
+     "text": "A halfvec column type",
+     "why": "The data type isn't the cause here."
+    }
+   ],
+   "answer": 0,
+   "hint": "The planner uses a vector index only for ORDER BY distance with a LIMIT.",
+   "explain": "Check operator class, index validity, table size and the LIMIT clause when you see Seq Scan.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A query asks for `LIMIT 100` results from an HNSW index while `hnsw.ef_search` is still at its default. What should you change?",
+   "options": [
+    {
+     "text": "Lower hnsw.ef_search to 20 for speed",
+     "why": "Lower values trade recall for speed and are still below the LIMIT."
+    },
+    {
+     "text": "Rebuild the index with a larger m",
+     "why": "m is a build-time parameter; ef_search is the query-time setting here."
+    },
+    {
+     "text": "Raise hnsw.ef_search to at least 100",
+     "why": "Correct. ef_search should be at least as large as the number of results you request; the default is 40."
+    },
+    {
+     "text": "Switch the operator class to vector_ip_ops",
+     "why": "The operator class must match the query operator; it isn't the issue."
+    }
+   ],
+   "answer": 2,
+   "hint": "ef_search should be at least the number of results you ask for.",
+   "explain": "Set ef_search per session with SET hnsw.ef_search = …; it should be at least the LIMIT.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-012",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A 50-million-row embeddings table needs searches under 100 ms, and the team can accept that a few true nearest neighbors are occasionally missed. What fits?",
+   "options": [
+    {
+     "text": "No index, with LIMIT 10 to keep the scan short",
+     "why": "Without an index, the database still compares every row before sorting."
+    },
+    {
+     "text": "An exact sequential scan with a larger server",
+     "why": "An exact scan computes 50 million distances per query, far too slow for 100 ms."
+    },
+    {
+     "text": "An approximate nearest-neighbor index such as HNSW",
+     "why": "Correct. ANN search trades perfect accuracy for dramatic speed, measured as recall."
+    },
+    {
+     "text": "A B-tree index on the embedding column",
+     "why": "B-tree indexes don't support nearest-neighbor distance search."
+    }
+   ],
+   "answer": 2,
+   "hint": "The team accepts \"occasionally missed\". Which kind of index trades a little accuracy for speed?",
+   "explain": "Approximate nearest-neighbor (ANN) indexes examine only a subset of vectors, trading perfect accuracy for speed. Recall measures how many true nearest neighbors appear in the results.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp5m2-013",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An IVFFlat index has lists = 100. You're choosing a starting value for ivfflat.probes. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Set probes to 1 so that queries stay as fast as possible",
+     "why": "One probe is fast but searches the fewest clusters, which can hurt recall. Learn's starting point is sqrt(lists)."
+    },
+    {
+     "text": "Set probes equal to lists divided by 2, then never change it",
+     "why": "Learn gives sqrt(lists) as the starting point, and says to adjust it for your recall and latency needs."
+    },
+    {
+     "text": "Set probes to 100 so that every cluster is searched",
+     "why": "That searches everything, which removes the index's speed benefit."
+    },
+    {
+     "text": "Start at 10, the square root of lists, then tune for recall and latency",
+     "why": "Correct. Start with probes = sqrt(lists) and adjust based on your recall and latency needs."
+    }
+   ],
+   "answer": 3,
+   "hint": "Learn gives a square-root rule of thumb.",
+   "explain": "probes controls how many clusters are searched at query time. Higher values improve recall but increase latency. Start with probes = sqrt(lists), set per session with SET ivfflat.probes.",
+   "origin": "new"
+  },
+  {
+   "id": "lp5m2-014",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "You must rebuild a vector index on a production table without blocking queries. What should you use?",
+   "options": [
+    {
+     "text": "VACUUM FULL documents to rebuild storage",
+     "why": "VACUUM FULL reclaims space and locks the table; it doesn't rebuild the vector index structure."
+    },
+    {
+     "text": "DROP INDEX first, then CREATE INDEX again",
+     "why": "Dropping first leaves queries without an index."
+    },
+    {
+     "text": "REINDEX INDEX on the existing vector index",
+     "why": "REINDEX blocks writes during the rebuild."
+    },
+    {
+     "text": "CREATE INDEX CONCURRENTLY, then swap names",
+     "why": "Correct. Build concurrently, verify, drop the old index and rename."
+    }
+   ],
+   "answer": 3,
+   "hint": "Build a replacement without blocking, then swap names.",
+   "explain": "CREATE INDEX CONCURRENTLY takes longer but keeps serving requests.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-015",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You're migrating from a 1,536-dimension model to a 3,072-dimension model with no downtime. Put the parallel-column steps in order.",
+   "steps": [
+    "Add a new column, embedding_v2 vector(3072)",
+    "Create an HNSW index on embedding_v2",
+    "Backfill embedding_v2 in batches",
+    "Switch queries to embedding_v2 after comparing results",
+    "Drop the old column and index, then rename the new ones"
+   ],
+   "hint": "Add the new column and its index, fill it, switch, then clean up.",
+   "explain": "Parallel columns let you validate the new model and roll back if it underperforms.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-016",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. Editors update document text hundreds of times an hour, and embeddings are regenerated in the same transaction.",
+   "rows": [
+    {
+     "text": "Marking rows embedding_stale = TRUE and re-embedding in batches would lower content update latency.",
+     "answer": true,
+     "why": "Batching decouples content updates from embedding generation."
+    },
+    {
+     "text": "Synchronous re-embedding in the same transaction is Learn's advice for frequent edits.",
+     "answer": false,
+     "why": "For frequent changes, Learn recommends async batch processing with a stale flag."
+    },
+    {
+     "text": "PostgreSQL reclaims disk space immediately when a row is updated.",
+     "answer": false,
+     "why": "MVCC keeps old row versions until VACUUM reclaims them."
+    },
+    {
+     "text": "VACUUM FULL is the non-locking option for busy tables.",
+     "answer": false,
+     "why": "VACUUM FULL locks the table; standard VACUUM runs concurrently."
+    }
+   ],
+   "hint": "For frequent edits, mark rows stale and re-embed in batches.",
+   "explain": "For frequent updates: stale flags, batch re-embedding, and tuned autovacuum.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-017",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A table will hold 1 million rows with `vector(1536)` embeddings. Roughly how much storage does the vector column alone need, before any index?",
+   "options": [
+    {
+     "text": "About 6 GB",
+     "why": "Correct. 1,536 dimensions × 4 bytes ≈ 6 KB per row, so about 6 GB for a million rows."
+    },
+    {
+     "text": "About 1.5 GB",
+     "why": "That's the size for 384-dimension vectors."
+    },
+    {
+     "text": "About 60 GB",
+     "why": "That's ten times too large."
+    },
+    {
+     "text": "About 12 GB",
+     "why": "That's the size for 3,072-dimension vectors."
+    }
+   ],
+   "answer": 0,
+   "hint": "Each float32 element is 4 bytes. Multiply by dimensions and rows.",
+   "explain": "Vector column storage ≈ dimensions × 4 bytes × rows; indexes add more on top.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-018",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You loaded embeddings from a new document domain, adding about 35% more rows. Search latency is up, and users say results are less relevant. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Drop the index and rely on exact scans",
+     "why": "Exact scans are too slow at this size."
+    },
+    {
+     "text": "Change the operator class to vector_ip_ops",
+     "why": "The operator class must match the query operator. Changing it doesn't fix a stale structure."
+    },
+    {
+     "text": "Lower hnsw.ef_search to make queries faster",
+     "why": "That lowers recall further, which makes relevance worse."
+    },
+    {
+     "text": "Rebuild the vector index, for example with CREATE INDEX CONCURRENTLY",
+     "why": "Correct. Adding more than 20–30% new data, especially from a new domain, often warrants rebuilding the ANN index."
+    }
+   ],
+   "answer": 3,
+   "hint": "ANN indexes are shaped by the data they were built on. A lot of new data changes that.",
+   "explain": "ANN indexes optimize for the data distribution at creation. Rising latency, falling relevance, or adding more than 20–30% new data (especially a new domain) signal a rebuild. Use CREATE INDEX CONCURRENTLY to avoid blocking.",
+   "origin": "ca3"
+  },
+  {
+   "id": "lp5m2-019",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A small internal tool can tolerate a short pause in writes at night. You need to rebuild its vector index. Which approach does Learn describe as simpler for this case?",
+   "options": [
+    {
+     "text": "Switch to an IVFFlat index on an empty table",
+     "why": "IVFFlat needs data to train, and an empty table gives an unusable index."
+    },
+    {
+     "text": "CREATE INDEX CONCURRENTLY followed by a rename",
+     "why": "This avoids blocking, but it's the more involved option, meant for systems that can't tolerate downtime."
+    },
+    {
+     "text": "Drop the column and reload all embeddings",
+     "why": "That loses data and takes much longer than rebuilding the index."
+    },
+    {
+     "text": "REINDEX INDEX during a low-traffic period",
+     "why": "Correct. REINDEX is simpler, but it blocks writes, so schedule it during quiet periods."
+    }
+   ],
+   "answer": 3,
+   "hint": "Brief interruptions are acceptable here, so you don't need the non-blocking route.",
+   "explain": "For systems that tolerate brief interruptions, REINDEX INDEX is simpler but blocks writes. For systems that can't, use CREATE INDEX CONCURRENTLY, verify, drop the old index, and rename.",
+   "origin": "new"
+  },
+  {
+   "id": "lp5m2-020",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A legal assistant should return nothing rather than unrelated contracts when no good match exists. What should the query add?",
+   "options": [
+    {
+     "text": "A threshold: WHERE embedding <=> $1 < 0.4",
+     "why": "Correct. A threshold sets a quality floor; empty results can be the right answer."
+    },
+    {
+     "text": "A GIN index on the embedding column",
+     "why": "GIN indexes are for full-text, not vector distance."
+    },
+    {
+     "text": "An ORDER BY on created_at instead of distance",
+     "why": "Ordering by date ignores similarity."
+    },
+    {
+     "text": "A larger LIMIT, such as LIMIT 100 rows",
+     "why": "A larger LIMIT returns more weak matches."
+    }
+   ],
+   "answer": 0,
+   "hint": "Returning nothing beats returning something unrelated. Add a cut-off on distance.",
+   "explain": "Combine a threshold for quality with LIMIT for resource control.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-021",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An attorney searches for \"Smith v. Jones\" and expects that exact case name, but vector search returns semantically similar cases first. What should you implement?",
+   "options": [
+    {
+     "text": "Lower the cosine distance threshold to 0.1",
+     "why": "A stricter threshold may remove results but doesn't match exact names."
+    },
+    {
+     "text": "Switch the distance operator from <=> to <->",
+     "why": "Changing the distance metric doesn't add keyword matching."
+    },
+    {
+     "text": "Average the query vector with the top result's vector",
+     "why": "Averaging doesn't add exact term matching."
+    },
+    {
+     "text": "Hybrid search: vector similarity plus ts_rank",
+     "why": "Correct. Hybrid search captures both semantic and lexical relevance."
+    }
+   ],
+   "answer": 3,
+   "hint": "Exact names need keyword matching. Combine it with vector similarity.",
+   "explain": "Use hybrid search for exact terms, names and codes; speed it with a GIN index on the tsvector.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-022",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A user wants documents about \"mergers AND environmental compliance\". You have an embedding for each concept. What does Learn recommend?",
+   "options": [
+    {
+     "text": "Average the two embeddings and run one query",
+     "why": "The average may land near neither concept."
+    },
+    {
+     "text": "Query each aspect separately and combine the results",
+     "why": "Correct. Different aspects shouldn't be averaged; retrieve for each and rank by combined relevance."
+    },
+    {
+     "text": "Use whichever concept has more documents",
+     "why": "That ignores the other aspect."
+    },
+    {
+     "text": "Run the merger query alone, then filter by keyword",
+     "why": "That ignores half the query's meaning."
+    }
+   ],
+   "answer": 1,
+   "hint": "Two separate concepts are better searched one at a time.",
+   "explain": "Average only semantically related examples; query distinct aspects separately.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-023",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A filtered vector query: `WHERE category = 'contracts' AND practice_area = 'corporate' ORDER BY embedding <=> $1 LIMIT 10`.",
+   "rows": [
+    {
+     "text": "B-tree indexes on category and practice_area can help this query.",
+     "answer": true,
+     "why": "Index frequently filtered columns."
+    },
+    {
+     "text": "Running ANALYZE after loading data helps the planner choose well.",
+     "answer": true,
+     "why": "Accurate statistics guide the planner."
+    },
+    {
+     "text": "PostgreSQL always uses the vector index, whatever the filter selectivity.",
+     "answer": false,
+     "why": "With very selective filters, it may scan matching rows without the vector index."
+    }
+   ],
+   "hint": "Indexes on filter columns and fresh statistics help the planner.",
+   "explain": "The planner optimizes total cost; inspect plans with EXPLAIN ANALYZE.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-024",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Match each retrieval metric to what it measures.",
+   "choices": [
+    "Precision",
+    "Recall",
+    "MRR"
+   ],
+   "items": [
+    {
+     "text": "The fraction of retrieved chunks that are actually relevant",
+     "answer": 0,
+     "why": "Low precision feeds the LLM irrelevant context."
+    },
+    {
+     "text": "The fraction of relevant chunks that were retrieved",
+     "answer": 1,
+     "why": "Low recall means missing information."
+    },
+    {
+     "text": "How high the first relevant result appears in the list",
+     "answer": 2,
+     "why": "Mean Reciprocal Rank rewards early relevant results."
+    }
+   ],
+   "hint": "Precision: of what you retrieved, how much was relevant. Recall: of what was relevant, how much did you get. MRR: how soon the first hit appears.",
+   "explain": "Measure retrieval separately from generation with a labelled evaluation set.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-025",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Retrieved contract chunks often say \"as described above\" without containing the referenced text. Which pattern helps?",
+   "options": [
+    {
+     "text": "Switching to fixed-size chunks with no overlap",
+     "why": "Fixed-size chunks without overlap can cut ideas mid-thought."
+    },
+    {
+     "text": "Context-window retrieval of adjacent chunks",
+     "why": "Correct. Fetching neighbours (e.g. 46 and 48 around 47) supplies the missing context."
+    },
+    {
+     "text": "Removing the source_documents table entirely",
+     "why": "The source table is needed for citations."
+    },
+    {
+     "text": "Lowering the LIMIT to one chunk per query",
+     "why": "Fewer chunks make the missing context worse."
+    }
+   ],
+   "answer": 1,
+   "hint": "The chunk refers to text that's next to it in the document.",
+   "explain": "Context windows cost more tokens but reduce incomplete answers.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp5m2-026",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "multi",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Evaluation shows low recall: answers miss relevant clauses. Which two changes does Learn suggest? (Select two.)",
+   "options": [
+    {
+     "text": "Increase hnsw.ef_search",
+     "why": "Correct. Higher ef_search searches more candidates and improves recall."
+    },
+    {
+     "text": "Tighten the distance threshold",
+     "why": "Tighter thresholds improve precision, not recall."
+    },
+    {
+     "text": "Loosen the distance threshold",
+     "why": "Correct. Looser thresholds include more candidates."
+    },
+    {
+     "text": "Retrieve fewer chunks per query",
+     "why": "Fewer chunks lower recall."
+    }
+   ],
+   "answer": [
+    0,
+    2
+   ],
+   "hint": "Low recall: search more widely and accept slightly less similar matches.",
+   "explain": "Recall levers: looser thresholds, more chunks, higher ef_search or probes.",
+   "origin": "lab500"
+  }
+ ]
+}

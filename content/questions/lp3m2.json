@@ -1,0 +1,736 @@
+{
+ "module": "lp3m2",
+ "title": "Configure applications on Azure Kubernetes Service",
+ "questions": [
+  {
+   "id": "lp3m2-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "What is the maximum total size of a single ConfigMap?",
+   "options": [
+    {
+     "text": "64 KiB",
+     "why": "Learn gives a larger limit."
+    },
+    {
+     "text": "10 MiB",
+     "why": "Learn gives a smaller limit."
+    },
+    {
+     "text": "128 MB",
+     "why": "128 MB is the dynamic sessions upload limit, not a ConfigMap limit."
+    },
+    {
+     "text": "1 MiB",
+     "why": "Correct. ConfigMap data is limited to 1 MiB."
+    }
+   ],
+   "answer": 3,
+   "hint": "ConfigMaps are meant for small settings, and the limit is measured in mebibytes.",
+   "explain": "The 1 MiB limit keeps node synchronization fast and etcd storage efficient.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An app has 25 settings in one ConfigMap and you want all of them as environment variables without listing each key. What should you use?",
+   "options": [
+    {
+     "text": "valueFrom with configMapKeyRef",
+     "why": "configMapKeyRef references one key at a time."
+    },
+    {
+     "text": "valueFrom with secretKeyRef",
+     "why": "secretKeyRef reads from a Secret."
+    },
+    {
+     "text": "envFrom with configMapRef",
+     "why": "Correct. envFrom loads all keys as environment variables in one declaration."
+    },
+    {
+     "text": "A PersistentVolumeClaim",
+     "why": "A PVC is storage, not configuration injection."
+    }
+   ],
+   "answer": 2,
+   "hint": "One field loads every key at once instead of naming each one.",
+   "explain": "Bulk-load with envFrom/configMapRef; pick single keys with valueFrom/configMapKeyRef.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You change a feature flag in a ConfigMap. Pods that read it as an environment variable still show the old value. What should you do?",
+   "options": [
+    {
+     "text": "Wait for the kubelet's next sync period",
+     "why": "Kubelet sync updates mounted files, not environment variables."
+    },
+    {
+     "text": "Raise the ConfigMap size limit",
+     "why": "Size has nothing to do with it."
+    },
+    {
+     "text": "Restart the Pods so they read the new value",
+     "why": "Correct. Environment variables from ConfigMaps need a Pod restart."
+    },
+    {
+     "text": "Mark the ConfigMap as immutable",
+     "why": "Immutability prevents changes; it doesn't apply them."
+    }
+   ],
+   "answer": 2,
+   "hint": "Environment variables are read when the container starts.",
+   "explain": "Mounted ConfigMap files update automatically; environment variables don't.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A ConfigMap named `app-settings` is marked `immutable: true`.",
+   "rows": [
+    {
+     "text": "You can edit its data later with kubectl apply.",
+     "answer": false,
+     "why": "You can't change an immutable ConfigMap's data."
+    },
+    {
+     "text": "You can set immutable back to false if you need to change it.",
+     "answer": false,
+     "why": "You can't revert the immutable setting."
+    },
+    {
+     "text": "To change settings, you create a new ConfigMap such as app-settings-v2.",
+     "answer": true,
+     "why": "Delete and recreate, often with a new name."
+    },
+    {
+     "text": "Immutable ConfigMaps can reduce load on the API server in large clusters.",
+     "answer": true,
+     "why": "Kubernetes can close watches on immutable ConfigMaps."
+    }
+   ],
+   "hint": "Immutable means you can't edit it or undo the flag. You replace it with a new one.",
+   "explain": "Use immutable ConfigMaps for configuration tied to specific app versions.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-005",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A config file is mounted from a ConfigMap with a **subPath** mount. After the ConfigMap changes, the file in the container never updates. Why?",
+   "options": [
+    {
+     "text": "The file exceeds the 1 MiB ConfigMap size limit",
+     "why": "An oversized ConfigMap wouldn't have been accepted in the first place."
+    },
+    {
+     "text": "The ConfigMap has to be marked immutable first",
+     "why": "Immutable ConfigMaps can't change at all."
+    },
+    {
+     "text": "Mounted files update after you run kubectl describe",
+     "why": "describe only reads state; it doesn't trigger updates."
+    },
+    {
+     "text": "Automatic updates don't apply to subPath mounts",
+     "why": "Correct. Learn says automatic updates don't apply when you use subPath mounts."
+    }
+   ],
+   "answer": 3,
+   "hint": "Mounted ConfigMaps update by themselves, with one exception for how the file is mounted.",
+   "explain": "Volume-mounted ConfigMap files update on kubelet sync, except with subPath.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-006",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An inference API needs only SERVICE_ENDPOINT from a ConfigMap that holds 20 keys, and you want the container's environment to stay small. How should the Deployment reference it?",
+   "options": [
+    {
+     "text": "An env entry with valueFrom.secretKeyRef pointing at the ConfigMap",
+     "why": "secretKeyRef reads Secrets, not ConfigMaps."
+    },
+    {
+     "text": "envFrom with configMapRef, so that every key is loaded",
+     "why": "envFrom loads all 20 keys, which is the opposite of what you want."
+    },
+    {
+     "text": "valueFrom.configMapKeyRef for that one key",
+     "why": "Correct. configMapKeyRef injects one specific key as an environment variable."
+    },
+    {
+     "text": "A volume mount of the whole ConfigMap at /etc/config",
+     "why": "That exposes all keys as files rather than one environment variable."
+    }
+   ],
+   "answer": 2,
+   "hint": "One option picks a single key. Another loads the whole ConfigMap.",
+   "explain": "Use valueFrom with configMapKeyRef to reference specific keys. envFrom with configMapRef loads every key as an environment variable.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m2-007",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A legacy model server reads its settings from files in /etc/model rather than from environment variables. You mount a ConfigMap with keys log_level and timeout_seconds as a volume at /etc/model. What does the container see?",
+   "options": [
+    {
+     "text": "One file per key, such as /etc/model/log_level",
+     "why": "Correct. Each key in a mounted ConfigMap becomes a file whose content is the value."
+    },
+    {
+     "text": "One file, /etc/model/configmap.yaml, with the whole manifest",
+     "why": "Kubernetes projects keys as files. It doesn't copy the manifest."
+    },
+    {
+     "text": "Environment variables named LOG_LEVEL and TIMEOUT_SECONDS",
+     "why": "A volume mount creates files, not environment variables."
+    },
+    {
+     "text": "An empty folder until you run kubectl apply again",
+     "why": "The files appear when the Pod starts with the volume mounted."
+    }
+   ],
+   "answer": 0,
+   "hint": "With a volume, keys become something on disk. One per key.",
+   "explain": "Mount a ConfigMap as a volume and add a volumeMount; each key becomes a file under the mount path, and the file's content is the value.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m2-008",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Twelve services across three clusters must share feature flags managed in one central place, and the apps should keep reading standard ConfigMaps. What does Learn suggest?",
+   "options": [
+    {
+     "text": "Store the flags in a Kubernetes Secret, because Secrets sync across clusters",
+     "why": "Secrets don't sync across clusters, and flags aren't sensitive."
+    },
+    {
+     "text": "Bake the flags into each image so that every cluster gets the same values",
+     "why": "That ties configuration to images, which ConfigMaps exist to avoid."
+    },
+    {
+     "text": "App Configuration and its Kubernetes Provider",
+     "why": "Correct. The provider runs in the cluster and creates standard ConfigMaps from App Configuration data."
+    },
+    {
+     "text": "Copy one configmap.yaml into each cluster with a script",
+     "why": "Copies drift apart. That isn't central management."
+    }
+   ],
+   "answer": 2,
+   "hint": "You want one central store, while the apps keep using normal Kubernetes resources.",
+   "explain": "The Azure App Configuration Kubernetes Provider runs in your cluster and generates standard ConfigMaps from data stored in App Configuration, for centralized configuration across apps and environments.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m2-009",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "After you apply a new ConfigMap and Deployment, you want to confirm FEATURE_X_ENABLED reached the running container. Which command checks it directly?",
+   "options": [
+    {
+     "text": "kubectl exec <pod> -- printenv",
+     "why": "Correct. This prints the container's actual environment."
+    },
+    {
+     "text": "kubectl describe configmap app-settings",
+     "why": "This shows the ConfigMap, not whether a running container received it."
+    },
+    {
+     "text": "kubectl get deployment web-api",
+     "why": "This shows replica counts, not environment variables."
+    },
+    {
+     "text": "kubectl logs <pod-name> --previous",
+     "why": "Logs show program output, not the environment it received."
+    }
+   ],
+   "answer": 0,
+   "hint": "Look inside the running container instead of at the source object.",
+   "explain": "kubectl describe configmap shows the source data; kubectl exec <pod> -- printenv confirms what the container actually received.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m2-010",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which Kubernetes Secret type does Learn recommend for container registry credentials?",
+   "options": [
+    {
+     "text": "kubernetes.io/basic-auth",
+     "why": "Learn doesn't list this type."
+    },
+    {
+     "text": "Opaque",
+     "why": "Opaque suits most string values such as API keys."
+    },
+    {
+     "text": "kubernetes.io/tls",
+     "why": "tls is for certificates and keys."
+    },
+    {
+     "text": "kubernetes.io/dockerconfigjson",
+     "why": "Correct. Use kubernetes.io/dockerconfigjson for registry credentials."
+    }
+   ],
+   "answer": 3,
+   "hint": "Registry credentials have their own Secret type, named after a Docker config file.",
+   "explain": "Opaque for general strings, dockerconfigjson for registries, tls for certificates.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-011",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Compliance requires a detailed audit trail of each secret access, automatic rotation, and secrets that never leave a dedicated vault. Which approach fits?",
+   "options": [
+    {
+     "text": "ConfigMaps mounted as immutable files",
+     "why": "ConfigMaps are for non-sensitive data."
+    },
+    {
+     "text": "Azure Key Vault with the Secrets Store CSI Driver",
+     "why": "Correct. Secrets stay in Key Vault, mounted as files, with rotation and audit logging."
+    },
+    {
+     "text": "Opaque Kubernetes Secrets with etcd encryption",
+     "why": "Encryption at rest helps, but it doesn't give vault audit trails or rotation."
+    },
+    {
+     "text": "Secret values stored in the Deployment manifest",
+     "why": "Never put secret values in manifests."
+    }
+   ],
+   "answer": 1,
+   "hint": "Per-access audit, rotation and secrets that stay in a vault point to one integration.",
+   "explain": "Choose direct Key Vault integration for fine-grained audit and secrets that stay in the vault.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-012",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A team uses the Azure App Configuration Kubernetes Provider with Key Vault references.",
+   "rows": [
+    {
+     "text": "App Configuration stores the actual secret values.",
+     "answer": false,
+     "why": "It stores references; the values stay in Key Vault."
+    },
+    {
+     "text": "The provider creates native Kubernetes Secret resources with the resolved values.",
+     "answer": true,
+     "why": "The provider resolves references and generates Kubernetes Secrets."
+    },
+    {
+     "text": "Each application must authenticate to Key Vault itself to read its secrets.",
+     "answer": false,
+     "why": "Apps receive standard Kubernetes resources without authenticating to Key Vault."
+    }
+   ],
+   "hint": "App Configuration holds references, not values. The provider resolves them into Kubernetes resources.",
+   "explain": "App Configuration centralizes which secrets each app uses; Key Vault keeps the values.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-013",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "You rotated a database password in a plain Kubernetes Secret that Pods read through secretKeyRef environment variables. Pods still use the old password. What does Learn recommend?",
+   "options": [
+    {
+     "text": "Mark the Secret immutable to force a refresh",
+     "why": "Immutability prevents changes; it doesn't refresh Pods."
+    },
+    {
+     "text": "Wait, because the CSI driver polls and updates the variables",
+     "why": "There's no CSI driver here; that's the Key Vault option, and it updates files."
+    },
+    {
+     "text": "Run kubectl describe secret to push the new value",
+     "why": "describe only shows metadata and keys."
+    },
+    {
+     "text": "Trigger a Deployment rollout so Pods receive the new value",
+     "why": "Correct. After updates, trigger rollouts so Pods receive new values."
+    }
+   ],
+   "answer": 3,
+   "hint": "Environment variables from Secrets don't change in running Pods.",
+   "explain": "Rotate regularly and roll out Deployments so Pods pick up new Secret values.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-014",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A teammate asks you to prove the Secret app-secrets has the keys DB_CONNECTION and API_KEY, without printing their values. Which command does that?",
+   "options": [
+    {
+     "text": "kubectl logs <pod-name>",
+     "why": "Logs don't list a Secret's keys."
+    },
+    {
+     "text": "kubectl describe secret app-secrets",
+     "why": "Correct. describe secret shows metadata and keys without showing the values."
+    },
+    {
+     "text": "kubectl exec <pod-name> -- printenv",
+     "why": "This prints the values inside the container."
+    },
+    {
+     "text": "kubectl get secret app-secrets -o yaml",
+     "why": "This prints the data field, which exposes the encoded values."
+    }
+   ],
+   "answer": 1,
+   "hint": "One command lists keys and sizes but leaves the values out.",
+   "explain": "kubectl get secrets lists Secrets (name, type, data count, age); kubectl describe secret <name> shows metadata and keys without exposing values.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m2-015",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A GitOps repository manages every Kubernetes resource. A developer adds secret.yaml with the model API key written in it as a literal value. What does Learn's guidance say?",
+   "options": [
+    {
+     "text": "It's fine, because Kubernetes encodes Secret values in base64",
+     "why": "Encoding isn't protection. The value is still in source control."
+    },
+    {
+     "text": "It's fine if the repository is private",
+     "why": "A private repository still keeps the secret in its history for everyone with access."
+    },
+    {
+     "text": "Don't commit literal values; create Secrets in the cluster instead",
+     "why": "Correct. Committing literal values exposes them in source control and history."
+    },
+    {
+     "text": "Convert it to a ConfigMap so that GitOps can manage it",
+     "why": "ConfigMaps are for non-sensitive data, so that's worse."
+    }
+   ],
+   "answer": 2,
+   "hint": "Think about where the value ends up once it's committed.",
+   "explain": "Never commit Secret manifests with literal values. Create Secrets directly in the cluster, or use external secret management such as Key Vault with the CSI driver.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m2-016",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A platform team wants to manage, in one place, which Key Vault secrets each of 15 apps receives. The apps should read ordinary Kubernetes Secrets, and values must stay in Key Vault. Which option fits best?",
+   "options": [
+    {
+     "text": "A ConfigMap that lists each app's secret names",
+     "why": "A ConfigMap of names doesn't resolve or deliver secret values."
+    },
+    {
+     "text": "The Secrets Store CSI Driver, with secrets mounted as files in each Pod",
+     "why": "The CSI driver keeps secrets in the vault but mounts them as files. It doesn't centralize the mappings."
+    },
+    {
+     "text": "A Secret manifest per app in Git, applied by the pipeline",
+     "why": "That puts secret values in source control."
+    },
+    {
+     "text": "App Configuration Key Vault references, via its Kubernetes Provider",
+     "why": "Correct. It centralizes secret mappings while values stay in Key Vault and arrive as Kubernetes Secrets."
+    }
+   ],
+   "answer": 3,
+   "hint": "The key words are \"manage the mappings centrally\" and \"ordinary Kubernetes Secrets\".",
+   "explain": "Choose App Configuration with Key Vault references to manage secret mappings centrally and provide secrets as standard Kubernetes resources. Choose the Key Vault CSI driver for fine-grained per-access audit with secrets kept only in the vault.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m2-017",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "You're creating a new AKS cluster for an AI service and want an extra layer of protection for Secrets stored in the cluster itself. What does Learn recommend configuring at creation time?",
+   "options": [
+    {
+     "text": "A larger node size for the system pool",
+     "why": "Node size doesn't protect stored Secrets."
+    },
+    {
+     "text": "Public network access to the API server",
+     "why": "That widens access instead of protecting Secrets."
+    },
+    {
+     "text": "Immutable ConfigMaps for every Secret",
+     "why": "ConfigMaps aren't Secrets, and immutability doesn't encrypt anything."
+    },
+    {
+     "text": "etcd encryption at rest",
+     "why": "Correct. Configure etcd encryption when you create the cluster, and combine it with Key Vault integration."
+    }
+   ],
+   "answer": 3,
+   "hint": "Secrets are stored in the cluster's key-value store. How do you protect data at rest?",
+   "explain": "Enable encryption at rest by configuring etcd encryption when you create the cluster. Combine it with Key Vault integration for rotation and audit.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m2-018",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which is the default CSI storage class in AKS?",
+   "options": [
+    {
+     "text": "azurefile-csi-premium",
+     "why": "That's the Premium Azure Files class."
+    },
+    {
+     "text": "managed-csi",
+     "why": "Correct. managed-csi (Azure Disk) is the default."
+    },
+    {
+     "text": "azurefile-csi",
+     "why": "azurefile-csi is a built-in class, but not the default."
+    },
+    {
+     "text": "managed-csi-premium",
+     "why": "That's the Premium SSD disk class."
+    }
+   ],
+   "answer": 1,
+   "hint": "One storage class is the AKS default, and it's backed by Azure Disk.",
+   "explain": "managed-csi uses Azure Disk with ReadWriteOnce.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-019",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "Five embedding-worker Pods on different nodes must read and write the same cache directory. Which storage class fits?",
+   "options": [
+    {
+     "text": "An emptyDir in each Pod",
+     "why": "Each Pod's local directory isn't shared or persistent."
+    },
+    {
+     "text": "managed-csi",
+     "why": "Azure Disk is ReadWriteOnce, attached to one node."
+    },
+    {
+     "text": "managed-csi-premium",
+     "why": "Premium disks are still ReadWriteOnce."
+    },
+    {
+     "text": "azurefile-csi",
+     "why": "Correct. Azure Files is ReadWriteMany across nodes."
+    }
+   ],
+   "answer": 3,
+   "hint": "Pods on several nodes all need to write. Which backing service mounts on many nodes?",
+   "explain": "Choose file-based storage when multiple Pods need concurrent access to shared data.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-020",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Put the steps to give a Deployment durable storage, and prove it, in order.",
+   "steps": [
+    "Create a PersistentVolumeClaim with size, access mode and storageClassName",
+    "Add a volume that references the claim and a volumeMount with a mountPath",
+    "Check with kubectl describe pvc that the claim is bound",
+    "Write a file, delete the Pod and check the file in the replacement Pod"
+   ],
+   "hint": "Claim first, then mount it, then confirm it's bound, then test.",
+   "explain": "Claim → mount → confirm bound → prove persistence across a Pod restart.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-021",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A single-Pod vector database needs low-latency block storage on AKS.",
+   "rows": [
+    {
+     "text": "managed-csi-premium is a reasonable choice.",
+     "answer": true,
+     "why": "Premium SSD disk with ReadWriteOnce suits low-latency single-Pod I/O."
+    },
+    {
+     "text": "Azure Disk volumes can be written by Pods on several nodes at once.",
+     "answer": false,
+     "why": "Disks attach to a single node (ReadWriteOnce)."
+    },
+    {
+     "text": "Data written to the PVC mount path survives a Pod restart.",
+     "answer": true,
+     "why": "PVC data persists across Pod restarts."
+    }
+   ],
+   "hint": "Premium disks are fast, but a disk attaches to one node.",
+   "explain": "Disk classes are RWO and suit single-Pod stateful apps; files classes are RWX.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp3m2-022",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A team asks why managed-csi only supports ReadWriteOnce while azurefile-csi supports ReadWriteMany. What does Learn give as the reason?",
+   "options": [
+    {
+     "text": "ReadWriteMany needs a premium AKS tier that Azure Disk doesn't support",
+     "why": "There's no such tier rule. The difference is how the storage attaches."
+    },
+    {
+     "text": "Azure Disk is being retired, so it gets fewer features",
+     "why": "Azure Disk is the default storage class, not a retired one."
+    },
+    {
+     "text": "A disk attaches to one node; an SMB share mounts on many",
+     "why": "Correct. The access mode follows from how each kind of storage attaches."
+    },
+    {
+     "text": "Kubernetes limits block storage to one Pod for consistency",
+     "why": "The reason Learn gives is that the disk attaches to a single node."
+    }
+   ],
+   "answer": 2,
+   "hint": "Think about how each kind of storage connects to the nodes.",
+   "explain": "Azure Disk classes use ReadWriteOnce because the disk attaches to a single node. Azure Files classes use ReadWriteMany because the SMB share mounts across multiple nodes.",
+   "origin": "ca1"
+  },
+  {
+   "id": "lp3m2-023",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Several Pods on different nodes collaborate on the same working files and need low latency for frequent reads and writes. Which storage class fits?",
+   "options": [
+    {
+     "text": "managed-csi-premium",
+     "why": "Premium disk is fast, but it's ReadWriteOnce and attaches to one node."
+    },
+    {
+     "text": "azurefile-csi",
+     "why": "This shares across nodes, but on standard storage rather than premium."
+    },
+    {
+     "text": "azurefile-csi-premium",
+     "why": "Correct. It gives shared ReadWriteMany access on Premium SSD."
+    },
+    {
+     "text": "managed-csi",
+     "why": "This is a single-node disk class without premium performance."
+    }
+   ],
+   "answer": 2,
+   "hint": "You need sharing across nodes and premium performance at the same time.",
+   "explain": "azurefile-csi-premium (Azure Files Premium) gives ReadWriteMany shared access with Premium SSD performance for collaborative, low-latency workloads.",
+   "origin": "new"
+  },
+  {
+   "id": "lp3m2-024",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A conversation-state service writes to /data inside its container. After every Pod restart, the state is gone. What should you add?",
+   "options": [
+    {
+     "text": "A larger memory limit for the container",
+     "why": "Memory doesn't keep files across restarts."
+    },
+    {
+     "text": "An immutable ConfigMap mounted at /data",
+     "why": "ConfigMaps are read-only configuration, not writable storage."
+    },
+    {
+     "text": "A PersistentVolumeClaim mounted at /data",
+     "why": "Correct. Container file systems are ephemeral, and a PVC gives storage that survives restarts and rescheduling."
+    },
+    {
+     "text": "A second replica so that one copy always survives",
+     "why": "Each replica has its own ephemeral file system, so nothing is shared or kept."
+    }
+   ],
+   "answer": 2,
+   "hint": "Container file systems are temporary. Which Kubernetes object requests durable storage?",
+   "explain": "Container filesystems are ephemeral. A PersistentVolumeClaim, mounted with a volume and volumeMount, provides storage that survives Pod restarts and rescheduling.",
+   "origin": "new"
+  }
+ ]
+}

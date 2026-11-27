@@ -1,0 +1,13 @@
+{
+  "name": "ai-200-prep",
+  "private": true,
+  "description": "Free, open AI-200 prep: lessons, practice with hints, labs, 3 mock exams. https://aryantripathi.dev/ai-200",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "check": "node tools/check.mjs",
+    "report": "node tools/check.mjs --report",
+    "build:md": "node tools/build-md.mjs"
+  },
+  "license": "MIT"
+}

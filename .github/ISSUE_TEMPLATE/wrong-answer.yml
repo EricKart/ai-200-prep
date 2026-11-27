@@ -1,0 +1,24 @@
+name: Wrong answer or unclear question
+description: Report a question whose answer, reason or wording looks wrong
+labels: [question-fix]
+body:
+  - type: input
+    id: qid
+    attributes:
+      label: Question id
+      description: Shown under each question on the site, for example lp7m1-012
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's wrong?
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Microsoft Learn link that supports your point
+      placeholder: https://learn.microsoft.com/...
+    validations:
+      required: true

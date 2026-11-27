@@ -1,0 +1,746 @@
+{
+ "module": "lp7m5",
+ "title": "Deliver real-time AI experiences with Azure Web PubSub",
+ "questions": [
+  {
+   "id": "lp7m5-001",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "An on-call developer, an incident commander and a database specialist must all watch the same AI investigation update live. Which approach fits best?",
+   "options": [
+    {
+     "text": "Azure Web PubSub with an operation group",
+     "why": "Correct. One worker publish reaches every authorized connection in the group."
+    },
+    {
+     "text": "An SSE stream tied to the developer's request",
+     "why": "SSE from one request doesn't fan out to others by itself."
+    },
+    {
+     "text": "Polling every 60 seconds",
+     "why": "Polling is for infrequent changes and multiplies requests."
+    },
+    {
+     "text": "Direct HTTP streaming to the first requester",
+     "why": "The stream is tied to one request; others need a relay."
+    }
+   ],
+   "answer": 0,
+   "hint": "Several people, independently connected, all watching the same thing.",
+   "explain": "Choose Web PubSub when independent recipients or group delivery justify it.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-002",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which content type does a Server-Sent Events response use?",
+   "options": [
+    {
+     "text": "application/cloudevents+json",
+     "why": "That's for publishing CloudEvents to Event Grid."
+    },
+    {
+     "text": "text/event-stream",
+     "why": "Correct. SSE uses a long-lived text/event-stream response."
+    },
+    {
+     "text": "multipart/form-data",
+     "why": "That's form uploads."
+    },
+    {
+     "text": "application/json",
+     "why": "That's ordinary JSON."
+    }
+   ],
+   "answer": 1,
+   "hint": "SSE responses have their own MIME type.",
+   "explain": "SSE adds event data, names and IDs on top of a long-lived HTTP response.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-003",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. An assistant streams a log summary to the browser with SSE.",
+   "rows": [
+    {
+     "text": "The browser's EventSource normally tries to reconnect after an interruption.",
+     "answer": true,
+     "why": "EventSource manages reconnection."
+    },
+    {
+     "text": "After reconnecting, missed events are replayed even if the server never stored them.",
+     "answer": false,
+     "why": "The server needs retained events and resume logic."
+    },
+    {
+     "text": "Approving a finding should go through a separate authenticated HTTP request.",
+     "answer": true,
+     "why": "SSE is one-way; commands use HTTP."
+    },
+    {
+     "text": "SSE lets the browser send approvals back on the same event stream.",
+     "answer": false,
+     "why": "SSE is one-way; commands go through separate HTTP requests."
+    }
+   ],
+   "hint": "EventSource reconnects by itself, but replay depends on what the server kept.",
+   "explain": "SSE is one-way with reconnection; resume depends on retained events.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-004",
+   "unit": "U02",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "An existing app uses Azure SignalR Service hubs and client method invocation. A developer proposes swapping in the Web PubSub client library. What does Learn say?",
+   "options": [
+    {
+     "text": "Web PubSub clients are drop-in replacements for SignalR clients",
+     "why": "Learn says not to assume this."
+    },
+    {
+     "text": "Switch to polling first, then to Web PubSub",
+     "why": "Polling isn't a migration step for this."
+    },
+    {
+     "text": "SignalR is required for every WebSocket application",
+     "why": "Web PubSub suits WebSocket apps with their own contract."
+    },
+    {
+     "text": "Evaluate SignalR integration; it isn't drop-in",
+     "why": "Correct. SignalR has its own programming model (hubs, method invocation)."
+    }
+   ],
+   "answer": 3,
+   "hint": "SignalR and Web PubSub are related, but their programming models differ.",
+   "explain": "SignalR and Web PubSub are related but distinct services.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-005",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An archived-log analysis takes several minutes and only ever shows three states: queued, processing and completed. One user watches it. Which delivery approach does Learn suggest evaluating first?",
+   "options": [
+    {
+     "text": "A WebSocket that the browser holds open for the whole analysis",
+     "why": "A live channel adds complexity that three state changes don't justify."
+    },
+    {
+     "text": "Periodic status requests against a status endpoint",
+     "why": "Correct. Infrequent background status changes can be served by polling, without a live messaging channel."
+    },
+    {
+     "text": "Azure Web PubSub with a group per user",
+     "why": "Web PubSub fits many independent recipients or group delivery, which this scenario doesn't need."
+    },
+    {
+     "text": "Azure SignalR Service hubs",
+     "why": "SignalR is for hub-based app models, which isn't needed for three status updates."
+    }
+   ],
+   "answer": 1,
+   "hint": "Start with the simplest option that meets the experience you need.",
+   "explain": "Begin with the client experience. For a single generated answer, evaluate HTTP streaming or SSE; for infrequent background status, evaluate polling; choose Web PubSub for independently connected recipients, group delivery or connection scale.",
+   "origin": "new"
+  },
+  {
+   "id": "lp7m5-006",
+   "unit": "U02",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A FastAPI endpoint streams a generated answer with SSE, and locally the text appears word by word. In production, behind a reverse proxy, the whole answer appears at once at the end. What's the likely cause?",
+   "options": [
+    {
+     "text": "The model sends the whole answer at once in production",
+     "why": "It streams locally with the same model, which points to buffering along the way."
+    },
+    {
+     "text": "A proxy, compression layer or framework is buffering the response",
+     "why": "Correct. Verify incremental delivery through the actual hosting stack, because layers in between can buffer."
+    },
+    {
+     "text": "The browser's EventSource waits for the connection to close",
+     "why": "EventSource processes events as they arrive when nothing buffers them."
+    },
+    {
+     "text": "SSE only works over HTTP/1.0",
+     "why": "That isn't the issue. The response is being held back somewhere between the app and the browser."
+    }
+   ],
+   "answer": 1,
+   "hint": "It works locally. What sits between the app and the browser in production?",
+   "explain": "An HTTP stream isn't automatically visible as soon as the backend writes a chunk: a reverse proxy, compression layer or framework can buffer it. Verify incremental delivery through the real hosting stack.",
+   "origin": "new"
+  },
+  {
+   "id": "lp7m5-007",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A developer proposes publishing new investigation requests to a Web PubSub group so that \"a worker picks them up\". What's wrong?",
+   "options": [
+    {
+     "text": "Web PubSub can't carry JSON payloads to clients",
+     "why": "Web PubSub carries JSON envelopes."
+    },
+    {
+     "text": "Groups can hold at most one connection each",
+     "why": "Groups collect many connections; the issue is broadcast vs reliable assignment."
+    },
+    {
+     "text": "Groups broadcast; they don't assign work to one worker",
+     "why": "Correct. Use a queue or workflow for backend processing."
+    },
+    {
+     "text": "Groups require Durable Functions to work at all",
+     "why": "Web PubSub doesn't require Durable Functions."
+    }
+   ],
+   "answer": 2,
+   "hint": "A group delivers to everyone in it. It doesn't hand one job to one worker.",
+   "explain": "A group isn't a Service Bus subscription or competing-consumer queue.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-008",
+   "unit": "U03",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A worker stores a completed report, then crashes before publishing the completion notification.",
+   "rows": [
+    {
+     "text": "Connected browsers might keep showing older progress.",
+     "answer": true,
+     "why": "The publish never happened."
+    },
+    {
+     "text": "Clients can recover the completed result through the status endpoint.",
+     "answer": true,
+     "why": "The durable record is authoritative."
+    },
+    {
+     "text": "The AI operation must be repeated to send the notification.",
+     "answer": false,
+     "why": "Recovery via status avoids repeating the AI work."
+    },
+    {
+     "text": "A Web PubSub group publish and the database write commit as one atomic transaction.",
+     "answer": false,
+     "why": "A database write and a Web PubSub publish aren't one atomic transaction."
+    }
+   ],
+   "hint": "The durable record is the truth. A missed notification doesn't undo completed work.",
+   "explain": "Persist first; use an outbox when eventual notification is required.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-009",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A responder closes the browser tab during an investigation. What should happen to the backend work?",
+   "options": [
+    {
+     "text": "It's cancelled automatically when the connection drops",
+     "why": "Disconnecting isn't a cancellation."
+    },
+    {
+     "text": "It continues; cancelling is a separate command",
+     "why": "Correct. Lost connections don't cancel work; cancellation is a deliberate command."
+    },
+    {
+     "text": "It pauses until any responder reconnects",
+     "why": "Work doesn't depend on a connected browser."
+    },
+    {
+     "text": "It's marked failed because delivery failed",
+     "why": "Delivery problems don't turn successful processing into failure."
+    }
+   ],
+   "answer": 1,
+   "hint": "Closing a tab isn't a decision to stop the investigation.",
+   "explain": "Separate processing outcomes from delivery problems.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-010",
+   "unit": "U03",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A worker updates the operation record in the database and must eventually publish a matching Web PubSub notification, even if it crashes right after the database write. Which pattern fits?",
+   "options": [
+    {
+     "text": "Publish the notification first, then write to the database",
+     "why": "Clients could then see \"completed\" before the result exists."
+    },
+    {
+     "text": "A transactional outbox: store the notification with the state change, and let a publisher send pending ones",
+     "why": "Correct. Recording the notification in the same transaction means a separate publisher can send it later."
+    },
+    {
+     "text": "Ask each browser to reconnect every minute",
+     "why": "Reconnecting doesn't produce the missing notification. Clients would need to read the status API."
+    },
+    {
+     "text": "Rely on Web PubSub to retry the notification after the crash",
+     "why": "Web PubSub can't send something the crashed worker never published."
+    }
+   ],
+   "answer": 1,
+   "hint": "Put the notification somewhere durable, in the same transaction as the state change.",
+   "explain": "Persist state before notifying. When eventual publishing is required, record the notification with the state change in a transactional outbox; a separate publisher sends pending notifications and marks them sent.",
+   "origin": "new"
+  },
+  {
+   "id": "lp7m5-011",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "A browser should only observe updates for one investigation. Which role should its Web PubSub token include?",
+   "options": [
+    {
+     "text": "Web PubSub Service Owner",
+     "why": "That's an Azure RBAC role for backend identities."
+    },
+    {
+     "text": "webpubsub.joinLeaveGroup.<that-group>",
+     "why": "Correct. It permits joining and leaving that one group, not publishing."
+    },
+    {
+     "text": "webpubsub.joinLeaveGroup (unrestricted)",
+     "why": "Unrestricted join lets it join any group."
+    },
+    {
+     "text": "webpubsub.sendToGroup",
+     "why": "That lets the client publish to groups."
+    }
+   ],
+   "answer": 1,
+   "hint": "Observers need to join one group and nothing more.",
+   "explain": "Grant the smallest group-scoped role for receive-only clients.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-012",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "The negotiation endpoint receives userId and groupName in the request body from the browser. What should the backend do?",
+   "options": [
+    {
+     "text": "Derive identity and group on the server",
+     "why": "Correct. Browser-supplied IDs and group names aren't identity assertions."
+    },
+    {
+     "text": "Copy them into the token after URL-encoding them",
+     "why": "Encoding doesn't authorize anything."
+    },
+    {
+     "text": "Use the values if they contain no forward slashes",
+     "why": "Format checks don't establish authorization."
+    },
+    {
+     "text": "Trust the values, since the user is already signed in",
+     "why": "Signed-in status doesn't make client fields trustworthy."
+    }
+   ],
+   "answer": 0,
+   "hint": "Identity and group come from what the server has verified, not from the request body.",
+   "explain": "Authorize the operation, then derive user ID and group on the server.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-013",
+   "unit": "U04",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A backend uses its managed identity with Microsoft Entra ID to generate client tokens.",
+   "rows": [
+    {
+     "text": "The identity needs the generateToken action and clientConnection/write.",
+     "answer": true,
+     "why": "Both permissions are required."
+    },
+    {
+     "text": "Web PubSub Service Owner includes both permissions but grants broader access.",
+     "answer": true,
+     "why": "A custom role can be narrower."
+    },
+    {
+     "text": "Developer role assignments automatically apply to the deployed managed identity.",
+     "answer": false,
+     "why": "Assign deployed identities their own roles."
+    }
+   ],
+   "hint": "Token generation needs two permissions. Developer role assignments don't carry over.",
+   "explain": "Backend Azure permissions and client token roles are separate boundaries.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-014",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "A responder is removed from an incident while their browser tab is still connected. What should the backend do?",
+   "options": [
+    {
+     "text": "Deny negotiation, revoke permission, remove from group",
+     "why": "Correct. Expiry doesn't revoke active connections; act on each tracked connection."
+    },
+    {
+     "text": "Send a message asking the browser to leave the group",
+     "why": "The browser isn't trusted to enforce access."
+    },
+    {
+     "text": "Nothing; the client token will expire on its own soon",
+     "why": "Expiry only blocks new connections."
+    },
+    {
+     "text": "Rotate the Web PubSub access key for the service",
+     "why": "Key rotation doesn't target this user's connection."
+    }
+   ],
+   "answer": 0,
+   "hint": "Removing access means stopping future connections and cutting off the current one.",
+   "explain": "Track connection IDs; use revoke_permission() and remove_connection_from_group().",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-015",
+   "unit": "U04",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "An operation group's name must not expose tenant or operation IDs, and IDs may contain delimiter characters. How does Learn suggest naming the group?",
+   "options": [
+    {
+     "text": "Join the tenant and operation IDs with a hyphen",
+     "why": "Delimiters inside IDs could collide, and the IDs would be exposed."
+    },
+    {
+     "text": "Use the signed-in user's email address",
+     "why": "That exposes personal data and scopes the group to the user, not to the operation."
+    },
+    {
+     "text": "Hash an unambiguous encoding of the tenant and operation IDs into a stable, opaque name",
+     "why": "Correct. This avoids collisions from delimiters and keeps IDs out of routing names."
+    },
+    {
+     "text": "Let the browser choose a random group name and send it to the backend",
+     "why": "Browser-supplied group names aren't trusted."
+    }
+   ],
+   "answer": 2,
+   "hint": "You want a name that's stable, collision-free, and reveals nothing.",
+   "explain": "Derive a stable, opaque group name by hashing an unambiguous encoding of tenant and operation IDs. That avoids collisions from delimiters and avoids exposing IDs in routing names.",
+   "origin": "new"
+  },
+  {
+   "id": "lp7m5-016",
+   "unit": "U05",
+   "pool": "practice",
+   "type": "single",
+   "scenario": false,
+   "difficulty": "easy",
+   "q": "Which Python client callback type delivers messages that a service publishes to a group?",
+   "options": [
+    {
+     "text": "CallbackType.GROUP_MESSAGE",
+     "why": "Correct. Group broadcasts arrive through GROUP_MESSAGE."
+    },
+    {
+     "text": "CallbackType.CONNECTED",
+     "why": "CONNECTED reports connection, not messages."
+    },
+    {
+     "text": "CallbackType.SERVER_MESSAGE",
+     "why": "SERVER_MESSAGE is for messages sent directly to a connection or user."
+    },
+    {
+     "text": "CallbackType.REJOIN_GROUP_FAILED",
+     "why": "That reports a failed rejoin."
+    }
+   ],
+   "answer": 0,
+   "hint": "The callback type is named after where the message was sent.",
+   "explain": "Route group notifications through validated handlers under a lock.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-017",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A worker publishes notification `op42-event-15` with sequence 15.",
+   "rows": [
+    {
+     "text": "If the publish is retried, it should reuse event ID op42-event-15 and sequence 15.",
+     "answer": true,
+     "why": "One logical update keeps its IDs across retries."
+    },
+    {
+     "text": "A successful send_to_group() proves every responder saw the update.",
+     "answer": false,
+     "why": "Publish success doesn't prove browser processing or human receipt."
+    },
+    {
+     "text": "The final text batch alone shows the operation succeeded.",
+     "answer": false,
+     "why": "Wait for operation.completed; validation or persistence can still fail."
+    }
+   ],
+   "hint": "Retries keep the same identity. Sending isn't proof of reading. Notifications don't replace durable state.",
+   "explain": "Persist, then publish with stable IDs; completion is its own event.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-018",
+   "unit": "U05",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Generated findings arrive as Markdown and the browser renders them as HTML. What does Learn require?",
+   "options": [
+    {
+     "text": "Strip the sequence numbers before rendering",
+     "why": "Sequences are needed for ordering, and aren't the issue."
+    },
+    {
+     "text": "Render raw HTML for richer formatting",
+     "why": "Raw HTML risks script injection."
+    },
+    {
+     "text": "Trust it because it came from your own model",
+     "why": "Model output is untrusted."
+    },
+    {
+     "text": "Render as text; sanitize Markdown-to-HTML",
+     "why": "Correct. Model output isn't trusted browser markup."
+    }
+   ],
+   "answer": 3,
+   "hint": "Generated text is untrusted, so render it safely.",
+   "explain": "Validate payloads before mutating view state.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-019",
+   "unit": "U06",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "easy",
+   "q": "The browser has applied updates through sequence 15 and receives sequence 17. What should it do?",
+   "options": [
+    {
+     "text": "Hold 17 and fetch current operation state",
+     "why": "Correct. A gap means a missed update; reconcile with a snapshot."
+    },
+    {
+     "text": "Close the connection and reload the whole page",
+     "why": "Reloading isn't the recovery step Learn describes."
+    },
+    {
+     "text": "Apply 17 and continue with the stream",
+     "why": "Applying out of order can corrupt generated text."
+    },
+    {
+     "text": "Ignore 17 because it's a duplicate",
+     "why": "Duplicates have the same or lower sequence."
+    }
+   ],
+   "answer": 0,
+   "hint": "Sequence 16 is missing. Don't apply 17 on top of a gap.",
+   "explain": "Duplicate → ignore; next → apply; gap → hold and fetch state.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-020",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "order",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "Put Learn's recovery flow for an operation in order.",
+   "steps": [
+    "Register handlers and mark the view unsynchronized",
+    "Connect and wait for operation-group membership",
+    "Buffer notifications while requesting the status snapshot",
+    "Replace the view with the snapshot and set last_sequence to its watermark",
+    "Discard buffered events at or below the watermark and apply newer ones"
+   ],
+   "hint": "Mark the view unsynchronized, connect and join, buffer, then rebuild from the snapshot.",
+   "explain": "Subscribing before requesting the snapshot avoids losing updates in between.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-021",
+   "unit": "U06",
+   "pool": "practice",
+   "type": "yesno",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "For each statement, select Yes if the statement is true. Otherwise, select No. A browser reconnects with a brand-new connection after the reliable session couldn't be recovered.",
+   "rows": [
+    {
+     "text": "It needs fresh negotiation and its group membership restored.",
+     "answer": true,
+     "why": "New connections reauthorize and restore membership."
+    },
+    {
+     "text": "auto_rejoin_groups also recreates memberships the server assigned to the old connection.",
+     "answer": false,
+     "why": "It tracks only groups joined by client code."
+    },
+    {
+     "text": "A snapshot whose lastSequence is lower than what the view shows should replace the view.",
+     "answer": false,
+     "why": "Don't replace newer output with an older snapshot."
+    },
+    {
+     "text": "If completion was the last event and was missed, no later gap will reveal it.",
+     "answer": true,
+     "why": "Reconcile after reconnects and inactivity, not only on gaps."
+    }
+   ],
+   "hint": "A new connection means new negotiation, and server-assigned groups don't come back by themselves.",
+   "explain": "Recovery = reauthorize, restore membership, reconcile durable state.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-022",
+   "unit": "U07",
+   "pool": "practice",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "A batcher only checks elapsed time when a new token arrives, and during model pauses short batches sit unsent. What fixes this?",
+   "options": [
+    {
+     "text": "Lower the item threshold to a single fragment",
+     "why": "One-item batches defeat batching."
+    },
+    {
+     "text": "Publish every model token immediately instead",
+     "why": "Per-token publishing adds overhead and fan-out traffic."
+    },
+    {
+     "text": "Flush on a timer, not only on new fragments",
+     "why": "Correct. Time-based flushing must not depend on the next fragment arriving."
+    },
+    {
+     "text": "Increase the batch size budget for each batch",
+     "why": "Larger batches make the delay worse."
+    }
+   ],
+   "answer": 2,
+   "hint": "A batch that waits for the next token never flushes during a pause.",
+   "explain": "Flush on time, count, size or operation boundary.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-023",
+   "unit": "U07",
+   "pool": "practice",
+   "type": "match",
+   "scenario": true,
+   "difficulty": "hard",
+   "q": "Match each update type to Learn's overflow policy.",
+   "choices": [
+    "Keep only the newest",
+    "Preserve order, or restore from durable state",
+    "Persist and keep discoverable via status"
+   ],
+   "items": [
+    {
+     "text": "Progress snapshots",
+     "answer": 0,
+     "why": "A newer snapshot replaces older ones."
+    },
+    {
+     "text": "Generated-text deltas",
+     "answer": 1,
+     "why": "Deltas depend on earlier deltas."
+    },
+    {
+     "text": "Approval requests and terminal outcomes",
+     "answer": 2,
+     "why": "They must survive missed delivery."
+    }
+   ],
+   "hint": "Some updates can be replaced by newer ones. Others must never be dropped.",
+   "explain": "Define which updates can be coalesced before choosing an overflow policy.",
+   "origin": "lab500"
+  },
+  {
+   "id": "lp7m5-024",
+   "unit": "U07",
+   "pool": "mock",
+   "type": "single",
+   "scenario": true,
+   "difficulty": "medium",
+   "q": "During heavy load, a worker can't keep up with publishing a progress snapshot for every log file it scans. Which overflow policy does Learn give for progress snapshots?",
+   "options": [
+    {
+     "text": "Persist every snapshot and keep each one discoverable",
+     "why": "That policy is for approval requests and terminal outcomes."
+    },
+    {
+     "text": "Preserve every snapshot in order",
+     "why": "Strict order is for generated-text deltas, which can't be skipped."
+    },
+    {
+     "text": "Keep only the newest snapshot and drop older pending ones",
+     "why": "Correct. A newer snapshot replaces older progress, so older ones can be dropped."
+    },
+    {
+     "text": "Block the AI work until every snapshot is delivered",
+     "why": "Slowing the work for progress messages isn't the policy Learn gives."
+    }
+   ],
+   "answer": 2,
+   "hint": "Which kind of update makes the previous one useless?",
+   "explain": "Overflow policies differ by update type: progress snapshots keep only the newest; generated-text deltas preserve order or restore from durable state; approval requests and terminal outcomes are persisted and stay discoverable via status.",
+   "origin": "new"
+  }
+ ]
+}
