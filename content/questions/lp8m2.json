@@ -43,19 +43,19 @@
    "q": "What is the endpoint format for an App Configuration store named docpipe-config?",
    "options": [
     {
-     "text": "https://docpipe-config.azconfig.io",
-     "why": "Correct. Stores use https://`<store-name>`.azconfig.io."
+     "text": "`https://docpipe-config.azconfig.io`",
+     "why": "Correct. Stores use `https://<store-name>.azconfig.io`."
     },
     {
-     "text": "https://docpipe-config.config.azure.com",
+     "text": "`https://docpipe-config.config.azure.com`",
      "why": "That isn't the App Configuration domain."
     },
     {
-     "text": "https://docpipe-config.vault.azure.net",
+     "text": "`https://docpipe-config.vault.azure.net`",
      "why": "That's a Key Vault URL."
     },
     {
-     "text": "https://docpipe-config.azurewebsites.net",
+     "text": "`https://docpipe-config.azurewebsites.net`",
      "why": "That's App Service."
     }
    ],
@@ -112,15 +112,15 @@
      "why": "A store per key isn't how prefixes are handled."
     },
     {
-     "text": "A label_filter set to the value DocPipeline",
+     "text": "A `label_filter` set to the value `DocPipeline`",
      "why": "Labels are variants, not key prefixes."
     },
     {
-     "text": "Tags named DocPipeline on every one of the keys",
+     "text": "Tags named `DocPipeline` on every one of the keys",
      "why": "Tags don't shorten key names."
     },
     {
-     "text": "key_filter `DocPipeline:*` plus trim_prefixes",
+     "text": "`key_filter` `DocPipeline:*` plus `trim_prefixes`",
      "why": "Correct. Filter by prefix, then trim it for cleaner names."
     }
    ],

@@ -332,15 +332,15 @@
      "why": "That's an Azure RBAC role for backend identities."
     },
     {
-     "text": "webpubsub.joinLeaveGroup.`<that-group>`",
+     "text": "`webpubsub.joinLeaveGroup.<that-group>`",
      "why": "Correct. It permits joining and leaving that one group, not publishing."
     },
     {
-     "text": "webpubsub.joinLeaveGroup (unrestricted)",
+     "text": "`webpubsub.joinLeaveGroup` (unrestricted)",
      "why": "Unrestricted join lets it join any group."
     },
     {
-     "text": "webpubsub.sendToGroup",
+     "text": "`webpubsub.sendToGroup`",
      "why": "That lets the client publish to groups."
     }
    ],

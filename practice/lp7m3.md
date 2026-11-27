@@ -218,10 +218,10 @@ The Linux Consumption plan is legacy; running function apps on Linux in a Consum
 
 You run a function app locally with Core Tools. At which address are HTTP triggers exposed by default?
 
-- **A.** http://localhost:7071
-- **B.** http://localhost:5000
-- **C.** https://localhost:443
-- **D.** http://localhost:10000
+- **A.** `http://localhost:7071`
+- **B.** `http://localhost:5000`
+- **C.** `https://localhost:443`
+- **D.** `http://localhost:10000`
 
 <details><summary>💡 Hint</summary>
 
@@ -231,7 +231,7 @@ Core Tools runs the host on localhost with a default port.
 
 <details><summary>✅ Answer</summary>
 
-**A.** http://localhost:7071
+**A.** `http://localhost:7071`
 
 - A: Correct. Core Tools exposes HTTP endpoints on port 7071 by default.
 - B: 5000 isn't the Functions default.

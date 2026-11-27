@@ -222,10 +222,10 @@ Full pull on first deploy or image change; only changed layers on restart; new i
 
 Your image is private on GitHub Container Registry. When you create the web app with az webapp create, what do you pass as --docker-registry-server-url?
 
-- **A.** https://index.docker.io/v1/
-- **B.** https://ghcr.io
-- **C.** https://myregistry.azurecr.io
-- **D.** https://github.com
+- **A.** `https://index.docker.io/v1/`
+- **B.** `https://ghcr.io`
+- **C.** `https://myregistry.azurecr.io`
+- **D.** `https://github.com`
 
 <details><summary>💡 Hint</summary>
 
@@ -235,7 +235,7 @@ The registry server URL is the registry's own address, including the scheme.
 
 <details><summary>✅ Answer</summary>
 
-**B.** https://ghcr.io
+**B.** `https://ghcr.io`
 
 - A: That's Docker Hub's server URL.
 - B: Correct. This is the server URL for GitHub Container Registry.
@@ -673,10 +673,10 @@ Connection strings are injected with a type prefix such as SQLAZURECONNSTR_, MYS
 
 A .NET app on a Linux container reads the key ConnectionStrings:DefaultConnection. What name should the app setting use?
 
-- **A.** CONNECTIONSTRINGS_DEFAULTCONNECTION
-- **B.** ConnectionStrings:DefaultConnection
+- **A.** `CONNECTIONSTRINGS_DEFAULTCONNECTION`
+- **B.** `ConnectionStrings:DefaultConnection`
 - **C.** `ConnectionStrings__DefaultConnection`
-- **D.** ConnectionStrings.DefaultConnection
+- **D.** `ConnectionStrings.DefaultConnection`
 
 <details><summary>💡 Hint</summary>
 
@@ -941,7 +941,7 @@ It shows new entries in real time from all instances, each tagged with its insta
 
 ## 32. `lp1m2-032`
 
-The container log says "Listening on http://localhost:8000" and WEBSITES_PORT is 8000, but every request returns 404. What is the most likely fix?
+The container log says "Listening on `http://localhost:8000`" and WEBSITES_PORT is 8000, but every request returns 404. What is the most likely fix?
 
 - **A.** Change WEBSITES_PORT to 80 so the default route is used
 - **B.** Enable always-on so the container finishes starting up

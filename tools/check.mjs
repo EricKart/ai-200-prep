@@ -86,6 +86,14 @@ function checkQuestion(q, where, units) {
     for (const t of texts) {
       const plain = String(t ?? '').replace(/`[^`]*`/g, '');
       if (/<\/?[A-Za-z][\w.:-]*[^>]*>/.test(plain)) { err(where, `raw <tag> or <placeholder> outside a code span: "${plain.match(/<\/?[A-Za-z][\w.:-]*[^>]*>/)[0]}"; wrap it in backticks`); break; }
+      // Example URLs (often wrong answers) must not become clickable links on GitHub.
+      const url = plain.replace(/\]\([^)]*\)/g, '').match(/https?:\/\/\S+/);
+      if (url) { err(where, `bare URL "${url[0]}" outside a code span; wrap it in backticks`); break; }
+    }
+    // Formatting tell: the correct option is the only one shown as code.
+    if (q.type === 'single' && Array.isArray(q.options)) {
+      const code = q.options.map((o) => /`/.test(o.text || ''));
+      if (code.filter(Boolean).length === 1 && code[q.answer]) err(where, 'the correct option is the only one with code formatting; format the others alike');
     }
   }
   const hintLeaks = (txt) => {

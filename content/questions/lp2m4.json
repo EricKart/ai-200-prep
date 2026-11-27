@@ -458,25 +458,25 @@
    "q": "Your backend calls the session pool management API with a managed identity. Which token audience must it request?",
    "options": [
     {
-     "text": "https://management.azure.com",
+     "text": "`https://management.azure.com`",
      "why": "That's the Azure Resource Manager audience, not the dynamic sessions API."
     },
     {
-     "text": "https://dynamicsessions.io",
-     "why": "Correct. The token audience must be https://dynamicsessions.io."
+     "text": "`https://dynamicsessions.io`",
+     "why": "Correct. The token audience must be `https://dynamicsessions.io`."
     },
     {
-     "text": "https://containerapps.io",
+     "text": "`https://containerapps.io`",
      "why": "That isn't the dynamic sessions audience."
     },
     {
-     "text": "https://vault.azure.net",
+     "text": "`https://vault.azure.net`",
      "why": "That's for Key Vault."
     }
    ],
    "answer": 1,
    "hint": "Tokens for the pool management API are issued for a specific audience URL.",
-   "explain": "Request a token for https://dynamicsessions.io/.default; DefaultAzureCredential handles caching and renewal.",
+   "explain": "Request a token for `https://dynamicsessions.io/.default`; DefaultAzureCredential handles caching and renewal.",
    "origin": "lab500"
   },
   {
@@ -807,15 +807,15 @@
      "why": "System logs aren't the documented way to read one session's expiry."
     },
     {
-     "text": "Call GET …/session?identifier=`<id>` on the pool's management endpoint",
+     "text": "Call `GET …/session?identifier=<id>` on the pool's management endpoint",
      "why": "Correct. The session query returns those details, though the backend must still handle the session disappearing."
     },
     {
-     "text": "Read /mnt/data/session.json inside the session",
+     "text": "Read `/mnt/data/session.json` inside the session",
      "why": "Session lifecycle data isn't exposed as a file in /mnt/data."
     },
     {
-     "text": "Run az containerapp sessionpool show for the pool",
+     "text": "Run `az containerapp sessionpool show` for the pool",
      "why": "That returns pool properties such as the management endpoint, not one session's status."
     }
    ],

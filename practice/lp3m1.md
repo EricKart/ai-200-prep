@@ -336,10 +336,10 @@ The Service forwards connections from its port to the Pod's targetPort.
 
 Another Pod in the default namespace must call inference-api-service on port 8080. Which address should it use?
 
-- **A.** http://inference-api-service.azurecr.io:8080
-- **B.** http://inference-api-service.default.svc.cluster.local:8080
+- **A.** `http://inference-api-service.azurecr.io:8080`
+- **B.** `http://inference-api-service.default.svc.cluster.local:8080`
 - **C.** The EXTERNAL-IP shown for the Service
-- **D.** http://localhost:8080
+- **D.** `http://localhost:8080`
 
 <details><summary>💡 Hint</summary>
 
@@ -349,7 +349,7 @@ Service DNS names follow service.namespace.svc.cluster.local.
 
 <details><summary>✅ Answer</summary>
 
-**B.** http://inference-api-service.default.svc.cluster.local:8080
+**B.** `http://inference-api-service.default.svc.cluster.local:8080`
 
 - A: azurecr.io is the registry domain.
 - B: Correct. ClusterIP services use servicename.namespace.svc.cluster.local.
@@ -456,10 +456,10 @@ ClusterIP is the default Service type. It gives an internal IP that Pods can rea
 
 A Pod shows STATUS CrashLoopBackOff. Which command should you run first to see why?
 
-- **A.** kubectl get svc
-- **B.** kubectl logs `<pod-name>`
-- **C.** az acr repository list
-- **D.** az aks scale --node-count 3
+- **A.** `kubectl get svc`
+- **B.** `kubectl logs <pod-name>`
+- **C.** `az acr repository list`
+- **D.** `az aks scale --node-count 3`
 
 <details><summary>💡 Hint</summary>
 
@@ -469,7 +469,7 @@ The Pod keeps restarting. What the app printed before it exited is the quickest 
 
 <details><summary>✅ Answer</summary>
 
-**B.** kubectl logs `<pod-name>`
+**B.** `kubectl logs <pod-name>`
 
 - A: Service status doesn't explain an application crash.
 - B: Correct. The application's logs show why it crashes on startup.

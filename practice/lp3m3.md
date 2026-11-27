@@ -453,7 +453,7 @@ kubectl describe pod shows the Pod's probes, environment, mounts and Events, whi
 
 ## 16. `lp3m3-016`
 
-You want to call a container's own health endpoint, http://localhost:8080/health, without changing or rebuilding the image. What do you do?
+You want to call a container's own health endpoint, `http://localhost:8080/health`, without changing or rebuilding the image. What do you do?
 
 - **A.** Rebuild the image with an extra probe that logs the result
 - **B.** Port-forward to the kubelet's port on the node
@@ -475,7 +475,7 @@ localhost means inside the container. How do you run a command in there?
 - C: localhost on the node isn't the container's localhost.
 - D: Correct. kubectl exec (or the portal Console) lets you run simple HTTP checks from inside the container.
 
-Use kubectl exec -it `<pod>` -- /bin/sh (or the portal Console tab) to inspect files, check variables and run commands such as curl http://localhost:8080/health.
+Use kubectl exec -it `<pod>` -- /bin/sh (or the portal Console tab) to inspect files, check variables and run commands such as curl `http://localhost:8080/health`.
 
 📘 Source: [Troubleshoot pods and services](https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/3-troubleshoot-pods-services)
 
@@ -545,10 +545,10 @@ Port-forwarding lets you test before exposing endpoints to users.
 
 After `kubectl port-forward service/inference-api 8080:80`, which URL reaches the API from your laptop?
 
-- **A.** http://inference-api:8080/api/inference
+- **A.** `http://inference-api:8080/api/inference`
 - **B.** The Service's cluster IP on port 8080
-- **C.** http://localhost:8080/api/inference
-- **D.** http://localhost:80/api/inference
+- **C.** `http://localhost:8080/api/inference`
+- **D.** `http://localhost:80/api/inference`
 
 <details><summary>💡 Hint</summary>
 
@@ -558,7 +558,7 @@ In local:remote, the first number is the port on your machine.
 
 <details><summary>✅ Answer</summary>
 
-**C.** http://localhost:8080/api/inference
+**C.** `http://localhost:8080/api/inference`
 
 - A: That DNS name isn't resolvable from your laptop.
 - B: The cluster IP isn't reachable from your laptop.

@@ -220,19 +220,19 @@
    "q": "Your image is private on GitHub Container Registry. When you create the web app with az webapp create, what do you pass as --docker-registry-server-url?",
    "options": [
     {
-     "text": "https://index.docker.io/v1/",
+     "text": "`https://index.docker.io/v1/`",
      "why": "That's Docker Hub's server URL."
     },
     {
-     "text": "https://ghcr.io",
+     "text": "`https://ghcr.io`",
      "why": "Correct. This is the server URL for GitHub Container Registry."
     },
     {
-     "text": "https://myregistry.azurecr.io",
+     "text": "`https://myregistry.azurecr.io`",
      "why": "That's an ACR login server, not GitHub's."
     },
     {
-     "text": "https://github.com",
+     "text": "`https://github.com`",
      "why": "That's the website, not the container registry endpoint."
     }
    ],
@@ -682,11 +682,11 @@
    "q": "A .NET app on a Linux container reads the key ConnectionStrings:DefaultConnection. What name should the app setting use?",
    "options": [
     {
-     "text": "CONNECTIONSTRINGS_DEFAULTCONNECTION",
+     "text": "`CONNECTIONSTRINGS_DEFAULTCONNECTION`",
      "why": "A single underscore doesn't express nesting."
     },
     {
-     "text": "ConnectionStrings:DefaultConnection",
+     "text": "`ConnectionStrings:DefaultConnection`",
      "why": "Setting names can contain only letters, numbers and underscores, so a colon isn't allowed."
     },
     {
@@ -694,7 +694,7 @@
      "why": "Correct. On Linux containers, nested .NET keys use double underscores."
     },
     {
-     "text": "ConnectionStrings.DefaultConnection",
+     "text": "`ConnectionStrings.DefaultConnection`",
      "why": "A dot isn't allowed in setting names."
     }
    ],
@@ -962,7 +962,7 @@
    "type": "single",
    "scenario": true,
    "difficulty": "medium",
-   "q": "The container log says \"Listening on http://localhost:8000\" and WEBSITES_PORT is 8000, but every request returns 404. What is the most likely fix?",
+   "q": "The container log says \"Listening on `http://localhost:8000`\" and WEBSITES_PORT is 8000, but every request returns 404. What is the most likely fix?",
    "options": [
     {
      "text": "Change WEBSITES_PORT to 80 so the default route is used",

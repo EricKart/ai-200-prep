@@ -580,10 +580,10 @@ Each listening process needs a unique port.
 
 The main API must call the model-server sidecar, which listens on port 11434. Which URL should the API use?
 
-- **A.** https://`<app-name>`.azurewebsites.net:11434
-- **B.** http://model-server:11434
-- **C.** http://`<app-name>`.scm.azurewebsites.net:11434
-- **D.** http://localhost:11434
+- **A.** `https://<app-name>.azurewebsites.net:11434`
+- **B.** `http://model-server:11434`
+- **C.** `http://<app-name>.scm.azurewebsites.net:11434`
+- **D.** `http://localhost:11434`
 
 <details><summary>💡 Hint</summary>
 
@@ -593,7 +593,7 @@ The containers share a network. What host name reaches a process on the same ins
 
 <details><summary>✅ Answer</summary>
 
-**D.** http://localhost:11434
+**D.** `http://localhost:11434`
 
 - A: Sidecars aren't published on the public hostname.
 - B: Containers don't reach each other by container name in App Service sidecars.

@@ -36,10 +36,10 @@ Readers for apps, Owners for operators.
 
 What is the endpoint format for an App Configuration store named docpipe-config?
 
-- **A.** https://docpipe-config.azconfig.io
-- **B.** https://docpipe-config.config.azure.com
-- **C.** https://docpipe-config.vault.azure.net
-- **D.** https://docpipe-config.azurewebsites.net
+- **A.** `https://docpipe-config.azconfig.io`
+- **B.** `https://docpipe-config.config.azure.com`
+- **C.** `https://docpipe-config.vault.azure.net`
+- **D.** `https://docpipe-config.azurewebsites.net`
 
 <details><summary>💡 Hint</summary>
 
@@ -49,9 +49,9 @@ App Configuration endpoints use their own domain.
 
 <details><summary>✅ Answer</summary>
 
-**A.** https://docpipe-config.azconfig.io
+**A.** `https://docpipe-config.azconfig.io`
 
-- A: Correct. Stores use https://`<store-name>`.azconfig.io.
+- A: Correct. Stores use `https://<store-name>.azconfig.io`.
 - B: That isn't the App Configuration domain.
 - C: That's a Key Vault URL.
 - D: That's App Service.
@@ -99,9 +99,9 @@ Use SettingSelector to choose keys and labels.
 Several apps share one store, and this app's keys all start with DocPipeline:. The code should use short names like OpenAI:Endpoint. What should you use?
 
 - **A.** A separate App Configuration store for each key
-- **B.** A label_filter set to the value DocPipeline
-- **C.** Tags named DocPipeline on every one of the keys
-- **D.** key_filter `DocPipeline:*` plus trim_prefixes
+- **B.** A `label_filter` set to the value `DocPipeline`
+- **C.** Tags named `DocPipeline` on every one of the keys
+- **D.** `key_filter` `DocPipeline:*` plus `trim_prefixes`
 
 <details><summary>💡 Hint</summary>
 
@@ -111,7 +111,7 @@ Filter on the app's prefix, then remove it from the names the code sees.
 
 <details><summary>✅ Answer</summary>
 
-**D.** key_filter `DocPipeline:*` plus trim_prefixes
+**D.** `key_filter` `DocPipeline:*` plus `trim_prefixes`
 
 - A: A store per key isn't how prefixes are handled.
 - B: Labels are variants, not key prefixes.

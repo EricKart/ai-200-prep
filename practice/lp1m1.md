@@ -126,10 +126,10 @@ Geo-replication distributes images close to deployment regions for faster pulls;
 
 Production pods pulled `inference-api:stable` at different times and now run two different images. You need every node to run exactly the image that passed testing, even if someone pushes to that tag again. What should the deployment reference?
 
-- **A.** Its digest: inference-api@sha256:`<hash>`
-- **B.** inference-api:latest, because it resolves to a single image
+- **A.** Its digest: `inference-api@sha256:<hash>`
+- **B.** `inference-api:latest`, because it resolves to a single image
 - **C.** The repository name alone, so ACR picks the newest manifest
-- **D.** The same tag, with the image locked by write-enabled false
+- **D.** The same tag, with the image locked by `--write-enabled false`
 
 <details><summary>💡 Hint</summary>
 
@@ -139,7 +139,7 @@ Tags can move after a push. Which way of naming an image can never change?
 
 <details><summary>✅ Answer</summary>
 
-**A.** Its digest: inference-api@sha256:`<hash>`
+**A.** Its digest: `inference-api@sha256:<hash>`
 
 - A: Correct. Digests are immutable, so pulling by digest always returns the same image.
 - B: latest is a mutable tag and is the default; it causes this exact problem.

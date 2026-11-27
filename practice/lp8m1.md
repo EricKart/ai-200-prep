@@ -308,10 +308,10 @@ Validate configuration early by listing secret properties.
 
 Which URL format does a SecretClient use for a vault named kv-ragpipeline-prod?
 
-- **A.** https://kv-ragpipeline-prod.vault.azure.net/
-- **B.** https://vault.azure.net/kv-ragpipeline-prod
-- **C.** https://kv-ragpipeline-prod.azurewebsites.net/vault
-- **D.** https://kv-ragpipeline-prod.keyvault.windows.net/
+- **A.** `https://kv-ragpipeline-prod.vault.azure.net/`
+- **B.** `https://vault.azure.net/kv-ragpipeline-prod`
+- **C.** `https://kv-ragpipeline-prod.azurewebsites.net/vault`
+- **D.** `https://kv-ragpipeline-prod.keyvault.windows.net/`
 
 <details><summary>💡 Hint</summary>
 
@@ -321,9 +321,9 @@ Each vault has its own DNS name under vault.azure.net.
 
 <details><summary>✅ Answer</summary>
 
-**A.** https://kv-ragpipeline-prod.vault.azure.net/
+**A.** `https://kv-ragpipeline-prod.vault.azure.net/`
 
-- A: Correct. Vault URLs follow https://`<vault-name>`.vault.azure.net/.
+- A: Correct. Vault URLs follow `https://<vault-name>.vault.azure.net/`.
 - B: The vault name is a subdomain, not a path.
 - C: That's an App Service domain.
 - D: That isn't the Key Vault domain.

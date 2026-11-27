@@ -136,11 +136,11 @@
    "q": "Production pods pulled `inference-api:stable` at different times and now run two different images. You need every node to run exactly the image that passed testing, even if someone pushes to that tag again. What should the deployment reference?",
    "options": [
     {
-     "text": "Its digest: inference-api@sha256:`<hash>`",
+     "text": "Its digest: `inference-api@sha256:<hash>`",
      "why": "Correct. Digests are immutable, so pulling by digest always returns the same image."
     },
     {
-     "text": "inference-api:latest, because it resolves to a single image",
+     "text": "`inference-api:latest`, because it resolves to a single image",
      "why": "latest is a mutable tag and is the default; it causes this exact problem."
     },
     {
@@ -148,7 +148,7 @@
      "why": "Without a tag, Docker uses latest, which is still a moving tag."
     },
     {
-     "text": "The same tag, with the image locked by write-enabled false",
+     "text": "The same tag, with the image locked by `--write-enabled false`",
      "why": "Locking stops overwrites from now on, but Learn's answer for guaranteed reproducibility is the digest."
     }
    ],

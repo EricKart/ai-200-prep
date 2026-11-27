@@ -218,10 +218,10 @@ Use verify-full in production.
 
 An Azure-hosted app uses a managed identity to connect with Microsoft Entra authentication. Which resource should it request a token for?
 
-- **A.** https://vault.azure.net/.default
-- **B.** https://ossrdbms-aad.database.windows.net
-- **C.** https://management.azure.com/.default
-- **D.** https://database.windows.net/postgres
+- **A.** `https://vault.azure.net/.default`
+- **B.** `https://ossrdbms-aad.database.windows.net`
+- **C.** `https://management.azure.com/.default`
+- **D.** `https://database.windows.net/postgres`
 
 <details><summary>💡 Hint</summary>
 
@@ -231,14 +231,14 @@ Entra tokens for Azure's open-source databases come from one specific resource U
 
 <details><summary>✅ Answer</summary>
 
-**B.** https://ossrdbms-aad.database.windows.net
+**B.** `https://ossrdbms-aad.database.windows.net`
 
 - A: That's Key Vault.
 - B: Correct. Entra identities obtain tokens from this resource and use them as the password.
 - C: That's the Azure Resource Manager audience.
 - D: That isn't the PostgreSQL token resource Learn names.
 
-credential.get_token("https://ossrdbms-aad.database.windows.net/.default")
+credential.get_token("`https://ossrdbms-aad.database.windows.net/.default`")
 
 📘 Source: [Connect to PostgreSQL](https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/3-connect-to-postgresql)
 

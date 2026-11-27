@@ -325,19 +325,19 @@
    "q": "Which URL format does a SecretClient use for a vault named kv-ragpipeline-prod?",
    "options": [
     {
-     "text": "https://kv-ragpipeline-prod.vault.azure.net/",
-     "why": "Correct. Vault URLs follow https://`<vault-name>`.vault.azure.net/."
+     "text": "`https://kv-ragpipeline-prod.vault.azure.net/`",
+     "why": "Correct. Vault URLs follow `https://<vault-name>.vault.azure.net/`."
     },
     {
-     "text": "https://vault.azure.net/kv-ragpipeline-prod",
+     "text": "`https://vault.azure.net/kv-ragpipeline-prod`",
      "why": "The vault name is a subdomain, not a path."
     },
     {
-     "text": "https://kv-ragpipeline-prod.azurewebsites.net/vault",
+     "text": "`https://kv-ragpipeline-prod.azurewebsites.net/vault`",
      "why": "That's an App Service domain."
     },
     {
-     "text": "https://kv-ragpipeline-prod.keyvault.windows.net/",
+     "text": "`https://kv-ragpipeline-prod.keyvault.windows.net/`",
      "why": "That isn't the Key Vault domain."
     }
    ],

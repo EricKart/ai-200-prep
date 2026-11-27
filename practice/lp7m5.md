@@ -311,9 +311,9 @@ Persist state before notifying. When eventual publishing is required, record the
 A browser should only observe updates for one investigation. Which role should its Web PubSub token include?
 
 - **A.** Web PubSub Service Owner
-- **B.** webpubsub.joinLeaveGroup.`<that-group>`
-- **C.** webpubsub.joinLeaveGroup (unrestricted)
-- **D.** webpubsub.sendToGroup
+- **B.** `webpubsub.joinLeaveGroup.<that-group>`
+- **C.** `webpubsub.joinLeaveGroup` (unrestricted)
+- **D.** `webpubsub.sendToGroup`
 
 <details><summary>💡 Hint</summary>
 
@@ -323,7 +323,7 @@ Observers need to join one group and nothing more.
 
 <details><summary>✅ Answer</summary>
 
-**B.** webpubsub.joinLeaveGroup.`<that-group>`
+**B.** `webpubsub.joinLeaveGroup.<that-group>`
 
 - A: That's an Azure RBAC role for backend identities.
 - B: Correct. It permits joining and leaving that one group, not publishing.

@@ -432,10 +432,10 @@ If a session needs runtime access, use a separate identity with the smallest pos
 
 Your backend calls the session pool management API with a managed identity. Which token audience must it request?
 
-- **A.** https://management.azure.com
-- **B.** https://dynamicsessions.io
-- **C.** https://containerapps.io
-- **D.** https://vault.azure.net
+- **A.** `https://management.azure.com`
+- **B.** `https://dynamicsessions.io`
+- **C.** `https://containerapps.io`
+- **D.** `https://vault.azure.net`
 
 <details><summary>💡 Hint</summary>
 
@@ -445,14 +445,14 @@ Tokens for the pool management API are issued for a specific audience URL.
 
 <details><summary>✅ Answer</summary>
 
-**B.** https://dynamicsessions.io
+**B.** `https://dynamicsessions.io`
 
 - A: That's the Azure Resource Manager audience, not the dynamic sessions API.
-- B: Correct. The token audience must be https://dynamicsessions.io.
+- B: Correct. The token audience must be `https://dynamicsessions.io`.
 - C: That isn't the dynamic sessions audience.
 - D: That's for Key Vault.
 
-Request a token for https://dynamicsessions.io/.default; DefaultAzureCredential handles caching and renewal.
+Request a token for `https://dynamicsessions.io/.default`; DefaultAzureCredential handles caching and renewal.
 
 📘 Source: [Execute code and exchange files](https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/4-execute-code-exchange-files)
 
@@ -763,9 +763,9 @@ Clean up intentionally, confirm with 204, and keep failed deletions visible.
 You want to tell a user that their analysis workspace will expire soon. How can the backend get the session's creation, last-access and expiry details?
 
 - **A.** Query the Container Apps environment's system logs for the session's events
-- **B.** Call GET …/session?identifier=`<id>` on the pool's management endpoint
-- **C.** Read /mnt/data/session.json inside the session
-- **D.** Run az containerapp sessionpool show for the pool
+- **B.** Call `GET …/session?identifier=<id>` on the pool's management endpoint
+- **C.** Read `/mnt/data/session.json` inside the session
+- **D.** Run `az containerapp sessionpool show` for the pool
 
 <details><summary>💡 Hint</summary>
 
@@ -775,7 +775,7 @@ The pool management API can describe a session by its identifier.
 
 <details><summary>✅ Answer</summary>
 
-**B.** Call GET …/session?identifier=`<id>` on the pool's management endpoint
+**B.** Call `GET …/session?identifier=<id>` on the pool's management endpoint
 
 - A: System logs aren't the documented way to read one session's expiry.
 - B: Correct. The session query returns those details, though the backend must still handle the session disappearing.

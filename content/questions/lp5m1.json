@@ -232,25 +232,25 @@
    "q": "An Azure-hosted app uses a managed identity to connect with Microsoft Entra authentication. Which resource should it request a token for?",
    "options": [
     {
-     "text": "https://vault.azure.net/.default",
+     "text": "`https://vault.azure.net/.default`",
      "why": "That's Key Vault."
     },
     {
-     "text": "https://ossrdbms-aad.database.windows.net",
+     "text": "`https://ossrdbms-aad.database.windows.net`",
      "why": "Correct. Entra identities obtain tokens from this resource and use them as the password."
     },
     {
-     "text": "https://management.azure.com/.default",
+     "text": "`https://management.azure.com/.default`",
      "why": "That's the Azure Resource Manager audience."
     },
     {
-     "text": "https://database.windows.net/postgres",
+     "text": "`https://database.windows.net/postgres`",
      "why": "That isn't the PostgreSQL token resource Learn names."
     }
    ],
    "answer": 1,
    "hint": "Entra tokens for Azure's open-source databases come from one specific resource URL.",
-   "explain": "credential.get_token(\"https://ossrdbms-aad.database.windows.net/.default\")",
+   "explain": "credential.get_token(\"`https://ossrdbms-aad.database.windows.net/.default`\")",
    "origin": "lab500"
   },
   {

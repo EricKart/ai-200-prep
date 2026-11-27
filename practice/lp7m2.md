@@ -702,10 +702,10 @@ Events describe what happened and where to find details.
 
 A CI/CD pipeline publishes a CloudEvent to a custom topic with curl. Which two settings does Learn show? (Select two.)
 
-- **A.** A Bearer token for https://dynamicsessions.io
-- **B.** Content-Type: application/x-www-form-urlencoded
-- **C.** An aeg-sas-key header with the topic key
-- **D.** Content-Type: application/cloudevents+json; charset=utf-8
+- **A.** A Bearer token for `https://dynamicsessions.io`
+- **B.** `Content-Type: application/x-www-form-urlencoded`
+- **C.** An `aeg-sas-key` header with the topic key
+- **D.** `Content-Type: application/cloudevents+json; charset=utf-8`
 
 <details><summary>💡 Hint</summary>
 
@@ -715,8 +715,8 @@ One setting tells Event Grid the payload format. The other authenticates the req
 
 <details><summary>✅ Answer</summary>
 
-**C.** An aeg-sas-key header with the topic key  
-**D.** Content-Type: application/cloudevents+json; charset=utf-8
+**C.** An `aeg-sas-key` header with the topic key  
+**D.** `Content-Type: application/cloudevents+json; charset=utf-8`
 
 - A: That audience is for dynamic sessions, not Event Grid.
 - B: Form encoding isn't used for CloudEvents.

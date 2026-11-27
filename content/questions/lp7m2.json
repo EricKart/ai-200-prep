@@ -743,19 +743,19 @@
    "q": "A CI/CD pipeline publishes a CloudEvent to a custom topic with curl. Which two settings does Learn show? (Select two.)",
    "options": [
     {
-     "text": "A Bearer token for https://dynamicsessions.io",
+     "text": "A Bearer token for `https://dynamicsessions.io`",
      "why": "That audience is for dynamic sessions, not Event Grid."
     },
     {
-     "text": "Content-Type: application/x-www-form-urlencoded",
+     "text": "`Content-Type: application/x-www-form-urlencoded`",
      "why": "Form encoding isn't used for CloudEvents."
     },
     {
-     "text": "An aeg-sas-key header with the topic key",
+     "text": "An `aeg-sas-key` header with the topic key",
      "why": "Correct. Learn's REST example authenticates with aeg-sas-key."
     },
     {
-     "text": "Content-Type: application/cloudevents+json; charset=utf-8",
+     "text": "`Content-Type: application/cloudevents+json; charset=utf-8`",
      "why": "Correct. That's the content type for a single CloudEvent."
     }
    ],

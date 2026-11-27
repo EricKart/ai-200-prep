@@ -232,19 +232,19 @@
    "q": "You run a function app locally with Core Tools. At which address are HTTP triggers exposed by default?",
    "options": [
     {
-     "text": "http://localhost:7071",
+     "text": "`http://localhost:7071`",
      "why": "Correct. Core Tools exposes HTTP endpoints on port 7071 by default."
     },
     {
-     "text": "http://localhost:5000",
+     "text": "`http://localhost:5000`",
      "why": "5000 isn't the Functions default."
     },
     {
-     "text": "https://localhost:443",
+     "text": "`https://localhost:443`",
      "why": "443 isn't used locally by Core Tools."
     },
     {
-     "text": "http://localhost:10000",
+     "text": "`http://localhost:10000`",
      "why": "10000 is the Azure Managed Redis port."
     }
    ],

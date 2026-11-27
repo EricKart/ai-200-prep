@@ -672,15 +672,15 @@
    "q": "A production app should stop using an access key and connect to Azure Managed Redis with Microsoft Entra ID. What does Learn point to for redis-py?",
    "options": [
     {
-     "text": "redis.cluster.RedisCluster, which handles authentication",
+     "text": "`redis.cluster.RedisCluster`, which handles authentication",
      "why": "RedisCluster is for OSS clustering. It doesn't add Entra ID authentication."
     },
     {
-     "text": "The redis-entraid package, with a token for https://redis.azure.com/.default",
+     "text": "The redis-entraid package, with a token for `https://redis.azure.com/.default`",
      "why": "Correct. redis-entraid adds Entra ID authentication to redis-py."
     },
     {
-     "text": "Port 6380 with TLS turned off",
+     "text": "Port `6380` with TLS turned off",
      "why": "Azure Managed Redis uses port 10000, and TLS is required."
     },
     {
@@ -690,7 +690,7 @@
    ],
    "answer": 1,
    "hint": "Entra ID support for redis-py comes from an add-on library.",
-   "explain": "For production, use Microsoft Entra ID authentication with the redis-entraid package, requesting tokens for https://redis.azure.com/.default.",
+   "explain": "For production, use Microsoft Entra ID authentication with the redis-entraid package, requesting tokens for `https://redis.azure.com/.default`.",
    "origin": "new"
   },
   {

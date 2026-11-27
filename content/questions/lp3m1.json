@@ -360,11 +360,11 @@
    "q": "Another Pod in the default namespace must call inference-api-service on port 8080. Which address should it use?",
    "options": [
     {
-     "text": "http://inference-api-service.azurecr.io:8080",
+     "text": "`http://inference-api-service.azurecr.io:8080`",
      "why": "azurecr.io is the registry domain."
     },
     {
-     "text": "http://inference-api-service.default.svc.cluster.local:8080",
+     "text": "`http://inference-api-service.default.svc.cluster.local:8080`",
      "why": "Correct. ClusterIP services use servicename.namespace.svc.cluster.local."
     },
     {
@@ -372,7 +372,7 @@
      "why": "A ClusterIP service has no external IP."
     },
     {
-     "text": "http://localhost:8080",
+     "text": "`http://localhost:8080`",
      "why": "localhost reaches the calling Pod itself."
     }
    ],
@@ -482,19 +482,19 @@
    "q": "A Pod shows STATUS CrashLoopBackOff. Which command should you run first to see why?",
    "options": [
     {
-     "text": "kubectl get svc",
+     "text": "`kubectl get svc`",
      "why": "Service status doesn't explain an application crash."
     },
     {
-     "text": "kubectl logs `<pod-name>`",
+     "text": "`kubectl logs <pod-name>`",
      "why": "Correct. The application's logs show why it crashes on startup."
     },
     {
-     "text": "az acr repository list",
+     "text": "`az acr repository list`",
      "why": "That checks images exist, which matters for ImagePullBackOff."
     },
     {
-     "text": "az aks scale --node-count 3",
+     "text": "`az aks scale --node-count 3`",
      "why": "Adding nodes fixes Pending Pods, not crashing apps."
     }
    ],

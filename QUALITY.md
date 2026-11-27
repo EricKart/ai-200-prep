@@ -14,6 +14,8 @@ Hints are also scanned for words that appear only in the correct option (a warni
 | Answer tells | The correct option is the single longest in ≤ 30% of single-choice questions (≤ 45% within one module), and the single shortest in ≤ 35% | You can't pass by picking the longest |
 | Position balance | Correct answers spread across A–D (15–35% each) | No "always C" pattern |
 | Absolute words | ≤ 10% of questions have "always / never / only…" only in the wrong options | No "absolute word = wrong" shortcut |
+| Formatting tell | The correct option is never the only one shown as `code` | Formatting must not give the answer away |
+| No bare URLs | URLs in question text sit in code spans (real references use `[text](url)`) | Example and wrong-answer URLs must not become clickable links |
 | Hint | ≤ 200 characters, never contains the correct option's text, never says "the answer is" | A hint points you somewhere; it doesn't hand you the answer |
 | Scenario floor | ≥ 60% scenario questions in every module, every mock, and overall | The exam tests decisions, not recall |
 | Coverage | Every Learn content unit has at least one question | Nothing in the syllabus is skipped |

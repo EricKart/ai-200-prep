@@ -464,7 +464,7 @@
    "type": "single",
    "scenario": true,
    "difficulty": "medium",
-   "q": "You want to call a container's own health endpoint, http://localhost:8080/health, without changing or rebuilding the image. What do you do?",
+   "q": "You want to call a container's own health endpoint, `http://localhost:8080/health`, without changing or rebuilding the image. What do you do?",
    "options": [
     {
      "text": "Rebuild the image with an extra probe that logs the result",
@@ -485,7 +485,7 @@
    ],
    "answer": 3,
    "hint": "localhost means inside the container. How do you run a command in there?",
-   "explain": "Use kubectl exec -it `<pod>` -- /bin/sh (or the portal Console tab) to inspect files, check variables and run commands such as curl http://localhost:8080/health.",
+   "explain": "Use kubectl exec -it `<pod>` -- /bin/sh (or the portal Console tab) to inspect files, check variables and run commands such as curl `http://localhost:8080/health`.",
    "origin": "ca3"
   },
   {
@@ -560,7 +560,7 @@
    "q": "After `kubectl port-forward service/inference-api 8080:80`, which URL reaches the API from your laptop?",
    "options": [
     {
-     "text": "http://inference-api:8080/api/inference",
+     "text": "`http://inference-api:8080/api/inference`",
      "why": "That DNS name isn't resolvable from your laptop."
     },
     {
@@ -568,11 +568,11 @@
      "why": "The cluster IP isn't reachable from your laptop."
     },
     {
-     "text": "http://localhost:8080/api/inference",
+     "text": "`http://localhost:8080/api/inference`",
      "why": "Correct. Local port 8080 forwards to Service port 80."
     },
     {
-     "text": "http://localhost:80/api/inference",
+     "text": "`http://localhost:80/api/inference`",
      "why": "The local side of the forward is 8080."
     }
    ],
