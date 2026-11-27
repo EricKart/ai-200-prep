@@ -32,7 +32,7 @@ Every learning path has a cheat sheet.
 ## Labs
 
 Each lab has a README with a **cost** section and a **clean up** section. `cmd/bash.sh` and `cmd/ps.ps1` have the same
-`# @@ step` names, and one of them is a clean-up step. CI runs ShellCheck and PSScriptAnalyzer.
+`# @@ <step>` names, and one of them is a clean-up step. CI runs ShellCheck and PSScriptAnalyzer.
 
 ## Every file
 

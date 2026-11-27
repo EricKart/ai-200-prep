@@ -1,0 +1,6 @@
+// Module 2 unit 4: dashboard tile, failed requests per service
+requests
+| where timestamp > ago(24h)
+| where success == false
+| summarize failedCount = count() by cloud_RoleName
+| render barchart

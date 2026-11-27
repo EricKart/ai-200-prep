@@ -277,8 +277,8 @@ function walk(dir, out = []) {
 const PII = [
   [/[A-Z0-9._%+-]+@(?!example\.(com|org)|contoso\.com|noreply)[A-Z0-9.-]+\.[A-Z]{2,}/i, 'an email address'],
   [/@lpu\.in\b/i, 'a university email'],
-  [/(?<![\d.])1[12]\d{6}(?![\d.])/, 'a student roll number'],
-  [/(?<![\d+])(\+91[ -]?)?[6-9]\d{9}(?!\d)/, 'a phone number'],
+  [/(?<![\dA-Fa-f.])1[12]\d{6}(?![\dA-Fa-f.])/, 'a student roll number'],
+  [/(?<![\dA-Fa-f+])(\+91[ -]?)?[6-9]\d{9}(?![\dA-Fa-f])/, 'a phone number'],
   [/(AccountKey|SharedAccessKey|client_secret|api[_-]?key)\s*[=:]\s*["']?[A-Za-z0-9+/]{20,}/i, 'a secret'],
 ];
 const PII_ALLOW = /(<[^>]+>|\$\{?[A-Z_]+\}?|xxxx|\.\.\.)/;
@@ -302,7 +302,7 @@ if (!ONLY && exists('labs')) {
     const readme = read(`${base}/README.md`);
     if (!/^## .*cost/im.test(readme)) err(`${base}/README.md`, 'needs a "## … cost" section');
     if (!/^## .*clean ?up/im.test(readme)) err(`${base}/README.md`, 'needs a "## … clean up" section');
-    const steps = (f) => exists(f) ? [...read(f).matchAll(/^# @@ step (.+)$/gm)].map((x) => x[1].trim()) : null;
+    const steps = (f) => exists(f) ? [...read(f).matchAll(/^# @@ (\S+)\s*$/gm)].map((x) => x[1].trim()) : null;
     const sh = steps(`${base}/cmd/bash.sh`), ps = steps(`${base}/cmd/ps.ps1`);
     if (!sh) err(base, 'missing cmd/bash.sh');
     if (!ps) err(base, 'missing cmd/ps.ps1');

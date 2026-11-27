@@ -1,0 +1,10 @@
+// Module 2 unit 3: correlate exceptions with the request that caused them
+exceptions
+| where timestamp > ago(24h)
+| join kind=inner (
+    requests
+    | project requestName = name, requestDuration = duration, operation_Id, requestRoleName = cloud_RoleName
+) on operation_Id
+| project timestamp, exceptionType = type, exceptionMessage = outerMessage,
+    requestName, requestDuration, cloud_RoleName = requestRoleName
+| top 20 by timestamp desc

@@ -1,0 +1,4 @@
+// Sampling: rows stored vs real events (run after the --sampling 0.25 experiment)
+requests
+| where timestamp > ago(1h)
+| summarize storedRows = count(), realRequests = sum(itemCount) by cloud_RoleName, itemCount

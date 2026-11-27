@@ -1,0 +1,6 @@
+// Module 2 unit 2: the 20 slowest failed requests in the last hour
+requests
+| where timestamp > ago(1h)
+| where success == false
+| project timestamp, name, resultCode, duration, cloud_RoleName
+| top 20 by duration desc

@@ -1,0 +1,5 @@
+// Module 2 unit 3: exception rate over time, sampling-safe with sum(itemCount)
+exceptions
+| where timestamp > ago(24h)
+| summarize exceptionCount = sum(itemCount) by bin(timestamp, 1h), type
+| render timechart

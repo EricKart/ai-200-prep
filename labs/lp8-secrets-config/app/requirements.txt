@@ -1,0 +1,6 @@
+azure-identity>=1.24
+azure-keyvault-secrets>=4.9
+azure-appconfiguration-provider>=2.1
+featuremanagement>=2.0
+azure-storage-queue>=12.12
+aiohttp>=3.10

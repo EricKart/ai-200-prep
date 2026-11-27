@@ -1,0 +1,5 @@
+// Module 2 unit 6: log search alert query (services with >10 failures)
+requests
+| where success == false
+| summarize failedCount = count() by cloud_RoleName
+| where failedCount > 10

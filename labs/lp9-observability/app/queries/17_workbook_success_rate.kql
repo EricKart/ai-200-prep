@@ -1,0 +1,8 @@
+// Module 2 unit 5: workbook step ({TimeRange} is a workbook parameter; run_query.py uses 24h)
+requests
+| where timestamp > ago({TimeRange})
+| summarize totalRequests = count(),
+    failedRequests = countif(success == false)
+    by cloud_RoleName
+| extend successRate = round(100.0 * (totalRequests - failedRequests) / totalRequests, 2)
+| project cloud_RoleName, totalRequests, failedRequests, successRate

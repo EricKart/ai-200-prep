@@ -1,0 +1,5 @@
+// Module 2 unit 3: most common exception types per operation
+exceptions
+| where timestamp > ago(24h)
+| summarize exceptionCount = sum(itemCount) by type, operation_Name
+| top 10 by exceptionCount desc

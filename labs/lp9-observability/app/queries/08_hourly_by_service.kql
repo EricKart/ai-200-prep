@@ -1,0 +1,5 @@
+// Module 2 unit 2: summarize + bin() per hour per service
+requests
+| where timestamp > ago(24h)
+| summarize requestCount = count(), avgDuration = avg(duration)
+    by bin(timestamp, 1h), cloud_RoleName

@@ -29,7 +29,7 @@ jobs:
       - name: Generated files are up to date
         run: |
           node tools/build-md.mjs
-          git diff --exit-code -- practice/ || (echo "::error::Run 'npm run build:md' and commit the result" && exit 1)
+          git diff --exit-code -- practice/ guides/coverage.md || (echo "::error::Run 'npm run build:md' and commit the result" && exit 1)
 
   lint:
     name: Markdown and spelling

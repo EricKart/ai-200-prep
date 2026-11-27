@@ -1,0 +1,5 @@
+// Module 2 unit 2: render timechart (chart in the portal, table here)
+requests
+| where timestamp > ago(24h)
+| summarize requestCount = count() by bin(timestamp, 1h), cloud_RoleName
+| render timechart

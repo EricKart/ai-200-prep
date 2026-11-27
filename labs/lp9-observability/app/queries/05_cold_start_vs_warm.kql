@@ -1,0 +1,6 @@
+// Module 1 unit 6 (diagnostic pattern): vector search cold starts
+dependencies
+| where name == "SearchVectorIndex"
+| extend coldStart = tostring(customDimensions["search.cold_start"]),
+    results = toint(customDimensions["search.result_count"])
+| summarize searches = count(), avgMs = avg(duration), maxMs = max(duration), avgResults = avg(results) by coldStart

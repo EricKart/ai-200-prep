@@ -1,0 +1,8 @@
+// Module 1 unit 6: join slow (>5 s) requests to their dependencies on operation_Id
+requests
+| where duration > 5000
+| join kind=inner (dependencies) on operation_Id
+| project timestamp, requestName = name, requestDuration = duration,
+    dependencyName = name1, dependencyDuration = duration1,
+    dependencyTarget = target
+| order by requestDuration desc

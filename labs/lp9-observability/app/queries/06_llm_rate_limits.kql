@@ -1,0 +1,5 @@
+// Module 1 unit 6 (diagnostic pattern): LLM calls that got HTTP 429
+dependencies
+| where resultCode == "429"
+| project timestamp, name, target, resultCode, duration, cloud_RoleName, operation_Id
+| order by timestamp desc

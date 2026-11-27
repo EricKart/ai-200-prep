@@ -1,0 +1,22 @@
+{
+  "DocPipeline": {
+    "OpenAI": {
+      "Endpoint": "https://dev-openai.openai.azure.com/",
+      "DeploymentName": "gpt-4o-mini",
+      "MaxTokens": "800"
+    },
+    "CosmosDB": {
+      "DatabaseName": "documents",
+      "ContainerName": "processed"
+    },
+    "Pipeline": {
+      "BatchSize": "10",
+      "RetryCount": "3",
+      "TimeoutSeconds": "30"
+    }
+  },
+  "OtherApp": {
+    "Theme": "dark"
+  },
+  "Sentinel": "1"
+}

@@ -1,0 +1,6 @@
+// Module 2 unit 3: failed dependencies by target and result code
+dependencies
+| where timestamp > ago(24h)
+| where success == false
+| summarize failureCount = count() by target, resultCode, cloud_RoleName
+| order by failureCount desc

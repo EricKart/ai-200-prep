@@ -1,0 +1,8 @@
+// Module 2 unit 4: dashboard tile, p50/p95/p99 over time
+requests
+| where timestamp > ago(24h)
+| summarize p50 = percentile(duration, 50),
+    p95 = percentile(duration, 95),
+    p99 = percentile(duration, 99)
+    by bin(timestamp, 1h)
+| render timechart

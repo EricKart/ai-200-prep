@@ -1,0 +1,5 @@
+// Everything for ONE operation_Id (run_query.py 21 --op <operation_Id>)
+union requests, dependencies, exceptions, traces
+| where operation_Id == "{OperationId}"
+| project timestamp, itemType, name, message, duration, success, cloud_RoleName, operation_ParentId, id
+| order by timestamp asc

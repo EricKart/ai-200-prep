@@ -1,0 +1,5 @@
+// Module 1 unit 6: which service has the most slow (>3 s) requests?
+requests
+| where duration > 3000
+| summarize count(), avg(duration) by cloud_RoleName
+| order by avg_duration desc

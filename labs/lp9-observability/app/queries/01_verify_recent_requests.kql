@@ -1,0 +1,6 @@
+// Module 1 unit 5: is telemetry arriving? (20 newest requests)
+requests
+| where timestamp > ago(1h)
+| project timestamp, name, duration, success, cloud_RoleName
+| order by timestamp desc
+| take 20

@@ -1,0 +1,4 @@
+// Module 2 unit 6: log search alert query (p95 above 3 s)
+requests
+| summarize p95Duration = percentile(duration, 95) by cloud_RoleName
+| where p95Duration > 3000
