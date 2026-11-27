@@ -187,7 +187,7 @@
     }
    ],
    "answer": 2,
-   "hint": "Which setting is PostgreSQL's shared memory cache for data pages?",
+   "hint": "Which parameter sizes the memory cache that every session reads data pages from?",
    "explain": "shared_buffers controls PostgreSQL's shared memory cache. For vector workloads, it should hold the vector indexes and hot data; a hit ratio below 99% suggests it's too small. Azure tunes it by tier, within an allowed range.",
    "origin": "ca3"
   },
@@ -374,7 +374,7 @@
     2,
     3
    ],
-   "hint": "Build without blocking writes, and watch the progress view.",
+   "hint": "Build without blocking writes, and use a system view to follow the build.",
    "explain": "Index builds lock writes by default; CONCURRENTLY takes longer but avoids downtime.",
    "origin": "lab500"
   },

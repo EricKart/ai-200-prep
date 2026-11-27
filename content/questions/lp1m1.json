@@ -549,7 +549,7 @@
     }
    ],
    "answer": 3,
-   "hint": "Build, push and test as one workflow means several steps. Which ACR Tasks feature is defined in YAML?",
+   "hint": "Build, push and test as one workflow means several steps. Which ACR Tasks feature runs steps in sequence?",
    "explain": "YAML steps can build, push and then cmd to run tests in the new image.",
    "origin": "site"
   },

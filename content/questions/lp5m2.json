@@ -252,7 +252,7 @@
     }
    ],
    "answer": 1,
-   "hint": "IVFFlat builds its clusters from data that already exists.",
+   "hint": "IVFFlat learns something from the data when the index is built.",
    "explain": "Load data, then create IVFFlat. HNSW, by contrast, can start on an empty table.",
    "origin": "lab500"
   },
@@ -343,7 +343,7 @@
     }
    ],
    "answer": 2,
-   "hint": "ef_search should be at least the number of results you ask for.",
+   "hint": "Compare ef_search with the number of results you ask for.",
    "explain": "Set ef_search per session with SET hnsw.ef_search = …; it should be at least the LIMIT.",
    "origin": "lab500"
   },
@@ -436,7 +436,7 @@
     }
    ],
    "answer": 3,
-   "hint": "Build a replacement without blocking, then swap names.",
+   "hint": "Build a replacement without blocking reads and writes.",
    "explain": "CREATE INDEX CONCURRENTLY takes longer but keeps serving requests.",
    "origin": "lab500"
   },

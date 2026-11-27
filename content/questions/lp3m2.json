@@ -342,7 +342,7 @@
     }
    ],
    "answer": 1,
-   "hint": "Per-access audit, rotation and secrets that stay in a vault point to one integration.",
+   "hint": "Which integration keeps secrets in their dedicated store and mounts them into Pods?",
    "explain": "Choose direct Key Vault integration for fine-grained audit and secrets that stay in the vault.",
    "origin": "lab500"
   },

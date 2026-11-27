@@ -886,7 +886,7 @@
     }
    ],
    "answer": 1,
-   "hint": "The Kudu (SCM) site shows the environment the platform injects into the app.",
+   "hint": "Look in the advanced tools that run beside your app, not in the portal's configuration blade.",
    "explain": "/Env lists app settings and system variables.",
    "origin": "site"
   },

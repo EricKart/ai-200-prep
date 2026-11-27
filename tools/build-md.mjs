@@ -1,0 +1,50 @@
+#!/usr/bin/env node
+// Generates practice/<module>.md and practice/README.md from content/questions, so the questions
+// are readable on GitHub with answers folded away. CI fails if these files are out of date.
+// Part of https://aryantripathi.dev/ai-200
+import fs from 'node:fs';
+import path from 'node:path';
+
+const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
+const course = JSON.parse(fs.readFileSync(path.join(ROOT, 'course.json'), 'utf8'));
+const OUT = path.join(ROOT, 'practice');
+fs.mkdirSync(OUT, { recursive: true });
+const FOOT = ['', '---', '', 'Part of **AI-200 Prep**, a free course by Aryan Tripathi · [aryantripathi.dev/ai-200](https://aryantripathi.dev/ai-200) · Practice questions written from the public Microsoft Learn course AI-200T00. Not real exam questions. Not affiliated with Microsoft.', ''];
+const L = 'ABCDEF';
+const cell = (s) => String(s).replace(/\|/g, '\\|');
+
+const index = ['# Practice questions', '',
+  '> Every question has a hint, the answer, and a reason for every option. For a timer, saved progress and readiness scores, use [aryantripathi.dev/ai-200](https://aryantripathi.dev/ai-200).', '',
+  '| Module | Questions | Lesson |', '|---|---|---|'];
+
+for (const p of course.paths) {
+  for (const m of p.modules) {
+    const qs = JSON.parse(fs.readFileSync(path.join(ROOT, `content/questions/${m.id}.json`), 'utf8')).questions;
+    const units = Object.fromEntries(m.units.map((u) => [u.u, u]));
+    const md = [`# Practice: LP${p.n} · M${m.n} ${m.title}`, '',
+      `> ${qs.length} questions · try each one before opening the hint, then the answer · [lesson](../content/lessons/${m.id}.md) · [interactive version](https://aryantripathi.dev/ai-200/lp-${p.n}/${m.slug})`, ''];
+    qs.forEach((q, i) => {
+      md.push(`## ${i + 1}. \`${q.id}\``, '', q.q, '');
+      if (q.code) md.push('```text', q.code, '```', '');
+      if (q.type === 'single' || q.type === 'multi') q.options.forEach((o, k) => md.push(`- **${L[k]}.** ${o.text}`));
+      if (q.type === 'yesno') { md.push('| Statement | Yes / No |', '|---|---|'); q.rows.forEach((r) => md.push(`| ${cell(r.text)} | ☐ |`)); }
+      if (q.type === 'match') { md.push(`Choices: ${q.choices.map((c) => `**${c}**`).join(' · ')}`, ''); q.items.forEach((it) => md.push(`- ${it.text}`)); }
+      if (q.type === 'order') { const shown = [...q.steps].sort(); shown.forEach((s) => md.push(`- ${s}`)); }
+      md.push('', `<details><summary>💡 Hint</summary>`, '', q.hint, '', '</details>', '');
+      md.push(`<details><summary>✅ Answer</summary>`, '');
+      if (q.type === 'single') md.push(`**${L[q.answer]}.** ${q.options[q.answer].text}`, '');
+      if (q.type === 'multi') md.push(q.answer.map((a) => `**${L[a]}.** ${q.options[a].text}`).join('  \n'), '');
+      if (q.type === 'single' || q.type === 'multi') q.options.forEach((o, k) => md.push(`- ${L[k]}: ${o.why}`));
+      if (q.type === 'yesno') { md.push('| Statement | Answer | Why |', '|---|---|---|'); q.rows.forEach((r) => md.push(`| ${cell(r.text)} | ${r.answer ? 'Yes' : 'No'} | ${cell(r.why)} |`)); }
+      if (q.type === 'match') q.items.forEach((it) => md.push(`- ${it.text} → **${q.choices[it.answer]}**. ${it.why}`));
+      if (q.type === 'order') q.steps.forEach((s, k) => md.push(`${k + 1}. ${s}`));
+      const u = units[q.unit];
+      md.push('', q.explain, '', `📘 Source: [${u.title}](${u.url})`, '', '</details>', '');
+    });
+    fs.writeFileSync(path.join(OUT, `${m.id}.md`), md.concat(FOOT).join('\n'));
+    index.push(`| [LP${p.n} · M${m.n} ${m.title}](${m.id}.md) | ${qs.length} | [lesson](../content/lessons/${m.id}.md) |`);
+  }
+}
+index.push('', '## Mock exams', '', 'The three timed mock exams (60 questions, 120 minutes) run on the site so that your score and weak areas are tracked: [aryantripathi.dev/ai-200](https://aryantripathi.dev/ai-200). Their question lists are in [mocks/](../mocks/).');
+fs.writeFileSync(path.join(OUT, 'README.md'), index.concat(FOOT).join('\n'));
+console.log('practice pages written');

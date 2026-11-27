@@ -355,7 +355,7 @@
     }
    ],
    "answer": 2,
-   "hint": "You want a file that can go through code review and be applied the same way every time.",
+   "hint": "You want a file the whole team can approve before it's applied the same way every time.",
    "explain": "Store the YAML file in source control and apply changes through code review. With --yaml, the YAML becomes the source of truth and other flags are ignored.",
    "origin": "new"
   },
@@ -482,7 +482,7 @@
     }
    ],
    "answer": 3,
-   "hint": "In the CLI you write secretref: in the value. YAML has its own field for the same thing.",
+   "hint": "The CLI and YAML both refer to the secret by name, but YAML uses a dedicated field instead of the value.",
    "explain": "In YAML, an env entry uses secretRef: <secret-name>. In the CLI, you set the value to secretref:<secret-name>. Either way, only the secret's name is stored.",
    "origin": "new"
   },

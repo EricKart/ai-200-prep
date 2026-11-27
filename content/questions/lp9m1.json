@@ -122,7 +122,7 @@
     }
    ],
    "answer": 3,
-   "hint": "The header has four parts: version, trace ID, parent span ID, flags.",
+   "hint": "The header has four parts. Count which part this is.",
    "explain": "The receiver creates a span with the same trace ID and this span as parent.",
    "origin": "lab500"
   },

@@ -29,7 +29,7 @@
     }
    ],
    "answer": 1,
-   "hint": "The recommended default plan for new apps can also keep some instances ready.",
+   "hint": "The recommended default plan for new apps can keep a few instances warm.",
    "explain": "Flex Consumption is the recommended default for new serverless apps.",
    "origin": "lab500"
   },
@@ -91,7 +91,7 @@
     }
    ],
    "answer": 1,
-   "hint": "Long work started over HTTP: accept, queue, return, process elsewhere.",
+   "hint": "Long work started over HTTP must not keep the HTTP call open.",
    "explain": "Decouple ingestion from processing so each scales on its own.",
    "origin": "lab500"
   },
@@ -345,7 +345,7 @@
     }
    ],
    "answer": 0,
-   "hint": "Core Tools can encrypt the local settings file.",
+   "hint": "Core Tools has a command that protects the local settings file.",
    "explain": "func azure functionapp fetch-app-settings downloads; func settings encrypt protects.",
    "origin": "lab500"
   },
@@ -498,7 +498,7 @@
     }
    ],
    "answer": 0,
-   "hint": "Key Vault references are resolved by the app's identity, which needs a secrets role.",
+   "hint": "Key Vault references are resolved by the app's identity. Which data-plane role lets it read values?",
    "explain": "Key Vault references need a managed identity with Key Vault Secrets User.",
    "origin": "lab500"
   },

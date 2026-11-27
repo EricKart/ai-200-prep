@@ -798,7 +798,7 @@
     }
    ],
    "answer": 2,
-   "hint": "Bulk loads are fastest with PostgreSQL's dedicated copy protocol.",
+   "hint": "Bulk loads have a dedicated protocol that's much faster than INSERT statements.",
    "explain": "Batch with executemany for moderate sizes; use COPY for large loads.",
    "origin": "lab500"
   },

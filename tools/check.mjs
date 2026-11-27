@@ -132,6 +132,23 @@ function checkQuestion(q, where, units) {
   }
 }
 
+// ---------- hints that may give the answer away (warning; reviewed ids are listed in tools/hint-reviewed.json) ----------
+{
+  const STOP = new Set('that this with from your into they them their have when which what does should only each more than then also used uses using before after about would could there these those where while other some most less same over under like just will very much many need needs make made because azure'.split(' '));
+  const toks = (s) => new Set(String(s).toLowerCase().replace(/[`*_]/g, '').match(/[a-z0-9][a-z0-9.\-]{3,}/g) || []);
+  const reviewed = exists('tools/hint-reviewed.json') ? new Set(JSON.parse(read('tools/hint-reviewed.json'))) : new Set();
+  for (const q of all) {
+    if ((q.type !== 'single' && q.type !== 'multi') || reviewed.has(q.id) || !Array.isArray(q.options)) continue;
+    const ans = q.type === 'single' ? [q.answer] : q.answer;
+    if (!Array.isArray(ans) || ans.some((a) => !q.options[a])) continue;
+    const right = new Set(ans.flatMap((a) => [...toks(q.options[a].text)]));
+    const other = new Set([...toks(q.q), ...q.options.filter((_, k) => !ans.includes(k)).flatMap((o) => [...toks(o.text)])]);
+    const h = toks(q.hint);
+    const leak = [...right].filter((w) => !STOP.has(w) && !other.has(w) && h.has(w));
+    if (leak.length) warn(`${q._file} ${q.id}`, `hint uses "${leak.join('", "')}", which appears only in the correct option. Point to the concept instead (or add the id to tools/hint-reviewed.json after review)`);
+  }
+}
+
 // ---------- answer tells & balance ----------
 function tells(list, where, longestMax) {
   const singles = list.filter((q) => q.type === 'single' && Array.isArray(q.options));

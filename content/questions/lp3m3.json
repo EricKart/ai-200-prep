@@ -199,7 +199,7 @@
     }
    ],
    "answer": 0,
-   "hint": "kubectl logs has a flag that keeps the stream open.",
+   "hint": "One command prints container output, and a flag keeps it streaming.",
    "explain": "kubectl logs -f <pod> follows the container's output as new lines arrive. Add -c <container> for multi-container Pods.",
    "origin": "ca3"
   },
@@ -608,7 +608,7 @@
     }
    ],
    "answer": 2,
-   "hint": "An empty endpoints list with running Pods means the selector found nothing.",
+   "hint": "Running Pods but no endpoints: the Service isn't finding them. Why?",
    "explain": "Standardize labels so Services and ingress resources select the correct Pods.",
    "origin": "lab500"
   },

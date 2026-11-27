@@ -280,7 +280,7 @@
     }
    ],
    "answer": 1,
-   "hint": "Turning something off in seconds without a deployment is a flag's job.",
+   "hint": "Turning something off in seconds without a deployment.",
    "explain": "Feature flags decouple feature lifecycle from deployment.",
    "origin": "lab500"
   },
@@ -467,7 +467,7 @@
     }
    ],
    "answer": 0,
-   "hint": "The reference resolves in Key Vault, so the identity needs a secrets role there too.",
+   "hint": "The reference resolves in Key Vault, so the identity needs a role there too.",
    "explain": "The identity needs a role on App Configuration and on every referenced vault.",
    "origin": "lab500"
   },
@@ -563,7 +563,7 @@
     }
    ],
    "answer": 2,
-   "hint": "Labels work for references too.",
+   "hint": "Labels create variants of the same key name.",
    "explain": "Label references to point to environment-specific vaults.",
    "origin": "lab500"
   },
@@ -781,7 +781,7 @@
     }
    ],
    "answer": 1,
-   "hint": "Key Vault logs every access to each secret.",
+   "hint": "Which service records each read of each credential?",
    "explain": "Per-access audit, rotation and expiry are Key Vault strengths.",
    "origin": "lab500"
   },

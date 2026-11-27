@@ -445,7 +445,7 @@
     }
    ],
    "answer": 1,
-   "hint": "One Redis scaler knows about entries that were taken but not yet acknowledged.",
+   "hint": "Some work was taken by a worker that then crashed. Which Redis structure remembers work that was handed out but not finished?",
    "explain": "Redis Streams scalers consider work in progress (pending entries), not just queued work.",
    "origin": "lab500"
   },
@@ -507,7 +507,7 @@
     }
    ],
    "answer": 2,
-   "hint": "Scalers are grouped by who maintains them. Which group gets first-party support for Azure resources?",
+   "hint": "Scalers are grouped by who maintains them.",
    "explain": "Microsoft maintains Azure-native scalers (Service Bus, Event Hubs, Storage Queue, Blob, Log Analytics, Azure Monitor). Community-maintained scalers vary in documentation and support. External scalers run as separate components.",
    "origin": "ca1"
   },
@@ -727,7 +727,7 @@
     }
    ],
    "answer": 1,
-   "hint": "Each active revision scales on its own share and keeps its own minimum.",
+   "hint": "With two active revisions, ask: does scaling look at the app as a whole, or at each revision separately?",
    "explain": "Move through traffic percentages quickly and deactivate old revisions promptly to control resources.",
    "origin": "lab500"
   },

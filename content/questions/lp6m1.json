@@ -689,7 +689,7 @@
     }
    ],
    "answer": 1,
-   "hint": "There's a companion package for Entra ID, and tokens are requested for a Redis-specific scope.",
+   "hint": "Entra ID support for redis-py comes from an add-on library.",
    "explain": "For production, use Microsoft Entra ID authentication with the redis-entraid package, requesting tokens for https://redis.azure.com/.default.",
    "origin": "new"
   },

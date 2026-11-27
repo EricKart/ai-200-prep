@@ -156,7 +156,7 @@
     }
    ],
    "answer": 0,
-   "hint": "Indexing every path includes the huge embedding array, which makes writes expensive.",
+   "hint": "Indexing every path includes a huge array that nobody filters on.",
    "explain": "Exclude the embedding path from standard range indexes and index it with a vector index instead.",
    "origin": "lab500"
   },
@@ -429,7 +429,7 @@
     }
    ],
    "answer": 3,
-   "hint": "VectorDistance has an optional third argument that forces brute force.",
+   "hint": "VectorDistance takes more than two arguments.",
    "explain": "Reserve brute force for evaluation and testing or very small datasets.",
    "origin": "lab500"
   },
@@ -714,7 +714,7 @@
     }
    ],
    "answer": 0,
-   "hint": "Only re-embed when the text that was embedded actually changed.",
+   "hint": "Not every edit changes the text that was embedded.",
    "explain": "Store a hash of the embedded text and refresh only when it differs.",
    "origin": "lab500"
   },

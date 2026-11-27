@@ -566,7 +566,7 @@
     }
    ],
    "answer": 3,
-   "hint": "A singleton tool reuses one session identifier for everybody.",
+   "hint": "Think about what a single shared instance means for session identifiers.",
    "explain": "The tool generates one identifier per instance. Separate instances per user keep files and Python state apart.",
    "origin": "lab500"
   },

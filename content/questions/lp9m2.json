@@ -371,7 +371,7 @@
     }
    ],
    "answer": 2,
-   "hint": "The Investigate area has a view built for failures, with drill-down to samples.",
+   "hint": "The portal has a view built for exactly this, with drill-down to samples.",
    "explain": "Built-in views first, then KQL for deeper questions.",
    "origin": "lab500"
   },

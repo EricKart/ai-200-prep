@@ -941,7 +941,7 @@
     }
    ],
    "answer": 3,
-   "hint": "No crash message, but memory spikes at startup. Measure first, then reduce what loads or add capacity.",
+   "hint": "No crash message, but memory spikes at startup. Learn's advice starts with checking numbers before changing anything.",
    "explain": "Align memory metrics with sidecar logs. If demand exceeds safe capacity, reduce concurrency, use a smaller model, scale the plan or host inference separately.",
    "origin": "lab500"
   },
@@ -1037,7 +1037,7 @@
     }
    ],
    "answer": 0,
-   "hint": "The registry is only reachable privately. Which App Service option sends image pulls through the VNet?",
+   "hint": "The registry is only reachable privately. One App Service option changes the route that image pulls take.",
    "explain": "It must be enabled when the image is pulled through VNet integration.",
    "origin": "site"
   }

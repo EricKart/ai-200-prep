@@ -125,7 +125,7 @@
     }
    ],
    "answer": 3,
-   "hint": "Orchestrator code runs again during replay, and so do its log lines.",
+   "hint": "Orchestrator code runs more than once. Is there a way to tell when it's running again?",
    "explain": "Activity logs reflect real work; orchestrator logs can repeat during replay.",
    "origin": "lab500"
   },
@@ -249,7 +249,7 @@
     }
    ],
    "answer": 1,
-   "hint": "Create all the tasks first, then wait for all of them together.",
+   "hint": "Start all the work before you wait for any of it.",
    "explain": "Fan-out: create tasks without yielding; fan-in: yield task_all.",
    "origin": "lab500"
   },
@@ -436,7 +436,7 @@
     }
    ],
    "answer": 2,
-   "hint": "Expect duplicates and old decisions. Accept the first valid one.",
+   "hint": "Expect duplicates and old decisions.",
    "explain": "Design for duplicates and stale responses explicitly.",
    "origin": "lab500"
   },
@@ -594,7 +594,7 @@
     }
    ],
    "answer": 1,
-   "hint": "Use a stable identifier so a repeated write lands in the same place.",
+   "hint": "The write must land in the same place every time the activity runs.",
    "explain": "Pass an operation ID (from input or context.new_uuid()) for idempotent writes.",
    "origin": "lab500"
   },

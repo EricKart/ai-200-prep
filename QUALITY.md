@@ -1,7 +1,7 @@
 # Quality gates
 
 A pull request can merge only when **every gate below passes** in CI **and** a maintainer approves it.
-The gates run with `npm run check` (no install needed: Node 20+). Thresholds live at the top of
+Hints are also scanned for words that appear only in the correct option (a warning; reviewed ids live in `tools/hint-reviewed.json`). The gates run with `npm run check` (no install needed: Node 20+). Thresholds live at the top of
 [tools/check.mjs](tools/check.mjs). Changing a threshold needs a reason in the pull request.
 
 ## Questions

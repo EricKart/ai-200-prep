@@ -29,7 +29,7 @@
     }
    ],
    "answer": 3,
-   "hint": "A queue can absorb bursts so the workers process at a steady pace.",
+   "hint": "Something has to hold the extra requests during a burst.",
    "explain": "Load leveling removes the need to provision compute for peak traffic.",
    "origin": "lab500"
   },
@@ -151,7 +151,7 @@
     }
    ],
    "answer": 3,
-   "hint": "Large messages, private endpoints and predictable latency all point to dedicated capacity.",
+   "hint": "Large messages, private endpoints and predictable latency: which tier has all three?",
    "explain": "Premium: dedicated capacity, large messages, VNet integration, private endpoints and availability zones.",
    "origin": "lab500"
   },
@@ -493,7 +493,7 @@
     }
    ],
    "answer": 3,
-   "hint": "A batch knows the size limit. When it's full, send it and start another.",
+   "hint": "A batch tells you when the next message won't fit.",
    "explain": "ServiceBusMessageBatch respects the tier's size limit; roll over to a new batch.",
    "origin": "lab500"
   },
@@ -753,7 +753,7 @@
     }
    ],
    "answer": 3,
-   "hint": "Don't move the original. Send a copy, then complete the dead-lettered one.",
+   "hint": "Don't move the dead-lettered message itself.",
    "explain": "Confirm the fix first, or messages will cycle back into the DLQ.",
    "origin": "lab500"
   },

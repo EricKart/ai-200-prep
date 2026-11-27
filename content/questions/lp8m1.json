@@ -612,7 +612,7 @@
     }
    ],
    "answer": 2,
-   "hint": "An expiry event can start a function that creates the new version.",
+   "hint": "An expiry event can start code that creates the new version.",
    "explain": "Automated rotation: SecretNearExpiry → Event Grid → Function → new secret version.",
    "origin": "lab500"
   },

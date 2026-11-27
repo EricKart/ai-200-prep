@@ -354,7 +354,7 @@
     }
    ],
    "answer": 0,
-   "hint": "Type says what happened, and subject says where. Both must match.",
+   "hint": "Type says what happened, and subject says where. How do two filters on one subscription combine?",
    "explain": "Use type filtering for what happened and subject filtering for where.",
    "origin": "lab500"
   },
@@ -512,7 +512,7 @@
     }
    ],
    "answer": 0,
-   "hint": "Retries stop at whichever limit comes first: attempts or the event's TTL.",
+   "hint": "Two limits apply. Which one runs out sooner with the default retry schedule?",
    "explain": "Retry stops at the first of max attempts or event TTL.",
    "origin": "lab500"
   },
@@ -763,7 +763,7 @@
     2,
     3
    ],
-   "hint": "Learn's curl example uses the CloudEvents content type and a header that carries the key.",
+   "hint": "One setting tells Event Grid the payload format. The other authenticates the request when you don't use Entra ID.",
    "explain": "The REST API returns 200 OK when the event is accepted.",
    "origin": "lab500"
   },

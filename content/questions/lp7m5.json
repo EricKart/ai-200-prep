@@ -376,7 +376,7 @@
     }
    ],
    "answer": 0,
-   "hint": "Identity and group come from what the server has verified, not from the request body.",
+   "hint": "Never trust what the browser says about who it is.",
    "explain": "Authorize the operation, then derive user ID and group on the server.",
    "origin": "lab500"
   },

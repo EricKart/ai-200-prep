@@ -797,7 +797,7 @@
     }
    ],
    "answer": 2,
-   "hint": "To get one row per array element, join the item to its own array.",
+   "hint": "To get one row per array element, the query has to iterate over the array itself.",
    "explain": "Use ARRAY_CONTAINS for membership; JOIN with IN to flatten arrays and filter elements.",
    "origin": "lab500"
   },
@@ -862,7 +862,7 @@
     }
    ],
    "answer": 2,
-   "hint": "The query text stays the same while the values change. What can the service reuse?",
+   "hint": "The query text stays the same while the values change. What work can the service skip the next time?",
    "explain": "Parameterized queries separate structure from values, preventing injection and letting Cosmos DB cache and reuse query plans for repeated queries with different values.",
    "origin": "ca1"
   },

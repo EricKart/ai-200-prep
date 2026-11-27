@@ -402,7 +402,7 @@
     }
    ],
    "answer": 0,
-   "hint": "The vector embedding policy can't change after the container is created.",
+   "hint": "Can the vector embedding policy be changed in place?",
    "explain": "Plan dimensions, data type and distance function up front; vector policies are immutable.",
    "origin": "lab500"
   },
@@ -594,7 +594,7 @@
     1,
     3
    ],
-   "hint": "Index what you filter on, exclude what you only display, and give the embedding a vector index.",
+   "hint": "Index only what you filter on, and think about what the embedding needs instead of range indexing.",
    "explain": "Index the properties used in queries plus a vector index; exclude display-only fields.",
    "origin": "lab500"
   },

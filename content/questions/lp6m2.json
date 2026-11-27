@@ -420,7 +420,7 @@
     }
    ],
    "answer": 0,
-   "hint": "Microsecond notifications where loss is acceptable don't need durability.",
+   "hint": "Does this need durability, or speed?",
    "explain": "Choose Streams for reliability, pub/sub for the lowest latency.",
    "origin": "lab500"
   },
@@ -638,7 +638,7 @@
     }
    ],
    "answer": 3,
-   "hint": "Find stale pending entries, then take them over.",
+   "hint": "One command lists entries nobody acknowledged. Another transfers them to a different consumer.",
    "explain": "XPENDING + XCLAIM keep tasks from being lost when workers crash.",
    "origin": "lab500"
   },

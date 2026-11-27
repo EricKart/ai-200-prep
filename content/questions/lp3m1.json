@@ -666,7 +666,7 @@
     }
    ],
    "answer": 2,
-   "hint": "kubectl logs shows the current container by default. One flag looks one restart back.",
+   "hint": "By default you see the container that's running now. You want the one before it.",
    "explain": "CrashLoopBackOff means the image pulled but the container keeps exiting. Use kubectl logs <pod> --previous to read the crashed instance's output, and kubectl describe pod for events.",
    "origin": "ca1"
   },
