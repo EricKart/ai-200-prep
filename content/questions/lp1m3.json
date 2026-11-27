@@ -261,7 +261,7 @@
    "q": "Which LinuxFxVersion value does a sidecar-enabled app use?",
    "options": [
     {
-     "text": "DOCKER|<image>",
+     "text": "DOCKER|`<image>`",
      "why": "That's the classic single-container value."
     },
     {
@@ -605,7 +605,7 @@
    "q": "The main API must call the model-server sidecar, which listens on port 11434. Which URL should the API use?",
    "options": [
     {
-     "text": "https://<app-name>.azurewebsites.net:11434",
+     "text": "https://`<app-name>`.azurewebsites.net:11434",
      "why": "Sidecars aren't published on the public hostname."
     },
     {
@@ -613,12 +613,12 @@
      "why": "Containers don't reach each other by container name in App Service sidecars."
     },
     {
-     "text": "http://<app-name>.scm.azurewebsites.net:11434",
+     "text": "http://`<app-name>`.scm.azurewebsites.net:11434",
      "why": "The SCM site is the Kudu diagnostic site, not the sidecar."
     },
     {
      "text": "http://localhost:11434",
-     "why": "Correct. Containers share a network namespace and use localhost:<port>."
+     "why": "Correct. Containers share a network namespace and use localhost:`<port>`."
     }
    ],
    "answer": 3,

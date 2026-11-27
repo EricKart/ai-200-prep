@@ -28,7 +28,7 @@ Scale rules are **if-this-then-add-replicas** instructions. HTTP and TCP rules c
 - **TCP** rule (`--scale-rule-tcp-concurrency`): concurrent connections, same 15-second window; for **WebSockets, gRPC** and long-lived connections. Supports scale to zero.
 - **CPU and memory** rules are KEDA custom scalers on average utilization; they **can't scale to zero** (need one replica to measure). Combine with HTTP or event rules for scale to zero.
 - Polling: custom scalers (CPU, memory, events) every **30 seconds**; HTTP and TCP use a 15-second window.
-- **Cool-down** before scaling to zero: **300 seconds**. Scale-up stabilization: **0 seconds**, in steps **1, 4, 8, 16, 32…**. Scale-down stabilization: **300 seconds**, and replicas are removed **all at once**.
+- **Cool-down** before scaling to zero: **300 seconds**. Scale-up stabilization: **0 seconds**, in steps `**1, 4, 8, 16, 32`…**. Scale-down stabilization: **300 seconds**, and replicas are removed **all at once**.
 - With multiple rules, the app scales out when **any** rule's threshold is met. Use at least one replica in production to avoid cold starts.
 
 | Rule | Measures | Scale to zero? |

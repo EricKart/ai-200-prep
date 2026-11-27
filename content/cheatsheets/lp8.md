@@ -54,7 +54,6 @@ Lesson: [lp8m2](../lessons/lp8m2.md) · Practice: [lp8m2](../../practice/lp8m2.m
 az appconfig kv set-keyvault --key … --secret-identifier https://…/secrets/openai-api-key
 ```
 
-
 ---
 
 Part of **AI-200 Prep**, a free course by Aryan Tripathi · [aryantripathi.dev/ai-200](https://aryantripathi.dev/ai-200) · Written from the public Microsoft Learn course AI-200T00. Not affiliated with Microsoft.

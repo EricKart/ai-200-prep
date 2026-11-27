@@ -8,7 +8,7 @@
 |---|---|---|
 | Service reachable only inside the environment | --ingress internal | external = callable from outside |
 | Reviewable config as the single source of truth | --yaml (other flags ignored) | az containerapp up is for quick prototypes |
-| Map a stored secret to an env var | secretref:<secret-name> | Never paste the value in YAML |
+| Map a stored secret to an env var | secretref:`<secret-name>` | Never paste the value in YAML |
 | Send 10% of traffic to a new revision | Multiple revision mode + traffic weights | Single revision mode can't split |
 | Testers hit one revision via its own URL | Revision label | Traffic weight on latest moves real users |
 | Changes that create a new revision | Template: image, env vars, scale rules | Secrets, ingress, traffic = application scope |
@@ -27,7 +27,7 @@
 - With --yaml, every other flag on the command is **ignored**.
 - Upper-case repository names cause pull failures that look like auth errors.
 - **--set-env-vars** adds or updates without removing other variables.
-- secretref:<secret-name> uses the secret's **name**, so the value never appears in YAML or shell history.
+- secretref:`<secret-name>` uses the secret's **name**, so the value never appears in YAML or shell history.
 - Inactive revisions appear only with **--all**.
 - Zero replicas can mean **scale to zero**, not necessarily a failure.
 
@@ -111,7 +111,6 @@ az containerapp update --cpu <cores> --memory <size>
 az containerapp ingress traffic set --revision-weight order-api--v1=80 order-api--v2=20
 az containerapp sessionpool create --container-type PythonLTS …
 ```
-
 
 ---
 

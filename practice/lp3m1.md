@@ -369,7 +369,7 @@ For each statement, select Yes if the statement is true. Otherwise, select No. A
 | Statement | Yes / No |
 |---|---|
 | The Service routes traffic to the Deployment's Pods. | ☐ |
-| kubectl describe svc shows Endpoints: <none>. | ☐ |
+| kubectl describe svc shows Endpoints: `<none>`. | ☐ |
 | Changing the Service type to LoadBalancer fixes the problem. | ☐ |
 
 <details><summary>💡 Hint</summary>
@@ -383,7 +383,7 @@ The selector must match the Pod labels exactly. Changing the Service type doesn'
 | Statement | Answer | Why |
 |---|---|---|
 | The Service routes traffic to the Deployment's Pods. | No | The labels don't match, so the Service has no Pods to route to. |
-| kubectl describe svc shows Endpoints: <none>. | Yes | No matching Pods means no endpoints. |
+| kubectl describe svc shows Endpoints: `<none>`. | Yes | No matching Pods means no endpoints. |
 | Changing the Service type to LoadBalancer fixes the problem. | No | The type doesn't matter if the selector matches no Pods. |
 
 Selectors connect Services to Pods; a mismatch leaves the Service without endpoints.
@@ -457,7 +457,7 @@ ClusterIP is the default Service type. It gives an internal IP that Pods can rea
 A Pod shows STATUS CrashLoopBackOff. Which command should you run first to see why?
 
 - **A.** kubectl get svc
-- **B.** kubectl logs <pod-name>
+- **B.** kubectl logs `<pod-name>`
 - **C.** az acr repository list
 - **D.** az aks scale --node-count 3
 
@@ -469,7 +469,7 @@ The Pod keeps restarting. What the app printed before it exited is the quickest 
 
 <details><summary>✅ Answer</summary>
 
-**B.** kubectl logs <pod-name>
+**B.** kubectl logs `<pod-name>`
 
 - A: Service status doesn't explain an application crash.
 - B: Correct. The application's logs show why it crashes on startup.
@@ -484,7 +484,7 @@ CrashLoopBackOff means the app keeps exiting; read its logs (use --previous for 
 
 ## 17. `lp3m1-017`
 
-Right after creating a LoadBalancer Service, `kubectl get svc` shows EXTERNAL-IP as <pending>. What does this mean?
+Right after creating a LoadBalancer Service, `kubectl get svc` shows EXTERNAL-IP as `<pending>`. What does this mean?
 
 - **A.** The Service selector doesn't match any Pods
 - **B.** The Pods are waiting for more CPU on the nodes
@@ -506,7 +506,7 @@ Azure is still creating something for this Service.
 - C: Image pull problems show up in the Pod status.
 - D: Correct. Wait a moment and check again.
 
-<pending> means Azure is still creating the load balancer and public IP.
+`<pending>` means Azure is still creating the load balancer and public IP.
 
 📘 Source: [Deploy applications to Azure Kubernetes Services](https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/4-deploy-verify-results)
 
@@ -520,7 +520,7 @@ Choices: **Image path or tag is wrong** · **Nodes lack the requested memory** �
 
 - Events show: Failed to pull image … image not found
 - Pods stay Pending; events show Insufficient memory
-- The Service shows Endpoints: <none>
+- The Service shows Endpoints: `<none>`
 - CrashLoopBackOff with a missing environment variable error in the logs
 
 <details><summary>💡 Hint</summary>
@@ -533,7 +533,7 @@ Each event points to a different layer: image, capacity, labels, or the app itse
 
 - Events show: Failed to pull image … image not found → **Image path or tag is wrong**. ImagePullBackOff: verify image path, tag and that it was pushed.
 - Pods stay Pending; events show Insufficient memory → **Nodes lack the requested memory**. Requests are too large for the free capacity on nodes.
-- The Service shows Endpoints: <none> → **Pod labels don't match the selector**. No Pods match the Service selector.
+- The Service shows Endpoints: `<none>` → **Pod labels don't match the selector**. No Pods match the Service selector.
 - CrashLoopBackOff with a missing environment variable error in the logs → **The app exits at startup**. The application crashes on startup.
 
 Each status points to a different layer: registry, scheduling, service routing or the app.
@@ -608,9 +608,9 @@ ImagePullBackOff means Kubernetes can't pull the image. Check the image path, ta
 
 A Pod is in CrashLoopBackOff, and the current container exits before writing anything useful. You want the output of the container instance that crashed just before. Which command shows it?
 
-- **A.** kubectl describe svc <service-name>
+- **A.** kubectl describe svc `<service-name>`
 - **B.** kubectl top pods
-- **C.** kubectl logs <pod-name> --previous
+- **C.** kubectl logs `<pod-name>` --previous
 - **D.** kubectl get pods -w
 
 <details><summary>💡 Hint</summary>
@@ -621,14 +621,14 @@ By default you see the container that's running now. You want the one before it.
 
 <details><summary>✅ Answer</summary>
 
-**C.** kubectl logs <pod-name> --previous
+**C.** kubectl logs `<pod-name>` --previous
 
 - A: Services don't hold container output.
 - B: This shows resource usage, not logs.
 - C: Correct. --previous shows logs from the previous container instance, which is the one that crashed.
 - D: This watches status changes. It doesn't show what the crashed container printed.
 
-CrashLoopBackOff means the image pulled but the container keeps exiting. Use kubectl logs <pod> --previous to read the crashed instance's output, and kubectl describe pod for events.
+CrashLoopBackOff means the image pulled but the container keeps exiting. Use kubectl logs `<pod>` --previous to read the crashed instance's output, and kubectl describe pod for events.
 
 📘 Source: [Deploy applications to Azure Kubernetes Services](https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/4-deploy-verify-results)
 
@@ -688,12 +688,11 @@ Think about whether apply is synchronous, how -l selects Pods, and what READY co
 | kubectl logs -l app=inference-api shows logs from every Pod with that label. | Yes | The -l flag selects Pods by label, so you see all replicas. |
 | A READY value of 2/2 for the Deployment means both replicas are running. | Yes | READY shows how many replicas are ready out of the desired count. |
 
-kubectl apply returns immediately and Kubernetes reconciles in the background. kubectl get pods/deployment show READY and STATUS; kubectl logs -l <label> reads all matching Pods.
+kubectl apply returns immediately and Kubernetes reconciles in the background. kubectl get pods/deployment show READY and STATUS; kubectl logs -l `<label>` reads all matching Pods.
 
 📘 Source: [Deploy applications to Azure Kubernetes Services](https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/4-deploy-verify-results)
 
 </details>
-
 
 ---
 

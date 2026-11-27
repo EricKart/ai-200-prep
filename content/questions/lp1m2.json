@@ -690,7 +690,7 @@
      "why": "Setting names can contain only letters, numbers and underscores, so a colon isn't allowed."
     },
     {
-     "text": "ConnectionStrings__DefaultConnection",
+     "text": "`ConnectionStrings__DefaultConnection`",
      "why": "Correct. On Linux containers, nested .NET keys use double underscores."
     },
     {

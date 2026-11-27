@@ -379,12 +379,12 @@ Environment variables can point to a secret by name with a special prefix.
 
 **A.** secretref:embeddings-api-key
 
-- A: Correct. secretref:<secret-name> maps the secret to the variable without exposing its value.
+- A: Correct. secretref:`<secret-name>` maps the secret to the variable without exposing its value.
 - B: That isn't Container Apps syntax.
 - C: Pasting the value exposes it in shell history and config.
 - D: That isn't the Container Apps reference syntax.
 
-Set the variable to secretref:<secret-name> (secretRef in YAML).
+Set the variable to secretref:`<secret-name>` (secretRef in YAML).
 
 📘 Source: [Configure runtime settings with environment variables and secrets](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/4-configure-runtime)
 
@@ -476,7 +476,7 @@ The CLI and YAML both refer to the secret by name, but YAML uses a dedicated fie
 - C: Container Apps doesn't expand shell-style placeholders in YAML values.
 - D: Correct. In YAML, secretRef names the secret, so only the secret's name is stored in source control.
 
-In YAML, an env entry uses secretRef: <secret-name>. In the CLI, you set the value to secretref:<secret-name>. Either way, only the secret's name is stored.
+In YAML, an env entry uses secretRef: `<secret-name>`. In the CLI, you set the value to secretref:`<secret-name>`. Either way, only the secret's name is stored.
 
 📘 Source: [Configure runtime settings with environment variables and secrets](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/4-configure-runtime)
 
@@ -752,7 +752,6 @@ az containerapp logs show returns a limited number of lines by default. Add --fo
 📘 Source: [Verify deployments with logs and status](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/6-verify-deployment)
 
 </details>
-
 
 ---
 

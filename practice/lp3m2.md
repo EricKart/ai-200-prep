@@ -248,10 +248,10 @@ The Azure App Configuration Kubernetes Provider runs in your cluster and generat
 
 After you apply a new ConfigMap and Deployment, you want to confirm FEATURE_X_ENABLED reached the running container. Which command checks it directly?
 
-- **A.** kubectl exec <pod> -- printenv
+- **A.** kubectl exec `<pod>` -- printenv
 - **B.** kubectl describe configmap app-settings
 - **C.** kubectl get deployment web-api
-- **D.** kubectl logs <pod-name> --previous
+- **D.** kubectl logs `<pod-name>` --previous
 
 <details><summary>💡 Hint</summary>
 
@@ -261,14 +261,14 @@ Look inside the running container instead of at the source object.
 
 <details><summary>✅ Answer</summary>
 
-**A.** kubectl exec <pod> -- printenv
+**A.** kubectl exec `<pod>` -- printenv
 
 - A: Correct. This prints the container's actual environment.
 - B: This shows the ConfigMap, not whether a running container received it.
 - C: This shows replica counts, not environment variables.
 - D: Logs show program output, not the environment it received.
 
-kubectl describe configmap shows the source data; kubectl exec <pod> -- printenv confirms what the container actually received.
+kubectl describe configmap shows the source data; kubectl exec `<pod>` -- printenv confirms what the container actually received.
 
 📘 Source: [Define ConfigMaps for application settings](https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/2-define-configmaps)
 
@@ -398,9 +398,9 @@ Rotate regularly and roll out Deployments so Pods pick up new Secret values.
 
 A teammate asks you to prove the Secret app-secrets has the keys DB_CONNECTION and API_KEY, without printing their values. Which command does that?
 
-- **A.** kubectl logs <pod-name>
+- **A.** kubectl logs `<pod-name>`
 - **B.** kubectl describe secret app-secrets
-- **C.** kubectl exec <pod-name> -- printenv
+- **C.** kubectl exec `<pod-name>` -- printenv
 - **D.** kubectl get secret app-secrets -o yaml
 
 <details><summary>💡 Hint</summary>
@@ -418,7 +418,7 @@ One command lists keys and sizes but leaves the values out.
 - C: This prints the values inside the container.
 - D: This prints the data field, which exposes the encoded values.
 
-kubectl get secrets lists Secrets (name, type, data count, age); kubectl describe secret <name> shows metadata and keys without exposing values.
+kubectl get secrets lists Secrets (name, type, data count, age); kubectl describe secret `<name>` shows metadata and keys without exposing values.
 
 📘 Source: [Implement secrets for sensitive data](https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/3-implement-secrets)
 
@@ -721,7 +721,6 @@ Container filesystems are ephemeral. A PersistentVolumeClaim, mounted with a vol
 📘 Source: [Attach persistent storage to an app](https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/4-persistent-storage)
 
 </details>
-
 
 ---
 

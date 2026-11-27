@@ -41,7 +41,7 @@ for (const p of course.paths) {
       const u = units[q.unit];
       md.push('', q.explain, '', `📘 Source: [${u.title}](${u.url})`, '', '</details>', '');
     });
-    fs.writeFileSync(path.join(OUT, `${m.id}.md`), md.concat(FOOT).join('\n'));
+    fs.writeFileSync(path.join(OUT, `${m.id}.md`), md.concat(FOOT).join('\n').replace(/\n{3,}/g, '\n\n'));
     index.push(`| [LP${p.n} · M${m.n} ${m.title}](${m.id}.md) | ${qs.length} | [lesson](../content/lessons/${m.id}.md) |`);
   }
 }

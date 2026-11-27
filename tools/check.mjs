@@ -81,7 +81,13 @@ function checkQuestion(q, where, units) {
     if (/\b(the answer is|correct answer|correct option)\b/i.test(q.hint)) err(where, 'hint gives the answer away');
   }
   if (!nonEmpty(q.origin)) err(where, 'missing origin');
-  if (/<\/?(b|i|em|strong|code|br|p|div|span|a|ul|ol|li|pre|sup|sub|table|tr|td)(\s[^>]*)?\/?>/i.test(JSON.stringify([q.q, q.hint, q.explain]))) err(where, 'HTML tags in text; use Markdown (`code`, **bold**)');
+  {
+    const texts = [q.q, q.hint, q.explain, ...(q.options || []).flatMap((o) => [o.text, o.why]), ...(q.rows || []).flatMap((r) => [r.text, r.why]), ...(q.items || []).flatMap((r) => [r.text, r.why]), ...(q.choices || []), ...(q.steps || [])];
+    for (const t of texts) {
+      const plain = String(t ?? '').replace(/`[^`]*`/g, '');
+      if (/<\/?[A-Za-z][\w.:-]*[^>]*>/.test(plain)) { err(where, `raw <tag> or <placeholder> outside a code span: "${plain.match(/<\/?[A-Za-z][\w.:-]*[^>]*>/)[0]}"; wrap it in backticks`); break; }
+    }
+  }
   const hintLeaks = (txt) => {
     const t = (txt || '').toLowerCase().replace(/[`*_]/g, '').trim();
     return t.length >= 6 && q.hint && q.hint.toLowerCase().replace(/[`*_]/g, '').includes(t);
@@ -288,6 +294,16 @@ for (const f of walk('.')) {
   if (rel === 'tools/check.mjs') continue;
   const text = read(rel);
   if (/\.(md|html)$/.test(rel) && !rel.startsWith('.github/') && !text.includes(BRAND)) err(rel, `missing the ${BRAND} line`);
+  if (rel.endsWith('.md')) {
+    let fence = false;
+    text.split('\n').forEach((line, i) => {
+      if (line.startsWith('```')) { fence = !fence; return; }
+      if (fence) return;
+      const plain = line.replace(/`[^`]*`/g, '');
+      const m = plain.match(/<\/?([A-Za-z][\w.:-]*)[^>]*>/g)?.filter((t) => !/^<\/?(details|summary|br|kbd|sup|sub)\b/i.test(t) && !/^<https?:/i.test(t));
+      if (m?.length) err(`${rel}:${i + 1}`, `raw ${m[0]} outside a code span disappears when rendered; wrap it in backticks`);
+    });
+  }
   for (const [re, what] of PII) {
     const hit = text.match(re);
     if (hit && !PII_ALLOW.test(hit[0])) err(rel, `looks like ${what}: "${hit[0].slice(0, 40)}"`);

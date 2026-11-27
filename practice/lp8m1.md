@@ -323,7 +323,7 @@ Each vault has its own DNS name under vault.azure.net.
 
 **A.** https://kv-ragpipeline-prod.vault.azure.net/
 
-- A: Correct. Vault URLs follow https://<vault-name>.vault.azure.net/.
+- A: Correct. Vault URLs follow https://`<vault-name>`.vault.azure.net/.
 - B: The vault name is a subdomain, not a path.
 - C: That's an App Service domain.
 - D: That isn't the Key Vault domain.
@@ -753,7 +753,6 @@ Shared caches reduce calls but add complexity and exposure.
 📘 Source: [Implement caching strategies to reduce Key Vault calls](https://learn.microsoft.com/en-us/training/modules/manage-app-secrets-key-vault/5-implement-caching-strategies)
 
 </details>
-
 
 ---
 

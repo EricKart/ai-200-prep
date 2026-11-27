@@ -245,7 +245,7 @@
      "why": "Accounts are the top-level unit, then databases, containers and items."
     },
     {
-     "text": "The account provides the DNS endpoint https://<account-name>.documents.azure.com:443/.",
+     "text": "The account provides the DNS endpoint https://`<account-name>`.documents.azure.com:443/.",
      "answer": true,
      "why": "SDK connections use the account's endpoint."
     },

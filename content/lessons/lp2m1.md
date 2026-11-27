@@ -97,7 +97,7 @@ Environment variables are the app's **settings dial**; secrets are the **locked 
 > **Exam traps**
 >
 > - **--set-env-vars** adds or updates without removing other variables.
-> - secretref:<secret-name> uses the secret's **name**, so the value never appears in YAML or shell history.
+> - secretref:`<secret-name>` uses the secret's **name**, so the value never appears in YAML or shell history.
 
 ## Configure image pull authentication for private registries
 

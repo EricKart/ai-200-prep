@@ -396,7 +396,7 @@
      "why": "The labels don't match, so the Service has no Pods to route to."
     },
     {
-     "text": "kubectl describe svc shows Endpoints: <none>.",
+     "text": "kubectl describe svc shows Endpoints: `<none>`.",
      "answer": true,
      "why": "No matching Pods means no endpoints."
     },
@@ -486,7 +486,7 @@
      "why": "Service status doesn't explain an application crash."
     },
     {
-     "text": "kubectl logs <pod-name>",
+     "text": "kubectl logs `<pod-name>`",
      "why": "Correct. The application's logs show why it crashes on startup."
     },
     {
@@ -510,7 +510,7 @@
    "type": "single",
    "scenario": true,
    "difficulty": "medium",
-   "q": "Right after creating a LoadBalancer Service, `kubectl get svc` shows EXTERNAL-IP as <pending>. What does this mean?",
+   "q": "Right after creating a LoadBalancer Service, `kubectl get svc` shows EXTERNAL-IP as `<pending>`. What does this mean?",
    "options": [
     {
      "text": "The Service selector doesn't match any Pods",
@@ -531,7 +531,7 @@
    ],
    "answer": 3,
    "hint": "Azure is still creating something for this Service.",
-   "explain": "<pending> means Azure is still creating the load balancer and public IP.",
+   "explain": "`<pending>` means Azure is still creating the load balancer and public IP.",
    "origin": "lab500"
   },
   {
@@ -560,7 +560,7 @@
      "why": "Requests are too large for the free capacity on nodes."
     },
     {
-     "text": "The Service shows Endpoints: <none>",
+     "text": "The Service shows Endpoints: `<none>`",
      "answer": 2,
      "why": "No Pods match the Service selector."
     },
@@ -649,7 +649,7 @@
    "q": "A Pod is in CrashLoopBackOff, and the current container exits before writing anything useful. You want the output of the container instance that crashed just before. Which command shows it?",
    "options": [
     {
-     "text": "kubectl describe svc <service-name>",
+     "text": "kubectl describe svc `<service-name>`",
      "why": "Services don't hold container output."
     },
     {
@@ -657,7 +657,7 @@
      "why": "This shows resource usage, not logs."
     },
     {
-     "text": "kubectl logs <pod-name> --previous",
+     "text": "kubectl logs `<pod-name>` --previous",
      "why": "Correct. --previous shows logs from the previous container instance, which is the one that crashed."
     },
     {
@@ -667,7 +667,7 @@
    ],
    "answer": 2,
    "hint": "By default you see the container that's running now. You want the one before it.",
-   "explain": "CrashLoopBackOff means the image pulled but the container keeps exiting. Use kubectl logs <pod> --previous to read the crashed instance's output, and kubectl describe pod for events.",
+   "explain": "CrashLoopBackOff means the image pulled but the container keeps exiting. Use kubectl logs `<pod>` --previous to read the crashed instance's output, and kubectl describe pod for events.",
    "origin": "ca1"
   },
   {
@@ -727,7 +727,7 @@
     }
    ],
    "hint": "Think about whether apply is synchronous, how -l selects Pods, and what READY counts.",
-   "explain": "kubectl apply returns immediately and Kubernetes reconciles in the background. kubectl get pods/deployment show READY and STATUS; kubectl logs -l <label> reads all matching Pods.",
+   "explain": "kubectl apply returns immediately and Kubernetes reconciles in the background. kubectl get pods/deployment show READY and STATUS; kubectl logs -l `<label>` reads all matching Pods.",
    "origin": "new"
   }
  ]

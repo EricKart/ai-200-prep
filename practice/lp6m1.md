@@ -184,9 +184,9 @@ Content cache: static template content (headers, footers, banners, navigation) r
 
 ## 7. `lp6m1-007`
 
-A cleanup job needs to find all keys matching user:42:* in production. Which command should it use?
+A cleanup job needs to find all keys matching `user:42:*` in production. Which command should it use?
 
-- **A.** KEYS user:42:* on the primary
+- **A.** KEYS `user:42:*` on the primary
 - **B.** SCAN with a match pattern
 - **C.** FLUSHDB, then reload the data
 - **D.** CLUSTER KEYSLOT for each key
@@ -724,7 +724,6 @@ Hashes store objects as field-value pairs within a single key (HSET, HGET, HGETA
 📘 Source: [Implement data operations](https://learn.microsoft.com/en-us/training/modules/implement-data-operations-azure-managed-redis/4-implement-data-operations)
 
 </details>
-
 
 ---
 

@@ -7,9 +7,9 @@
 A Pod runs an inference-api container and a logging sidecar. Which command shows only the inference-api container's logs?
 
 - **A.** kubectl top pods -n ai-workloads
-- **B.** kubectl logs <pod> -f
-- **C.** kubectl logs <pod> -c inference-api
-- **D.** kubectl describe pod <pod> -n ai-workloads
+- **B.** kubectl logs `<pod>` -f
+- **C.** kubectl logs `<pod>` -c inference-api
+- **D.** kubectl describe pod `<pod>` -n ai-workloads
 
 <details><summary>💡 Hint</summary>
 
@@ -19,14 +19,14 @@ The Pod has two containers. Tell kubectl which one you mean.
 
 <details><summary>✅ Answer</summary>
 
-**C.** kubectl logs <pod> -c inference-api
+**C.** kubectl logs `<pod>` -c inference-api
 
 - A: top shows resource usage, not logs.
 - B: -f streams logs, but doesn't choose the container.
 - C: Correct. -c selects the container in a multi-container Pod.
 - D: describe shows configuration and events, not container logs.
 
-Specify -c <container> when a Pod has several containers.
+Specify -c `<container>` when a Pod has several containers.
 
 📘 Source: [Monitor application logs and metrics](https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/2-monitor-logs-metrics)
 
@@ -182,9 +182,9 @@ Live Logs streams container output in the browser; you can pause, search and swi
 
 You want the terminal to keep printing new log lines from an inference Pod while you send test requests. Which command does that?
 
-- **A.** kubectl logs -f <pod-name> -n ai-workloads
+- **A.** kubectl logs -f `<pod-name>` -n ai-workloads
 - **B.** kubectl top pods -n ai-workloads
-- **C.** kubectl describe pod <pod-name>
+- **C.** kubectl describe pod `<pod-name>`
 - **D.** kubectl get pods -n ai-workloads -w
 
 <details><summary>💡 Hint</summary>
@@ -195,14 +195,14 @@ One command prints container output, and a flag keeps it streaming.
 
 <details><summary>✅ Answer</summary>
 
-**A.** kubectl logs -f <pod-name> -n ai-workloads
+**A.** kubectl logs -f `<pod-name>` -n ai-workloads
 
 - A: Correct. -f follows the log and prints new output as it arrives.
 - B: This shows CPU and memory, not logs.
 - C: describe shows configuration and events once. It doesn't stream logs.
 - D: -w watches Pod status changes, not log output.
 
-kubectl logs -f <pod> follows the container's output as new lines arrive. Add -c <container> for multi-container Pods.
+kubectl logs -f `<pod>` follows the container's output as new lines arrive. Add -c `<container>` for multi-container Pods.
 
 📘 Source: [Monitor application logs and metrics](https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/2-monitor-logs-metrics)
 
@@ -396,8 +396,8 @@ Check selectors, ports and EndpointSlices when Pods are healthy but unreachable.
 Several Pods across the namespace failed in the last ten minutes for different reasons. Which command gives one view of recent events across Pods and controllers?
 
 - **A.** kubectl get events -n ai-workloads
-- **B.** kubectl exec -it <pod> -- /bin/sh
-- **C.** kubectl logs -f <pod> -n ai-workloads
+- **B.** kubectl exec -it `<pod>` -- /bin/sh
+- **C.** kubectl logs -f `<pod>` -n ai-workloads
 - **D.** kubectl top pods -n ai-workloads
 
 <details><summary>💡 Hint</summary>
@@ -425,10 +425,10 @@ Use kubectl describe pod for one Pod's events and kubectl get events for a wider
 
 You need one view of a Pod's events, environment variables and mounted volumes, including Secrets. Which command gives you all of that?
 
-- **A.** kubectl logs <pod-name>
-- **B.** kubectl top pod <pod-name>
-- **C.** kubectl get pod <pod-name> -o name
-- **D.** kubectl describe pod <pod-name>
+- **A.** kubectl logs `<pod-name>`
+- **B.** kubectl top pod `<pod-name>`
+- **C.** kubectl get pod `<pod-name>` -o name
+- **D.** kubectl describe pod `<pod-name>`
 
 <details><summary>💡 Hint</summary>
 
@@ -438,7 +438,7 @@ You want a detailed description of one Pod, not its output.
 
 <details><summary>✅ Answer</summary>
 
-**D.** kubectl describe pod <pod-name>
+**D.** kubectl describe pod `<pod-name>`
 
 - A: Logs show application output, not configuration or events.
 - B: top shows resource usage only.
@@ -475,7 +475,7 @@ localhost means inside the container. How do you run a command in there?
 - C: localhost on the node isn't the container's localhost.
 - D: Correct. kubectl exec (or the portal Console) lets you run simple HTTP checks from inside the container.
 
-Use kubectl exec -it <pod> -- /bin/sh (or the portal Console tab) to inspect files, check variables and run commands such as curl http://localhost:8080/health.
+Use kubectl exec -it `<pod>` -- /bin/sh (or the portal Console tab) to inspect files, check variables and run commands such as curl http://localhost:8080/health.
 
 📘 Source: [Troubleshoot pods and services](https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/3-troubleshoot-pods-services)
 
@@ -690,7 +690,6 @@ The Services and ingresses section shows all Services across namespaces, with ex
 📘 Source: [Verify service connectivity and endpoints](https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/4-verify-connectivity)
 
 </details>
-
 
 ---
 

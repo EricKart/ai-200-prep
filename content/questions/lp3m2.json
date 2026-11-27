@@ -263,7 +263,7 @@
    "q": "After you apply a new ConfigMap and Deployment, you want to confirm FEATURE_X_ENABLED reached the running container. Which command checks it directly?",
    "options": [
     {
-     "text": "kubectl exec <pod> -- printenv",
+     "text": "kubectl exec `<pod>` -- printenv",
      "why": "Correct. This prints the container's actual environment."
     },
     {
@@ -275,13 +275,13 @@
      "why": "This shows replica counts, not environment variables."
     },
     {
-     "text": "kubectl logs <pod-name> --previous",
+     "text": "kubectl logs `<pod-name>` --previous",
      "why": "Logs show program output, not the environment it received."
     }
    ],
    "answer": 0,
    "hint": "Look inside the running container instead of at the source object.",
-   "explain": "kubectl describe configmap shows the source data; kubectl exec <pod> -- printenv confirms what the container actually received.",
+   "explain": "kubectl describe configmap shows the source data; kubectl exec `<pod>` -- printenv confirms what the container actually received.",
    "origin": "new"
   },
   {
@@ -416,7 +416,7 @@
    "q": "A teammate asks you to prove the Secret app-secrets has the keys DB_CONNECTION and API_KEY, without printing their values. Which command does that?",
    "options": [
     {
-     "text": "kubectl logs <pod-name>",
+     "text": "kubectl logs `<pod-name>`",
      "why": "Logs don't list a Secret's keys."
     },
     {
@@ -424,7 +424,7 @@
      "why": "Correct. describe secret shows metadata and keys without showing the values."
     },
     {
-     "text": "kubectl exec <pod-name> -- printenv",
+     "text": "kubectl exec `<pod-name>` -- printenv",
      "why": "This prints the values inside the container."
     },
     {
@@ -434,7 +434,7 @@
    ],
    "answer": 1,
    "hint": "One command lists keys and sizes but leaves the values out.",
-   "explain": "kubectl get secrets lists Secrets (name, type, data count, age); kubectl describe secret <name> shows metadata and keys without exposing values.",
+   "explain": "kubectl get secrets lists Secrets (name, type, data count, age); kubectl describe secret `<name>` shows metadata and keys without exposing values.",
    "origin": "new"
   },
   {

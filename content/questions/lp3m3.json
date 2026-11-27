@@ -16,21 +16,21 @@
      "why": "top shows resource usage, not logs."
     },
     {
-     "text": "kubectl logs <pod> -f",
+     "text": "kubectl logs `<pod>` -f",
      "why": "-f streams logs, but doesn't choose the container."
     },
     {
-     "text": "kubectl logs <pod> -c inference-api",
+     "text": "kubectl logs `<pod>` -c inference-api",
      "why": "Correct. -c selects the container in a multi-container Pod."
     },
     {
-     "text": "kubectl describe pod <pod> -n ai-workloads",
+     "text": "kubectl describe pod `<pod>` -n ai-workloads",
      "why": "describe shows configuration and events, not container logs."
     }
    ],
    "answer": 2,
    "hint": "The Pod has two containers. Tell kubectl which one you mean.",
-   "explain": "Specify -c <container> when a Pod has several containers.",
+   "explain": "Specify -c `<container>` when a Pod has several containers.",
    "origin": "lab500"
   },
   {
@@ -182,7 +182,7 @@
    "q": "You want the terminal to keep printing new log lines from an inference Pod while you send test requests. Which command does that?",
    "options": [
     {
-     "text": "kubectl logs -f <pod-name> -n ai-workloads",
+     "text": "kubectl logs -f `<pod-name>` -n ai-workloads",
      "why": "Correct. -f follows the log and prints new output as it arrives."
     },
     {
@@ -190,7 +190,7 @@
      "why": "This shows CPU and memory, not logs."
     },
     {
-     "text": "kubectl describe pod <pod-name>",
+     "text": "kubectl describe pod `<pod-name>`",
      "why": "describe shows configuration and events once. It doesn't stream logs."
     },
     {
@@ -200,7 +200,7 @@
    ],
    "answer": 0,
    "hint": "One command prints container output, and a flag keeps it streaming.",
-   "explain": "kubectl logs -f <pod> follows the container's output as new lines arrive. Add -c <container> for multi-container Pods.",
+   "explain": "kubectl logs -f `<pod>` follows the container's output as new lines arrive. Add -c `<container>` for multi-container Pods.",
    "origin": "ca3"
   },
   {
@@ -409,11 +409,11 @@
      "why": "Correct. get events reviews recent cluster events across Pods and controllers."
     },
     {
-     "text": "kubectl exec -it <pod> -- /bin/sh",
+     "text": "kubectl exec -it `<pod>` -- /bin/sh",
      "why": "That opens a shell in one container."
     },
     {
-     "text": "kubectl logs -f <pod> -n ai-workloads",
+     "text": "kubectl logs -f `<pod>` -n ai-workloads",
      "why": "That streams one Pod's application output."
     },
     {
@@ -436,19 +436,19 @@
    "q": "You need one view of a Pod's events, environment variables and mounted volumes, including Secrets. Which command gives you all of that?",
    "options": [
     {
-     "text": "kubectl logs <pod-name>",
+     "text": "kubectl logs `<pod-name>`",
      "why": "Logs show application output, not configuration or events."
     },
     {
-     "text": "kubectl top pod <pod-name>",
+     "text": "kubectl top pod `<pod-name>`",
      "why": "top shows resource usage only."
     },
     {
-     "text": "kubectl get pod <pod-name> -o name",
+     "text": "kubectl get pod `<pod-name>` -o name",
      "why": "This prints only the Pod's name."
     },
     {
-     "text": "kubectl describe pod <pod-name>",
+     "text": "kubectl describe pod `<pod-name>`",
      "why": "Correct. describe pod shows probes, environment, mounts and events together."
     }
    ],
@@ -485,7 +485,7 @@
    ],
    "answer": 3,
    "hint": "localhost means inside the container. How do you run a command in there?",
-   "explain": "Use kubectl exec -it <pod> -- /bin/sh (or the portal Console tab) to inspect files, check variables and run commands such as curl http://localhost:8080/health.",
+   "explain": "Use kubectl exec -it `<pod>` -- /bin/sh (or the portal Console tab) to inspect files, check variables and run commands such as curl http://localhost:8080/health.",
    "origin": "ca3"
   },
   {

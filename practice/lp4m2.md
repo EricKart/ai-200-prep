@@ -787,7 +787,6 @@ For embedding refresh in production, the push model (Azure Functions or the chan
 
 </details>
 
-
 ---
 
 Part of **AI-200 Prep**, a free course by Aryan Tripathi · [aryantripathi.dev/ai-200](https://aryantripathi.dev/ai-200) · Practice questions written from the public Microsoft Learn course AI-200T00. Not real exam questions. Not affiliated with Microsoft.

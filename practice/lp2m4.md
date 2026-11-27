@@ -763,7 +763,7 @@ Clean up intentionally, confirm with 204, and keep failed deletions visible.
 You want to tell a user that their analysis workspace will expire soon. How can the backend get the session's creation, last-access and expiry details?
 
 - **A.** Query the Container Apps environment's system logs for the session's events
-- **B.** Call GET …/session?identifier=<id> on the pool's management endpoint
+- **B.** Call GET …/session?identifier=`<id>` on the pool's management endpoint
 - **C.** Read /mnt/data/session.json inside the session
 - **D.** Run az containerapp sessionpool show for the pool
 
@@ -775,19 +775,18 @@ The pool management API can describe a session by its identifier.
 
 <details><summary>✅ Answer</summary>
 
-**B.** Call GET …/session?identifier=<id> on the pool's management endpoint
+**B.** Call GET …/session?identifier=`<id>` on the pool's management endpoint
 
 - A: System logs aren't the documented way to read one session's expiry.
 - B: Correct. The session query returns those details, though the backend must still handle the session disappearing.
 - C: Session lifecycle data isn't exposed as a file in /mnt/data.
 - D: That returns pool properties such as the management endpoint, not one session's status.
 
-GET <POOL_MANAGEMENT_ENDPOINT>/session?identifier=<SESSION_ID> returns creation, last-access and expiration information. It's useful for diagnostics and user messaging, but the session can still disappear before the next call.
+GET `<POOL_MANAGEMENT_ENDPOINT>`/session?identifier=`<SESSION_ID>` returns creation, last-access and expiration information. It's useful for diagnostics and user messaging, but the session can still disappear before the next call.
 
 📘 Source: [Manage lifecycle and execution failures](https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/5-manage-lifecycle-failures)
 
 </details>
-
 
 ---
 

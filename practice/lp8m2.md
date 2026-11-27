@@ -51,7 +51,7 @@ App Configuration endpoints use their own domain.
 
 **A.** https://docpipe-config.azconfig.io
 
-- A: Correct. Stores use https://<store-name>.azconfig.io.
+- A: Correct. Stores use https://`<store-name>`.azconfig.io.
 - B: That isn't the App Configuration domain.
 - C: That's a Key Vault URL.
 - D: That's App Service.
@@ -101,7 +101,7 @@ Several apps share one store, and this app's keys all start with DocPipeline:. T
 - **A.** A separate App Configuration store for each key
 - **B.** A label_filter set to the value DocPipeline
 - **C.** Tags named DocPipeline on every one of the keys
-- **D.** key_filter DocPipeline:* plus trim_prefixes
+- **D.** key_filter `DocPipeline:*` plus trim_prefixes
 
 <details><summary>💡 Hint</summary>
 
@@ -111,7 +111,7 @@ Filter on the app's prefix, then remove it from the names the code sees.
 
 <details><summary>✅ Answer</summary>
 
-**D.** key_filter DocPipeline:* plus trim_prefixes
+**D.** key_filter `DocPipeline:*` plus trim_prefixes
 
 - A: A store per key isn't how prefixes are handled.
 - B: Labels are variants, not key prefixes.
@@ -784,7 +784,6 @@ The key criterion is whether a value grants access or contains credentials. Endp
 📘 Source: [Decide what to store in App Configuration vs Key Vault](https://learn.microsoft.com/en-us/training/modules/manage-app-settings-app-config/5-decide-app-config-vs-key-vault)
 
 </details>
-
 
 ---
 

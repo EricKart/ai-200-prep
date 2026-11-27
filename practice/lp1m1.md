@@ -23,10 +23,10 @@ Every registry gets its own login server. Think about which Azure domain is rese
 
 - A: ACR login servers use the azurecr.io domain.
 - B: azurewebsites.net is the App Service domain, not a registry login server.
-- C: Correct. Each registry has a login server in the format <registry-name>.azurecr.io.
+- C: Correct. Each registry has a login server in the format `<registry-name>`.azurecr.io.
 - D: The registry name comes first, as a subdomain, not as a path.
 
-The registry name becomes part of its unique login server URL: <registry-name>.azurecr.io.
+The registry name becomes part of its unique login server URL: `<registry-name>`.azurecr.io.
 
 📘 Source: [Registries, repositories, and artifacts](https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/2-image-storage)
 
@@ -126,7 +126,7 @@ Geo-replication distributes images close to deployment regions for faster pulls;
 
 Production pods pulled `inference-api:stable` at different times and now run two different images. You need every node to run exactly the image that passed testing, even if someone pushes to that tag again. What should the deployment reference?
 
-- **A.** Its digest: inference-api@sha256:<hash>
+- **A.** Its digest: inference-api@sha256:`<hash>`
 - **B.** inference-api:latest, because it resolves to a single image
 - **C.** The repository name alone, so ACR picks the newest manifest
 - **D.** The same tag, with the image locked by write-enabled false
@@ -139,7 +139,7 @@ Tags can move after a push. Which way of naming an image can never change?
 
 <details><summary>✅ Answer</summary>
 
-**A.** Its digest: inference-api@sha256:<hash>
+**A.** Its digest: inference-api@sha256:`<hash>`
 
 - A: Correct. Digests are immutable, so pulling by digest always returns the same image.
 - B: latest is a mutable tag and is the default; it causes this exact problem.
@@ -626,12 +626,12 @@ Nothing in the code changes, but you still want a build every night. Which trigg
 
 **A.** Scheduled trigger
 
-- A: Correct. A schedule such as "0 0 * * *" runs the task nightly.
+- A: Correct. A schedule such as "`0 0 * * *`" runs the task nightly.
 - B: This fires only when the base image changes.
 - C: A quick task runs once, when you start it.
 - D: This needs a commit or pull request. Nights without commits wouldn't build.
 
-A schedule such as "0 0 * * *" runs the task nightly.
+A schedule such as "`0 0 * * *`" runs the task nightly.
 
 📘 Source: [Build and run images with ACR Tasks](https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/3-build-run-acr-tasks)
 
@@ -866,7 +866,7 @@ Untagged images pile up after pushes. Which ACR command deletes images by age, a
 
 **A.** A scheduled ACR task that runs acr purge --untagged --ago 7d
 
-- A: Correct. A scheduled task (for example --schedule "0 0 * * 0") can run acr purge on all repositories.
+- A: Correct. A scheduled task (for example --schedule "`0 0 * * 0`") can run acr purge on all repositories.
 - B: A rebuild would create even more untagged images.
 - C: Locks stop deletion, which is the opposite of what you need.
 - D: Retention policies are a Premium tier feature, so they aren't available here.
@@ -996,7 +996,6 @@ Stable tags let security updates flow to dependent images automatically.
 📘 Source: [Tag and version images](https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/4-tag-version-images)
 
 </details>
-
 
 ---
 

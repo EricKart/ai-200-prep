@@ -370,7 +370,7 @@
    "options": [
     {
      "text": "secretref:embeddings-api-key",
-     "why": "Correct. secretref:<secret-name> maps the secret to the variable without exposing its value."
+     "why": "Correct. secretref:`<secret-name>` maps the secret to the variable without exposing its value."
     },
     {
      "text": "$(embeddings-api-key)",
@@ -387,7 +387,7 @@
    ],
    "answer": 0,
    "hint": "Environment variables can point to a secret by name with a special prefix.",
-   "explain": "Set the variable to secretref:<secret-name> (secretRef in YAML).",
+   "explain": "Set the variable to secretref:`<secret-name>` (secretRef in YAML).",
    "origin": "lab500"
   },
   {
@@ -483,7 +483,7 @@
    ],
    "answer": 3,
    "hint": "The CLI and YAML both refer to the secret by name, but YAML uses a dedicated field instead of the value.",
-   "explain": "In YAML, an env entry uses secretRef: <secret-name>. In the CLI, you set the value to secretref:<secret-name>. Either way, only the secret's name is stored.",
+   "explain": "In YAML, an env entry uses secretRef: `<secret-name>`. In the CLI, you set the value to secretref:`<secret-name>`. Either way, only the secret's name is stored.",
    "origin": "new"
   },
   {

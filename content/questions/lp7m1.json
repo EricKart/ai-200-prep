@@ -686,7 +686,7 @@
      "why": "That's the reason Service Bus sets."
     },
     {
-     "text": "Building the path <queue>/$deadletterqueue by hand is the recommended way to read it.",
+     "text": "Building the path `<queue>`/$deadletterqueue by hand is the recommended way to read it.",
      "answer": false,
      "why": "Use sub_queue=ServiceBusSubQueue.DEAD_LETTER."
     }

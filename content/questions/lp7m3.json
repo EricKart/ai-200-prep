@@ -572,20 +572,20 @@
    "q": "A Service Bus trigger uses an identity-based connection named ServiceBusConnection. Which app setting should exist?",
    "options": [
     {
-     "text": "ServiceBusConnection__fullyQualifiedNamespace",
-     "why": "Correct. Messaging services use __fullyQualifiedNamespace, e.g. mynamespace.servicebus.windows.net."
+     "text": "`ServiceBusConnection__fullyQualifiedNamespace`",
+     "why": "Correct. Messaging services use `__fullyQualifiedNamespace`, e.g. mynamespace.servicebus.windows.net."
     },
     {
-     "text": "ServiceBusConnection__accountEndpoint set to its URL",
-     "why": "__accountEndpoint is the Cosmos DB suffix."
+     "text": "`ServiceBusConnection__accountEndpoint` set to its URL",
+     "why": "`__accountEndpoint` is the Cosmos DB suffix."
     },
     {
      "text": "ServiceBusConnection holding a full SAS connection string",
      "why": "That's a connection string, which identity-based connections replace."
     },
     {
-     "text": "ServiceBusConnection__accountName set to the namespace",
-     "why": "__accountName is the storage suffix."
+     "text": "`ServiceBusConnection__accountName` set to the namespace",
+     "why": "`__accountName` is the storage suffix."
     }
    ],
    "answer": 0,
@@ -609,7 +609,7 @@
    ],
    "items": [
     {
-     "text": "AzureWebJobsStorage__accountName for the runtime",
+     "text": "`AzureWebJobsStorage__accountName` for the runtime",
      "answer": 0,
      "why": "Minimum role for host-level coordination."
     },
@@ -705,7 +705,7 @@
    "type": "single",
    "scenario": true,
    "difficulty": "hard",
-   "q": "A function app uses identity-based AzureWebJobsStorage__accountName and has a blob trigger. Which roles does the app identity need on the storage account?",
+   "q": "A function app uses identity-based `AzureWebJobsStorage__accountName` and has a blob trigger. Which roles does the app identity need on the storage account?",
    "options": [
     {
      "text": "Storage Blob Data Reader and Storage Queue Data Reader",

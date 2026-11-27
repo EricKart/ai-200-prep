@@ -44,7 +44,7 @@
    "options": [
     {
      "text": "https://docpipe-config.azconfig.io",
-     "why": "Correct. Stores use https://<store-name>.azconfig.io."
+     "why": "Correct. Stores use https://`<store-name>`.azconfig.io."
     },
     {
      "text": "https://docpipe-config.config.azure.com",
@@ -120,7 +120,7 @@
      "why": "Tags don't shorten key names."
     },
     {
-     "text": "key_filter DocPipeline:* plus trim_prefixes",
+     "text": "key_filter `DocPipeline:*` plus trim_prefixes",
      "why": "Correct. Filter by prefix, then trim it for cleaner names."
     }
    ],

@@ -122,7 +122,7 @@ Sessions are **temporary**: after the cooldown they vanish with their files, and
 - Failure categories: **transport** (auth, authorization, malformed request, capacity, network, service), **execution** (code raises, exceeds a limit, unsuccessful result), **validation** (wrong schema, missing artifact, rule violation), **success** (all three pass).
 - An HTTP success doesn't mean a valid business result. Don't expose stack traces, tokens or sensitive content to users; return a correlation value.
 - Set your own HTTP **deadline** shorter than the caller's. A client timeout doesn't stop remote execution, so don't assume no effects. Dynamic sessions return a **trace ID** in the structured error body.
-- Retry only **idempotent** operations you can verify; a response timeout is ambiguous. Good candidates: file metadata reads, session status queries. Don't auto-repeat code that sends messages, writes externally or creates uniquely named artifacts. Transient codes: **429, 500, 502, 503, 504**. Use bounded retries with backoff and jitter.
+- Retry only **idempotent** operations you can verify; a response timeout is ambiguous. Good candidates: file metadata reads, session status queries. Don't auto-repeat code that sends messages, writes externally or creates uniquely named artifacts. Transient codes: `**429, 500, 502, 503, 504**`. Use bounded retries with backoff and jitter.
 - Delete early with `DELETE …/session?identifier=…`; **204 No Content** confirms it's gone. Don't delete while another request for that conversation runs. Report failed deletes in telemetry.
 - Practices: validate before execution, authorize every operation, persist durable data elsewhere, classify failures, retry with evidence, clean up intentionally, log safely.
 

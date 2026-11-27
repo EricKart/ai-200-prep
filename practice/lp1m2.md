@@ -675,7 +675,7 @@ A .NET app on a Linux container reads the key ConnectionStrings:DefaultConnectio
 
 - **A.** CONNECTIONSTRINGS_DEFAULTCONNECTION
 - **B.** ConnectionStrings:DefaultConnection
-- **C.** ConnectionStrings__DefaultConnection
+- **C.** `ConnectionStrings__DefaultConnection`
 - **D.** ConnectionStrings.DefaultConnection
 
 <details><summary>💡 Hint</summary>
@@ -686,7 +686,7 @@ Linux environment variable names can't contain a colon. What do .NET apps use as
 
 <details><summary>✅ Answer</summary>
 
-**C.** ConnectionStrings__DefaultConnection
+**C.** `ConnectionStrings__DefaultConnection`
 
 - A: A single underscore doesn't express nesting.
 - B: Setting names can contain only letters, numbers and underscores, so a colon isn't allowed.
@@ -1092,7 +1092,6 @@ It records container lifecycle events and platform messages.
 📘 Source: [Observe and troubleshoot containerized apps](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/5-observe-troubleshoot)
 
 </details>
-
 
 ---
 

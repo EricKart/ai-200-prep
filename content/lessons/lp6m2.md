@@ -7,7 +7,7 @@ Redis can also move messages. You'll learn when pub/sub's fast broadcast fits, w
 
 **In this lesson**
 
-1. [Publish and subscribe to events with Redis pub/sub](#publish-and-subscribe-to-events-with-redis-pub/sub)
+1. [Publish and subscribe to events with Redis pub/sub](#publish-and-subscribe-to-events-with-redis-pubsub)
 2. [Implement task queues with Redis Streams](#implement-task-queues-with-redis-streams)
 3. [Choose between broadcast and coordinated distribution](#choose-between-broadcast-and-coordinated-distribution)
 

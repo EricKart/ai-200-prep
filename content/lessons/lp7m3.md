@@ -138,17 +138,17 @@ Swap connection strings for **identity-based connections**: the setting holds on
 - Identity-based connections: enable a managed identity, assign roles on the target; settings use the connection prefix plus a **suffix** instead of a connection string.
 - Runtime storage: `AzureWebJobsStorage__accountName`; minimum role **Storage Blob Data Owner**. Blob triggers also need **Storage Queue Data Contributor** and **Storage Account Contributor**.
 - Service Bus: `ServiceBusConnection__fullyQualifiedNamespace`; **Azure Service Bus Data Receiver** for triggers, **Data Sender** for output bindings.
-- Cosmos DB: `CosmosDBConnection__accountEndpoint`; **Cosmos DB Built-in Data Contributor**. Suffixes: storage __accountName, Cosmos __accountEndpoint, messaging __fullyQualifiedNamespace.
+- Cosmos DB: `CosmosDBConnection__accountEndpoint`; **Cosmos DB Built-in Data Contributor**. Suffixes: storage `__accountName`, Cosmos `__accountEndpoint`, messaging `__fullyQualifiedNamespace`.
 - SDK clients: DefaultAzureCredential at **module level**. Roles: Document Intelligence **Cognitive Services User**; AI Search **Search Index Data Reader/Contributor**; Azure OpenAI **Cognitive Services OpenAI User**.
 - Keys: **function keys** (one function), **host keys** (all functions), **system keys** (extensions, e.g. mcp_extension), **master key** (admin, runtime APIs; never in clients).
 - Keys don't verify identity: layer **API Management** (rate limiting, OAuth 2.0) or **Easy Auth** (Entra ID).
 
 | Connection | Setting suffix | Role |
 |---|---|---|
-| Runtime storage | AzureWebJobsStorage__accountName | Storage Blob Data Owner |
-| Service Bus trigger | __fullyQualifiedNamespace | Azure Service Bus Data Receiver |
-| Service Bus output | __fullyQualifiedNamespace | Azure Service Bus Data Sender |
-| Cosmos DB output | __accountEndpoint | Cosmos DB Built-in Data Contributor |
+| Runtime storage | `AzureWebJobsStorage__accountName` | Storage Blob Data Owner |
+| Service Bus trigger | `__fullyQualifiedNamespace` | Azure Service Bus Data Receiver |
+| Service Bus output | `__fullyQualifiedNamespace` | Azure Service Bus Data Sender |
+| Cosmos DB output | `__accountEndpoint` | Cosmos DB Built-in Data Contributor |
 
 > [!WARNING]
 > **Exam traps**

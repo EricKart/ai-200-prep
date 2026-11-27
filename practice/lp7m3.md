@@ -550,10 +550,10 @@ Use versionless URIs for secrets that rotate on a schedule.
 
 A Service Bus trigger uses an identity-based connection named ServiceBusConnection. Which app setting should exist?
 
-- **A.** ServiceBusConnection__fullyQualifiedNamespace
-- **B.** ServiceBusConnection__accountEndpoint set to its URL
+- **A.** `ServiceBusConnection__fullyQualifiedNamespace`
+- **B.** `ServiceBusConnection__accountEndpoint` set to its URL
 - **C.** ServiceBusConnection holding a full SAS connection string
-- **D.** ServiceBusConnection__accountName set to the namespace
+- **D.** `ServiceBusConnection__accountName` set to the namespace
 
 <details><summary>💡 Hint</summary>
 
@@ -563,12 +563,12 @@ Identity-based connections replace the connection string with the namespace addr
 
 <details><summary>✅ Answer</summary>
 
-**A.** ServiceBusConnection__fullyQualifiedNamespace
+**A.** `ServiceBusConnection__fullyQualifiedNamespace`
 
-- A: Correct. Messaging services use __fullyQualifiedNamespace, e.g. mynamespace.servicebus.windows.net.
-- B: __accountEndpoint is the Cosmos DB suffix.
+- A: Correct. Messaging services use `__fullyQualifiedNamespace`, e.g. mynamespace.servicebus.windows.net.
+- B: `__accountEndpoint` is the Cosmos DB suffix.
 - C: That's a connection string, which identity-based connections replace.
-- D: __accountName is the storage suffix.
+- D: `__accountName` is the storage suffix.
 
 Assign Azure Service Bus Data Receiver to the app's identity.
 
@@ -582,7 +582,7 @@ Match each identity-based connection to the role the function app's identity nee
 
 Choices: **Storage Blob Data Owner** · **Azure Service Bus Data Receiver** · **Azure Service Bus Data Sender** · **Cosmos DB Built-in Data Contributor**
 
-- AzureWebJobsStorage__accountName for the runtime
+- `AzureWebJobsStorage__accountName` for the runtime
 - Service Bus queue trigger
 - Service Bus output binding
 - Cosmos DB output binding
@@ -595,7 +595,7 @@ Each connection needs its own data-plane role.
 
 <details><summary>✅ Answer</summary>
 
-- AzureWebJobsStorage__accountName for the runtime → **Storage Blob Data Owner**. Minimum role for host-level coordination.
+- `AzureWebJobsStorage__accountName` for the runtime → **Storage Blob Data Owner**. Minimum role for host-level coordination.
 - Service Bus queue trigger → **Azure Service Bus Data Receiver**. Triggers receive messages.
 - Service Bus output binding → **Azure Service Bus Data Sender**. Output bindings send messages.
 - Cosmos DB output binding → **Cosmos DB Built-in Data Contributor**. Writes items to the container.
@@ -670,7 +670,7 @@ Function keys: one function. Host keys: all functions. Master: admin.
 
 ## 23. `lp7m3-023`
 
-A function app uses identity-based AzureWebJobsStorage__accountName and has a blob trigger. Which roles does the app identity need on the storage account?
+A function app uses identity-based `AzureWebJobsStorage__accountName` and has a blob trigger. Which roles does the app identity need on the storage account?
 
 - **A.** Storage Blob Data Reader and Storage Queue Data Reader
 - **B.** Storage Account Contributor alone, at subscription scope
@@ -757,7 +757,6 @@ Access keys provide a basic access barrier but don't replace authentication. For
 📘 Source: [Configure identity and access for Functions](https://learn.microsoft.com/en-us/training/modules/build-backends-azure-functions/6-configure-identity-access)
 
 </details>
-
 
 ---
 

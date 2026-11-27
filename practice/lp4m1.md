@@ -225,7 +225,7 @@ For each statement, select Yes if the statement is true. Otherwise, select No. Y
 | Statement | Yes / No |
 |---|---|
 | The hierarchy runs account → database → container → item. | ☐ |
-| The account provides the DNS endpoint https://<account-name>.documents.azure.com:443/. | ☐ |
+| The account provides the DNS endpoint https://`<account-name>`.documents.azure.com:443/. | ☐ |
 | Items in one container must all follow the same schema. | ☐ |
 | By default, an account can hold up to 500 databases and containers combined. | ☐ |
 
@@ -240,7 +240,7 @@ Think top-down from the account, and remember Cosmos DB doesn't enforce a schema
 | Statement | Answer | Why |
 |---|---|---|
 | The hierarchy runs account → database → container → item. | Yes | Accounts are the top-level unit, then databases, containers and items. |
-| The account provides the DNS endpoint https://<account-name>.documents.azure.com:443/. | Yes | SDK connections use the account's endpoint. |
+| The account provides the DNS endpoint https://`<account-name>`.documents.azure.com:443/. | Yes | SDK connections use the account's endpoint. |
 | Items in one container must all follow the same schema. | No | Containers are schema-agnostic, so items can have different structures. |
 | By default, an account can hold up to 500 databases and containers combined. | Yes | That's the default limit Learn gives. |
 
@@ -852,7 +852,6 @@ The SDK's query iterator pages through continuation tokens. Set max_item_count f
 📘 Source: [Query Azure Cosmos DB for NoSQL](https://learn.microsoft.com/en-us/training/modules/build-query-azure-cosmos-db/4-query-cosmos-db-nosql)
 
 </details>
-
 
 ---
 

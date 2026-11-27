@@ -332,7 +332,7 @@
      "why": "That's an Azure RBAC role for backend identities."
     },
     {
-     "text": "webpubsub.joinLeaveGroup.<that-group>",
+     "text": "webpubsub.joinLeaveGroup.`<that-group>`",
      "why": "Correct. It permits joining and leaving that one group, not publishing."
     },
     {

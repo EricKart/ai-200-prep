@@ -40,8 +40,6 @@ jobs:
         with:
           globs: "**/*.md"
       - uses: codespell-project/actions-codespell@v2
-        with:
-          skip: "*.json,./labs/*/app/requirements.txt"
 
   links:
     name: Links

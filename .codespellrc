@@ -1,0 +1,3 @@
+[codespell]
+skip = *.json,./labs/*/app/requirements.txt,./.git,./labs/*/guide.html
+ignore-words-list = aks,ans,acr,te,nd,ser,datas,fo

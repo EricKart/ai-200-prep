@@ -21,7 +21,7 @@
     },
     {
      "text": "contosoinference.azurecr.io",
-     "why": "Correct. Each registry has a login server in the format <registry-name>.azurecr.io."
+     "why": "Correct. Each registry has a login server in the format `<registry-name>`.azurecr.io."
     },
     {
      "text": "azurecr.io/contosoinference",
@@ -30,7 +30,7 @@
    ],
    "answer": 2,
    "hint": "Every registry gets its own login server. Think about which Azure domain is reserved for container registries.",
-   "explain": "The registry name becomes part of its unique login server URL: <registry-name>.azurecr.io.",
+   "explain": "The registry name becomes part of its unique login server URL: `<registry-name>`.azurecr.io.",
    "origin": "lab500"
   },
   {
@@ -136,7 +136,7 @@
    "q": "Production pods pulled `inference-api:stable` at different times and now run two different images. You need every node to run exactly the image that passed testing, even if someone pushes to that tag again. What should the deployment reference?",
    "options": [
     {
-     "text": "Its digest: inference-api@sha256:<hash>",
+     "text": "Its digest: inference-api@sha256:`<hash>`",
      "why": "Correct. Digests are immutable, so pulling by digest always returns the same image."
     },
     {
@@ -627,7 +627,7 @@
    "options": [
     {
      "text": "Scheduled trigger",
-     "why": "Correct. A schedule such as \"0 0 * * *\" runs the task nightly."
+     "why": "Correct. A schedule such as \"`0 0 * * *`\" runs the task nightly."
     },
     {
      "text": "Base image trigger",
@@ -644,7 +644,7 @@
    ],
    "answer": 0,
    "hint": "Nothing in the code changes, but you still want a build every night. Which trigger runs on the clock?",
-   "explain": "A schedule such as \"0 0 * * *\" runs the task nightly.",
+   "explain": "A schedule such as \"`0 0 * * *`\" runs the task nightly.",
    "origin": "site"
   },
   {
@@ -879,7 +879,7 @@
    "options": [
     {
      "text": "A scheduled ACR task that runs acr purge --untagged --ago 7d",
-     "why": "Correct. A scheduled task (for example --schedule \"0 0 * * 0\") can run acr purge on all repositories."
+     "why": "Correct. A scheduled task (for example --schedule \"`0 0 * * 0`\") can run acr purge on all repositories."
     },
     {
      "text": "A base image trigger that rebuilds the stable tag",

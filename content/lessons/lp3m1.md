@@ -81,7 +81,7 @@ Pods come and go with new IP addresses. A **Service** is the **fixed phone numbe
 - `kubectl apply -f deployment.yaml` (and service.yaml) creates or updates resources; it's **asynchronous**. Kubernetes pulls images, schedules Pods, starts containers, creates the Service.
 - `kubectl get pods`: **READY** 2/2 means both replicas run; STATUS **Running**, **Pending** (starting or waiting for resources), **CrashLoopBackOff** (app keeps crashing).
 - `kubectl logs <pod>`; `--previous` shows logs from the crashed container.
-- `kubectl get svc`: EXTERNAL-IP **<pending>** means the load balancer is still being provisioned.
+- `kubectl get svc`: EXTERNAL-IP **`<pending>`** means the load balancer is still being provisioned.
 - Test ClusterIP services from a debug Pod: `kubectl run -it --rm debug --image=alpine:latest --restart=Never -- sh`; test LoadBalancer services with curl to the public IP.
 - **ImagePullBackOff**: image path, tag or registry wrong, image not pushed (`az acr repository list`) or missing pull credentials. Diagnose with `kubectl describe pod` events.
 - **CrashLoopBackOff**: read logs for missing environment variables or config errors; test the image locally.
@@ -93,12 +93,12 @@ Pods come and go with new IP addresses. A **Service** is the **fixed phone numbe
 | ImagePullBackOff | Wrong image/tag, not pushed, no pull rights | kubectl describe pod |
 | CrashLoopBackOff | App crashes at startup | kubectl logs (--previous) |
 | Pending | Not enough CPU or memory on nodes | kubectl describe pod |
-| Endpoints: <none> | Labels and selector differ | kubectl get pods --show-labels |
+| Endpoints: `<none>` | Labels and selector differ | kubectl get pods --show-labels |
 
 > [!WARNING]
 > **Exam traps**
 >
-> - EXTERNAL-IP <pending> = load balancer still provisioning; wait.
+> - EXTERNAL-IP `<pending>` = load balancer still provisioning; wait.
 > - kubectl apply returns before the Pods are ready.
 
 ## Check yourself

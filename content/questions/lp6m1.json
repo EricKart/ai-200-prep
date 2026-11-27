@@ -193,10 +193,10 @@
    "type": "single",
    "scenario": true,
    "difficulty": "easy",
-   "q": "A cleanup job needs to find all keys matching user:42:* in production. Which command should it use?",
+   "q": "A cleanup job needs to find all keys matching `user:42:*` in production. Which command should it use?",
    "options": [
     {
-     "text": "KEYS user:42:* on the primary",
+     "text": "KEYS `user:42:*` on the primary",
      "why": "KEYS is expensive and blocks; don't use it in production."
     },
     {

@@ -51,7 +51,6 @@ Lesson: [lp6m2](../lessons/lp6m2.md) · Practice: [lp6m2](../../practice/lp6m2.m
 
 Lesson: [lp6m3](../lessons/lp6m3.md) · Practice: [lp6m3](../../practice/lp6m3.md)
 
-
 ---
 
 Part of **AI-200 Prep**, a free course by Aryan Tripathi · [aryantripathi.dev/ai-200](https://aryantripathi.dev/ai-200) · Written from the public Microsoft Learn course AI-200T00. Not affiliated with Microsoft.

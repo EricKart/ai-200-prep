@@ -326,7 +326,7 @@
    "options": [
     {
      "text": "https://kv-ragpipeline-prod.vault.azure.net/",
-     "why": "Correct. Vault URLs follow https://<vault-name>.vault.azure.net/."
+     "why": "Correct. Vault URLs follow https://`<vault-name>`.vault.azure.net/."
     },
     {
      "text": "https://vault.azure.net/kv-ragpipeline-prod",

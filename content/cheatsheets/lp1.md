@@ -14,7 +14,7 @@
 | Files must survive restarts and be shared by instances | WEBSITES_ENABLE_APP_SERVICE_STORAGE=true (/home) | Container file system is ephemeral |
 | Value must not swap to production | Slot setting | Normal app settings swap |
 | One local helper process per instance, same lifecycle | App Service sidecar | Shared/GPU model → separate service |
-| Sidecar call from the main container | http://localhost:<port> | Not the container name |
+| Sidecar call from the main container | `http://localhost:<port>` | Not the container name |
 
 ## Must remember
 
@@ -90,7 +90,6 @@ az webapp sitecontainers create --sitecontainers-spec-file ./spec.json
 az acr config authentication-as-arm show
 az webapp sitecontainers list
 ```
-
 
 ---
 

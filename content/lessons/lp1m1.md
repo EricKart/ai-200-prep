@@ -65,9 +65,9 @@ ACR Tasks is a **build server inside your registry**. You hand it your source co
 | Need | ACR Tasks feature | Command / setting |
 |---|---|---|
 | One build now, no local Docker | Quick task | az acr build |
-| Build on every commit | Source code trigger | az acr task create --context <git url> --git-access-token |
+| Build on every commit | Source code trigger | az acr task create --context `<git url>` --git-access-token |
 | Rebuild when the base image is patched | Base image trigger | Automatic for the FROM image |
-| Nightly build | Scheduled trigger | --schedule "0 0 * * *" |
+| Nightly build | Scheduled trigger | --schedule "`0 0 * * *`" |
 | Build, push, then test | Multi-step task | YAML file with build/push/cmd steps |
 | Run a command in an existing image | Run | az acr run --cmd … /dev/null |
 

@@ -12,19 +12,19 @@
    "q": "Which command subscribes to every channel that starts with ai: ?",
    "options": [
     {
-     "text": "SUBSCRIBE ai:*",
+     "text": "SUBSCRIBE `ai:*`",
      "why": "SUBSCRIBE takes exact channel names."
     },
     {
-     "text": "PUBLISH ai:*",
+     "text": "PUBLISH `ai:*`",
      "why": "PUBLISH sends a message."
     },
     {
-     "text": "XREADGROUP ai:*",
+     "text": "XREADGROUP `ai:*`",
      "why": "XREADGROUP reads Streams."
     },
     {
-     "text": "PSUBSCRIBE ai:*",
+     "text": "PSUBSCRIBE `ai:*`",
      "why": "Correct. PSUBSCRIBE subscribes with pattern matching."
     }
    ],
@@ -227,7 +227,7 @@
    "q": "Status channels are named ml:models:resnet:status, ml:models:bert:status and so on. One monitoring service must receive the status of every model, including ones added later. Which subscription fits?",
    "options": [
     {
-     "text": "PSUBSCRIBE ml:models:*:status",
+     "text": "PSUBSCRIBE `ml:models:*`:status",
      "why": "Correct. A pattern subscription matches every channel with that shape, including new ones."
     },
     {
@@ -235,7 +235,7 @@
      "why": "This lists today's channels and misses models added later."
     },
     {
-     "text": "SUBSCRIBE ml:models:*:status",
+     "text": "SUBSCRIBE `ml:models:*`:status",
      "why": "SUBSCRIBE takes exact channel names. Patterns need PSUBSCRIBE."
     },
     {
@@ -245,7 +245,7 @@
    ],
    "answer": 0,
    "hint": "You need a wildcard, and wildcards need a particular command.",
-   "explain": "Channels are strings. PSUBSCRIBE subscribes with patterns such as ai:conversations:* or ml:models:*:status, so new matching channels are included.",
+   "explain": "Channels are strings. PSUBSCRIBE subscribes with patterns such as `ai:conversations:*` or `ml:models:*`:status, so new matching channels are included.",
    "origin": "new"
   },
   {

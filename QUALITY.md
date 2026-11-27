@@ -43,6 +43,7 @@ Each lab has a README with a **cost** section and a **clean up** section. `cmd/b
 ## Review checklist (human)
 
 The maintainer checks what a script can't:
+
 1. The answer is right per the cited Learn page, and only one option is defensible.
 2. Distractors are plausible: things a learner might really pick.
 3. The wording is plain, with no trick negatives.

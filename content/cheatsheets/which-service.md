@@ -15,7 +15,7 @@
 | Files must survive restarts and be shared by instances | WEBSITES_ENABLE_APP_SERVICE_STORAGE=true (/home) | Container file system is ephemeral |
 | Value must not swap to production | Slot setting | Normal app settings swap |
 | One local helper process per instance, same lifecycle | App Service sidecar | Shared/GPU model → separate service |
-| Sidecar call from the main container | http://localhost:<port> | Not the container name |
+| Sidecar call from the main container | `http://localhost:<port>` | Not the container name |
 
 ## Azure Container Apps (LP2)
 
@@ -23,7 +23,7 @@
 |---|---|---|
 | Service reachable only inside the environment | --ingress internal | external = callable from outside |
 | Reviewable config as the single source of truth | --yaml (other flags ignored) | az containerapp up is for quick prototypes |
-| Map a stored secret to an env var | secretref:<secret-name> | Never paste the value in YAML |
+| Map a stored secret to an env var | secretref:`<secret-name>` | Never paste the value in YAML |
 | Send 10% of traffic to a new revision | Multiple revision mode + traffic weights | Single revision mode can't split |
 | Testers hit one revision via its own URL | Revision label | Traffic weight on latest moves real users |
 | Changes that create a new revision | Template: image, env vars, scale rules | Secrets, ingress, traffic = application scope |
@@ -113,7 +113,6 @@
 | Exception totals under sampling | sum(itemCount) | count() undercounts |
 | Interactive investigation with filters | Workbook with parameters | Dashboards are at-a-glance |
 | Alert on p95 latency per service | Log search alert | Smart detection learns baselines |
-
 
 ---
 

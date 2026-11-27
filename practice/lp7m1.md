@@ -643,7 +643,7 @@ For each statement, select Yes if the statement is true. Otherwise, select No. A
 | The DLQ must be created before messages can be dead-lettered. | ☐ |
 | Messages stay in the DLQ until someone receives and completes them. | ☐ |
 | Messages dead-lettered after too many deliveries carry the reason MaxDeliveryCountExceeded. | ☐ |
-| Building the path <queue>/$deadletterqueue by hand is the recommended way to read it. | ☐ |
+| Building the path `<queue>`/$deadletterqueue by hand is the recommended way to read it. | ☐ |
 
 <details><summary>💡 Hint</summary>
 
@@ -658,7 +658,7 @@ Every queue gets a DLQ automatically. Messages stay there until handled, and the
 | The DLQ must be created before messages can be dead-lettered. | No | It exists automatically for every queue and subscription. |
 | Messages stay in the DLQ until someone receives and completes them. | Yes | DLQ messages persist until explicitly handled. |
 | Messages dead-lettered after too many deliveries carry the reason MaxDeliveryCountExceeded. | Yes | That's the reason Service Bus sets. |
-| Building the path <queue>/$deadletterqueue by hand is the recommended way to read it. | No | Use sub_queue=ServiceBusSubQueue.DEAD_LETTER. |
+| Building the path `<queue>`/$deadletterqueue by hand is the recommended way to read it. | No | Use sub_queue=ServiceBusSubQueue.DEAD_LETTER. |
 
 Monitor DLQ counts and reprocess only after fixing the root cause.
 
@@ -755,7 +755,6 @@ Queue lock duration defaults to 1 minute and can be set to at most 5. For longer
 📘 Source: [Process messages reliably](https://learn.microsoft.com/en-us/training/modules/queue-process-operations-service-bus/5-process-messages-reliably)
 
 </details>
-
 
 ---
 

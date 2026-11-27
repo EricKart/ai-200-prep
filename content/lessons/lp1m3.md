@@ -88,7 +88,7 @@ Containers in one app are **roommates in the same flat**: they call each other o
 
 **Key facts**
 
-- Containers share **one network namespace**: call another container at **localhost:<port>**, not by container or service name. Each process needs a **unique port**.
+- Containers share **one network namespace**: call another container at **localhost:`<port>`**, not by container or service name. Each process needs a **unique port**.
 - On each instance, the main container calls the sidecar **on that same instance**.
 - Use a short **connection timeout** and an overall request deadline. The main app stays the **external security boundary**: authentication, authorization, validation and response filtering.
 - Request policy: short connect timeout, request deadline, cancellation, a **limited retry only for idempotent, transient errors**, clear error mapping, correlation ids in both containers' logs.

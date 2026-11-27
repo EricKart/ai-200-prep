@@ -807,7 +807,7 @@
      "why": "System logs aren't the documented way to read one session's expiry."
     },
     {
-     "text": "Call GET …/session?identifier=<id> on the pool's management endpoint",
+     "text": "Call GET …/session?identifier=`<id>` on the pool's management endpoint",
      "why": "Correct. The session query returns those details, though the backend must still handle the session disappearing."
     },
     {
@@ -821,7 +821,7 @@
    ],
    "answer": 1,
    "hint": "The pool management API can describe a session by its identifier.",
-   "explain": "GET <POOL_MANAGEMENT_ENDPOINT>/session?identifier=<SESSION_ID> returns creation, last-access and expiration information. It's useful for diagnostics and user messaging, but the session can still disappear before the next call.",
+   "explain": "GET `<POOL_MANAGEMENT_ENDPOINT>`/session?identifier=`<SESSION_ID>` returns creation, last-access and expiration information. It's useful for diagnostics and user messaging, but the session can still disappear before the next call.",
    "origin": "new"
   }
  ]

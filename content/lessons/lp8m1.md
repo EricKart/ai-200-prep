@@ -108,7 +108,7 @@ Don't call Key Vault on every request: keep secrets in memory for a while. The c
 - **Event-driven invalidation**: **SecretNewVersionCreated** via Event Grid → invalidate → refetch on next use. Combine with a TTL as fallback.
 - Scopes: **per-process** (recommended start; 10 replicas × 15-min TTL ≤ 40 calls/hour/secret), **shared distributed** (e.g. Azure Managed Redis; fewer calls, but another place holding secrets), **startup preloading** (+ periodic refresh).
 - TTL guide: daily/weekly rotation → **5–15 min** + Event Grid; monthly/quarterly → **30–60 min**; annual/static → preload, refresh every few hours. For possible emergency revocation: short TTL or Event Grid.
-- On 429: exponential backoff with **jitter** (1, 2, 4, 8, 16 s); log throttling to tune caching. Bursts at deployment → stagger startups or use a shared cache.
+- On 429: exponential backoff with **jitter** (`1, 2, 4, 8, 16` s); log throttling to tune caching. Bursts at deployment → stagger startups or use a shared cache.
 
 | Rotation | Cache approach |
 |---|---|

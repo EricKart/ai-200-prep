@@ -8,7 +8,7 @@ Durable Functions coordinates long-running, multi-step AI workflows with state, 
 **In this lesson**
 
 1. [Separate orchestration logic from activity work](#separate-orchestration-logic-from-activity-work)
-2. [Process independent work with fan-out/fan-in](#process-independent-work-with-fan-out/fan-in)
+2. [Process independent work with fan-out/fan-in](#process-independent-work-with-fan-outfan-in)
 3. [Coordinate human approval with external events](#coordinate-human-approval-with-external-events)
 4. [Design reliable workflow steps](#design-reliable-workflow-steps)
 

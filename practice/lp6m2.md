@@ -6,10 +6,10 @@
 
 Which command subscribes to every channel that starts with ai: ?
 
-- **A.** SUBSCRIBE ai:*
-- **B.** PUBLISH ai:*
-- **C.** XREADGROUP ai:*
-- **D.** PSUBSCRIBE ai:*
+- **A.** SUBSCRIBE `ai:*`
+- **B.** PUBLISH `ai:*`
+- **C.** XREADGROUP `ai:*`
+- **D.** PSUBSCRIBE `ai:*`
 
 <details><summary>💡 Hint</summary>
 
@@ -19,7 +19,7 @@ Pattern subscriptions have their own command, which starts with P.
 
 <details><summary>✅ Answer</summary>
 
-**D.** PSUBSCRIBE ai:*
+**D.** PSUBSCRIBE `ai:*`
 
 - A: SUBSCRIBE takes exact channel names.
 - B: PUBLISH sends a message.
@@ -216,9 +216,9 @@ Learn's example combines pub/sub with WebSocket connections: a backend subscribe
 
 Status channels are named ml:models:resnet:status, ml:models:bert:status and so on. One monitoring service must receive the status of every model, including ones added later. Which subscription fits?
 
-- **A.** PSUBSCRIBE ml:models:*:status
+- **A.** PSUBSCRIBE `ml:models:*`:status
 - **B.** SUBSCRIBE ml:models:resnet:status ml:models:bert:status
-- **C.** SUBSCRIBE ml:models:*:status
+- **C.** SUBSCRIBE `ml:models:*`:status
 - **D.** XREADGROUP on a stream named ml:models
 
 <details><summary>💡 Hint</summary>
@@ -229,14 +229,14 @@ You need a wildcard, and wildcards need a particular command.
 
 <details><summary>✅ Answer</summary>
 
-**A.** PSUBSCRIBE ml:models:*:status
+**A.** PSUBSCRIBE `ml:models:*`:status
 
 - A: Correct. A pattern subscription matches every channel with that shape, including new ones.
 - B: This lists today's channels and misses models added later.
 - C: SUBSCRIBE takes exact channel names. Patterns need PSUBSCRIBE.
 - D: That reads a Stream, not pub/sub channels.
 
-Channels are strings. PSUBSCRIBE subscribes with patterns such as ai:conversations:* or ml:models:*:status, so new matching channels are included.
+Channels are strings. PSUBSCRIBE subscribes with patterns such as `ai:conversations:*` or `ml:models:*`:status, so new matching channels are included.
 
 📘 Source: [Publish and subscribe to events with Redis pub/sub](https://learn.microsoft.com/en-us/training/modules/implement-event-messaging-azure-managed-redis/2-redis-pub-sub)
 
@@ -689,7 +689,6 @@ Pub/sub broadcasts, so every worker processes every request. Stream consumer gro
 📘 Source: [Choose between broadcast and coordinated distribution](https://learn.microsoft.com/en-us/training/modules/implement-event-messaging-azure-managed-redis/4-coordinate-multiple-subscribers)
 
 </details>
-
 
 ---
 

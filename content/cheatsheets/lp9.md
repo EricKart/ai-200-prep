@@ -52,7 +52,6 @@ Lesson: [lp9m1](../lessons/lp9m1.md) · Practice: [lp9m1](../../practice/lp9m1.m
 
 Lesson: [lp9m2](../lessons/lp9m2.md) · Practice: [lp9m2](../../practice/lp9m2.md)
 
-
 ---
 
 Part of **AI-200 Prep**, a free course by Aryan Tripathi · [aryantripathi.dev/ai-200](https://aryantripathi.dev/ai-200) · Written from the public Microsoft Learn course AI-200T00. Not affiliated with Microsoft.

@@ -248,7 +248,7 @@ The plan doesn't scale the model server separately from the API.
 
 Which LinuxFxVersion value does a sidecar-enabled app use?
 
-- **A.** DOCKER|<image>
+- **A.** DOCKER|`<image>`
 - **B.** sidecar
 - **C.** sitecontainers
 - **D.** isMain
@@ -580,9 +580,9 @@ Each listening process needs a unique port.
 
 The main API must call the model-server sidecar, which listens on port 11434. Which URL should the API use?
 
-- **A.** https://<app-name>.azurewebsites.net:11434
+- **A.** https://`<app-name>`.azurewebsites.net:11434
 - **B.** http://model-server:11434
-- **C.** http://<app-name>.scm.azurewebsites.net:11434
+- **C.** http://`<app-name>`.scm.azurewebsites.net:11434
 - **D.** http://localhost:11434
 
 <details><summary>💡 Hint</summary>
@@ -598,7 +598,7 @@ The containers share a network. What host name reaches a process on the same ins
 - A: Sidecars aren't published on the public hostname.
 - B: Containers don't reach each other by container name in App Service sidecars.
 - C: The SCM site is the Kudu diagnostic site, not the sidecar.
-- D: Correct. Containers share a network namespace and use localhost:<port>.
+- D: Correct. Containers share a network namespace and use localhost:`<port>`.
 
 All containers share one network namespace, so each instance's main API calls its own sidecar on localhost.
 
@@ -998,7 +998,6 @@ It must be enabled when the image is pulled through VNet integration.
 📘 Source: [Diagnose sidecar failures](https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/5-diagnose-sidecar-failures)
 
 </details>
-
 
 ---
 

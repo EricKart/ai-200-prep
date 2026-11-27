@@ -23,7 +23,7 @@
 - Learn recommends **3** replicas for production APIs.
 - ClusterIP is the **default** type.
 - port ≠ targetPort: clients use port; the container listens on targetPort.
-- EXTERNAL-IP <pending> = load balancer still provisioning; wait.
+- EXTERNAL-IP `<pending>` = load balancer still provisioning; wait.
 - kubectl apply returns before the Pods are ready.
 
 Lesson: [lp3m1](../lessons/lp3m1.md) · Practice: [lp3m1](../../practice/lp3m1.md)
@@ -83,7 +83,6 @@ curl http://localhost:8080/api/inference
 kubectl get service inference-api
 kubectl get ingress
 ```
-
 
 ---
 
