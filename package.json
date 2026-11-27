@@ -7,7 +7,8 @@
   "scripts": {
     "check": "node tools/check.mjs",
     "report": "node tools/check.mjs --report",
-    "build:md": "node tools/build-md.mjs"
+    "build:md": "node tools/build-md.mjs",
+    "build:labs": "node tools/build-labs.mjs"
   },
   "license": "MIT"
 }
