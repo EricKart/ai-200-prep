@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # @@ vars
 # Git Bash on Windows rewrites anything that starts with "/" (like /subscriptions/...).
 # This line turns that off. On Mac, Linux and Cloud Shell it does nothing, so keep it.
@@ -167,7 +168,7 @@ az keyvault secret set --vault-name $KV --name openai-api-key --value "sk-demo-R
 
 # @@ reconnect
 # 1) Go to the lab folder (Step 1 put it in your home folder) and turn on the venv.
-cd ~/ai200-lp8-lab
+cd ~/ai200-lp8-lab || echo "!! Could not open ~/ai200-lp8-lab."
 [ -f lab_env.py ] || echo "!! Not in the lab folder. cd into your ai200-lp8-lab folder yourself, then paste this block again."
 if [ -f .venv/Scripts/activate ]; then source .venv/Scripts/activate; else source .venv/bin/activate; fi
 # 2) Ask Azure for the names of what you ALREADY created (no new names are made).

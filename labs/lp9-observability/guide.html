@@ -318,7 +318,7 @@ az account show --query "{name:name, id:id, user:user.name}" -o table</pre></div
   </table></div>
   <p>This lab mostly uses one terminal. Paste this block if you close it, or if you open a second one (for example to run queries while <code class="i">run_demo.py --serve</code> is running).</p>
   <div class="note bad"><span class="t">Never run Step 3 again to "fix" a new terminal</span>Step 3 invents <b>new</b> random names, which point at resources that don't exist. This block <b>asks Azure</b> for the Application Insights already in <code class="i">rg-ai200-lp9</code>. Put your email in the <code class="i">EMAIL</code> line again if you haven't done Step 13 yet.</div>
-  <ul class="cmnotes"><li>1) Go to the lab folder (Step 1 put it in your home folder) and turn on the venv.</li><li>2) Ask Azure for the names of what you ALREADY created (no new names are made).</li><li>&lt;-- your email again (only Step 13 uses it)</li><li>3) The environment variables the Python scripts read (only if Application Insights was found).</li></ul><div class="shell"><div class="tabs"><button data-sh="bash">Bash · zsh · Git Bash</button><button data-sh="ps">PowerShell</button></div><div class="code" data-sh="bash"><button class="copy">Copy</button><pre>cd ~/ai200-lp9-lab
+  <ul class="cmnotes"><li>1) Go to the lab folder (Step 1 put it in your home folder) and turn on the venv.</li><li>2) Ask Azure for the names of what you ALREADY created (no new names are made).</li><li>&lt;-- your email again (only Step 13 uses it)</li><li>3) The environment variables the Python scripts read (only if Application Insights was found).</li></ul><div class="shell"><div class="tabs"><button data-sh="bash">Bash · zsh · Git Bash</button><button data-sh="ps">PowerShell</button></div><div class="code" data-sh="bash"><button class="copy">Copy</button><pre>cd ~/ai200-lp9-lab || echo &quot;!! Could not open ~/ai200-lp9-lab.&quot;
 [ -f run_demo.py ] || echo &quot;!! Not in the lab folder. cd into your ai200-lp9-lab folder yourself, then paste this block again.&quot;
 if [ -f .venv/Scripts/activate ]; then source .venv/Scripts/activate; else source .venv/bin/activate; fi
 export MSYS_NO_PATHCONV=1
@@ -329,7 +329,8 @@ AI=$(az monitor app-insights component show --resource-group $RG --query &quot;[
 AG_ID=$(az monitor action-group show --name ag-ai200-oncall --resource-group $RG --query id -o tsv 2&gt;/dev/null)
 if [ -n &quot;$AI&quot; ]; then
   AI_ID=$(az monitor app-insights component show --app $AI --resource-group $RG --query id -o tsv)
-  export APPLICATIONINSIGHTS_CONNECTION_STRING=$(az monitor app-insights component show --app $AI --resource-group $RG --query connectionString -o tsv)
+  APPLICATIONINSIGHTS_CONNECTION_STRING=$(az monitor app-insights component show --app $AI --resource-group $RG --query connectionString -o tsv)
+  export APPLICATIONINSIGHTS_CONNECTION_STRING
   export APPINSIGHTS_RESOURCE_ID=&quot;$AI_ID&quot;
 fi
 echo &quot;App Insights: $AI&quot;
@@ -476,8 +477,9 @@ az monitor app-insights component create --app $AI --resource-group $RG `
 
   <p>Application Insights stores its data <b>in</b> the Log Analytics workspace ("workspace-based"). Now give the code its connection string:</p>
   <div class="shell"><div class="tabs"><button data-sh="bash">Bash · zsh · Git Bash</button><button data-sh="ps">PowerShell</button></div><div class="code" data-sh="bash"><button class="copy">Copy</button><pre>AI_ID=$(az monitor app-insights component show --app $AI --resource-group $RG --query id -o tsv)
-export APPLICATIONINSIGHTS_CONNECTION_STRING=$(az monitor app-insights component show \
+APPLICATIONINSIGHTS_CONNECTION_STRING=$(az monitor app-insights component show \
   --app $AI --resource-group $RG --query connectionString -o tsv)
+export APPLICATIONINSIGHTS_CONNECTION_STRING
 export APPINSIGHTS_RESOURCE_ID=&quot;$AI_ID&quot;
 echo $APPLICATIONINSIGHTS_CONNECTION_STRING</pre></div><div class="code" data-sh="ps"><button class="copy">Copy</button><pre>$AI_ID = az monitor app-insights component show --app $AI --resource-group $RG --query id -o tsv
 $env:APPLICATIONINSIGHTS_CONNECTION_STRING = az monitor app-insights component show `

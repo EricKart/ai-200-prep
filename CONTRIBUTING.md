@@ -4,7 +4,7 @@ Thanks for helping other people pass AI-200. Small fixes are just as welcome as 
 
 ## Report a problem (no code)
 
-Use **[Wrong answer or unclear question](../../issues/new?template=wrong-answer.yml)**. Include the question id
+Use **[Wrong answer or unclear question](https://github.com/EricKart/ai-200-prep/issues/new?template=wrong-answer.yml)**. Include the question id
 (for example `lp7m1-012`, shown under each question on the site) and the Microsoft Learn link that proves your point.
 
 ## Fix it yourself

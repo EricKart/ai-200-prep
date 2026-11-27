@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # @@ vars
 # Git Bash on Windows rewrites anything that starts with "/" (like /subscriptions/...).
 # This line turns that off. On Mac, Linux and Cloud Shell it does nothing, so keep it.
@@ -28,8 +29,9 @@ az monitor app-insights component create --app $AI --resource-group $RG \
 
 # @@ env
 AI_ID=$(az monitor app-insights component show --app $AI --resource-group $RG --query id -o tsv)
-export APPLICATIONINSIGHTS_CONNECTION_STRING=$(az monitor app-insights component show \
+APPLICATIONINSIGHTS_CONNECTION_STRING=$(az monitor app-insights component show \
   --app $AI --resource-group $RG --query connectionString -o tsv)
+export APPLICATIONINSIGHTS_CONNECTION_STRING
 export APPINSIGHTS_RESOURCE_ID="$AI_ID"
 echo $APPLICATIONINSIGHTS_CONNECTION_STRING
 
@@ -93,7 +95,7 @@ az rest --method get \
 
 # @@ reconnect
 # 1) Go to the lab folder (Step 1 put it in your home folder) and turn on the venv.
-cd ~/ai200-lp9-lab
+cd ~/ai200-lp9-lab || echo "!! Could not open ~/ai200-lp9-lab."
 [ -f run_demo.py ] || echo "!! Not in the lab folder. cd into your ai200-lp9-lab folder yourself, then paste this block again."
 if [ -f .venv/Scripts/activate ]; then source .venv/Scripts/activate; else source .venv/bin/activate; fi
 # 2) Ask Azure for the names of what you ALREADY created (no new names are made).
@@ -106,7 +108,8 @@ AG_ID=$(az monitor action-group show --name ag-ai200-oncall --resource-group $RG
 # 3) The environment variables the Python scripts read (only if Application Insights was found).
 if [ -n "$AI" ]; then
   AI_ID=$(az monitor app-insights component show --app $AI --resource-group $RG --query id -o tsv)
-  export APPLICATIONINSIGHTS_CONNECTION_STRING=$(az monitor app-insights component show --app $AI --resource-group $RG --query connectionString -o tsv)
+  APPLICATIONINSIGHTS_CONNECTION_STRING=$(az monitor app-insights component show --app $AI --resource-group $RG --query connectionString -o tsv)
+  export APPLICATIONINSIGHTS_CONNECTION_STRING
   export APPINSIGHTS_RESOURCE_ID="$AI_ID"
 fi
 echo "App Insights: $AI"

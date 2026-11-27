@@ -47,7 +47,7 @@ The full list of modules, units and Learn links is in [course.json](course.json)
 ## Found a mistake?
 
 Each question on the site has a **Report** link, which opens a pre-filled issue here. You can also
-[open an issue](../../issues/new/choose) or send a pull request: see [CONTRIBUTING.md](CONTRIBUTING.md).
+[open an issue](https://github.com/EricKart/ai-200-prep/issues/new/choose) or send a pull request: see [CONTRIBUTING.md](CONTRIBUTING.md).
 Every change must pass the [quality gates](QUALITY.md) and get a maintainer's review before it merges.
 
 ## Honest notes
