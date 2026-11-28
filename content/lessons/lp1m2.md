@@ -18,6 +18,16 @@ App Service can run your container as a managed web app without you looking afte
 
 App Service is a **managed host for your container**: you tell it which image to pull and how to log in to the registry, and it handles servers, load balancing and scaling. Managed identity is like a **staff badge** the app shows to ACR, so no password is stored anywhere.
 
+```mermaid
+---
+title: Pulling from ACR without passwords
+---
+flowchart LR
+    APP["Web app<br/>system-assigned identity"] -->|AcrPull role| ACR["Azure Container Registry"]
+    ACR -->|image pulled with the identity| C["Container<br/>on each instance"]
+    U["Users"] -->|HTTPS| APP
+```
+
 **Key facts**
 
 - App Service runs **custom Linux containers** as web apps (Web App for Containers). It handles provisioning, load balancing and scaling.
@@ -51,6 +61,20 @@ App Service is a **managed host for your container**: you tell it which image to
 
 Runtime settings are the **house rules** App Service applies to your container: which command starts it, which door (port) traffic comes through, which folder (`/home`) survives a restart, whether it may fall asleep, and which URL tells App Service it's still alive.
 
+<!-- widget: PortPath -->
+
+```mermaid
+---
+title: Where requests go
+---
+flowchart LR
+    U["Request<br/>HTTPS 443"] --> FE["App Service front end<br/>terminates TLS"]
+    FE --> Q{"Container listens on<br/>80 or 8080?"}
+    Q -->|Yes| OK["Routed automatically"]
+    Q -->|No, e.g. 8000| W["Set WEBSITES_PORT=8000"]
+    W --> OK
+```
+
 **Key facts**
 
 - A **startup command** (`az webapp config set --startup-file "…"`) replaces the Dockerfile **CMD**; the **ENTRYPOINT** stays. For shell processing, prefix with `/bin/bash -c '…'`.
@@ -82,6 +106,21 @@ Runtime settings are the **house rules** App Service applies to your container: 
 📘 Microsoft Learn: [Configure application settings](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/4-configure-settings)
 
 App settings are **notes App Service slips into the container's pocket** as environment variables when it starts. The same image can run in test and production with different notes. Slot settings are notes that **stay with the room** (slot) when you swap, and Key Vault references are notes that say "fetch the real secret from the vault".
+
+<!-- widget: SlotSwap -->
+
+```mermaid
+---
+title: Which kind of setting?
+---
+flowchart TD
+    S{"Is it a secret?"} -->|Yes| KV["Key Vault reference<br/>+ managed identity"]
+    S -->|No| SL{"Must it stay with<br/>the slot on swap?"}
+    SL -->|Yes| SS["Slot setting<br/>e.g. ENVIRONMENT=staging"]
+    SL -->|No| NET{".NET app that expects<br/>typed connection strings?"}
+    NET -->|Yes| CS["Connection string<br/>SQLAZURECONNSTR_…"]
+    NET -->|No| AS["App setting<br/>becomes an env var"]
+```
 
 **Key facts**
 
@@ -115,6 +154,17 @@ App settings are **notes App Service slips into the container's pocket** as envi
 📘 Microsoft Learn: [Observe and troubleshoot containerized apps](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-app-service/5-observe-troubleshoot)
 
 When a container misbehaves, App Service gives you a **live microphone** (log stream), a **back office** (Kudu, the SCM site) to check environment variables and log files, a **long-term archive** (Log Analytics) and, if your image allows it, a **door into the container** (SSH).
+
+```mermaid
+---
+title: Symptom → first place to look
+---
+flowchart LR
+    A["Container won't start"] --> A1["Log stream<br/>missing env var, port, dependency"]
+    B["Every request is 404"] --> B1["WEBSITES_PORT and bind address<br/>bound to localhost?"]
+    C["Setting is undefined"] --> C1["Kudu /Env<br/>typo or not saved"]
+    D["Slow first request"] --> D1["Always On, image size"]
+```
 
 **Key facts**
 

@@ -19,6 +19,17 @@ OpenTelemetry gives every request a trace that follows it across services. You'l
 
 **Metrics** tell you something changed, **traces** tell you where, **logs** tell you why. A trace is one request's journey; each step is a **span** with timing and labels. A `traceparent` header carries the trace ID from service to service so the steps join up.
 
+```mermaid
+---
+title: OpenTelemetry → Application Insights tables
+---
+flowchart LR
+    SV["Server / Consumer span"] --> RQ["requests"]
+    CL["Client / Internal / Producer span"] --> DP["dependencies"]
+    TID["Trace ID"] --> OP["operation_Id"]
+    AT["Span attributes"] --> CD["customDimensions"]
+```
+
 **Key facts**
 
 - Three pillars: **distributed tracing** (path and timing of a request), **metrics** (aggregates: counts, error rates, percentiles), **logs** (detailed timestamped events).
@@ -68,6 +79,17 @@ OpenTelemetry gives every request a trace that follows it across services. You'l
 
 Automatic capture can't see your own steps (assemble prompt, score results). Wrap them in **custom spans**, add **attributes** like the model name or token count, choose the right **span kind**, and nest spans so the trace looks like a tree of your pipeline.
 
+```mermaid
+---
+title: One trace across services
+---
+flowchart LR
+    U["Request"] --> A["API span<br/>Server"]
+    A -->|traceparent header| B["Worker span<br/>Server"]
+    A --> D1["Call to Cosmos DB<br/>Client span"]
+    B --> D2["Call to the model<br/>Client span"]
+```
+
 **Key facts**
 
 - `tracer = trace.get_tracer("name")` after configure_azure_monitor() (no extra registration in Python). `with tracer.start_as_current_span("GenerateEmbedding") as span:` starts and ends the span automatically.
@@ -88,6 +110,15 @@ Automatic capture can't see your own steps (assemble prompt, score results). Wra
 📘 Microsoft Learn: [Export telemetry to Azure Monitor](https://learn.microsoft.com/en-us/training/modules/instrument-app-opentelemetry/5-export-telemetry-azure-monitor)
 
 The Distro sends telemetry **straight** to Application Insights. **Sampling** keeps costs down by sending a share of traces (metrics are never sampled). If the network drops, telemetry is **cached locally** and retried for up to 48 hours. Check it's arriving with Live Metrics or a quick KQL query.
+
+```mermaid
+---
+title: From code to Azure Monitor
+---
+flowchart LR
+    APP["App + OpenTelemetry SDK"] -->|configure_azure_monitor| EXP["Azure Monitor exporter"]
+    EXP -->|connection string| AI["Application Insights<br/>requests, dependencies, traces"]
+```
 
 **Key facts**
 

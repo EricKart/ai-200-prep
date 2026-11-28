@@ -18,6 +18,16 @@ Cosmos DB can store embeddings next to your data and search them by meaning. You
 
 An embedding is a **list of numbers that captures meaning**; texts that mean similar things get similar lists. In Cosmos DB you store that list right next to the document. The container needs a **vector policy** (where the list is, how long it is, how to compare) and a **vector index** to search fast. Both are set when the container is born.
 
+```mermaid
+---
+title: Which vector index?
+---
+flowchart TD
+    Q{"How many vectors per partition?"} -->|Small, exact results, up to 505 dims| F["flat<br/>exact, 100% recall"]
+    Q -->|Up to about 50,000| QF["quantizedFlat<br/>compressed brute force"]
+    Q -->|Millions| DA["diskANN<br/>approximate, fast"]
+```
+
 **Key facts**
 
 - Embeddings are arrays of floats from models such as Azure OpenAI. **text-embedding-ada-002 = 1,536** dimensions; **text-embedding-3-large = 3,072**.
@@ -51,6 +61,16 @@ An embedding is a **list of numbers that captures meaning**; texts that mean sim
 
 Turn the user's question into an embedding with the **same model** you used for the documents, then ask for the **TOP N** documents ordered by **VectorDistance**. Higher cosine score = closer meaning.
 
+```mermaid
+---
+title: Semantic search in Cosmos DB
+---
+flowchart LR
+    Q["User question"] --> E["Embedding model"]
+    E -->|query vector| VD["SELECT TOP 5 …<br/>ORDER BY VectorDistance(c.embedding, @v)"]
+    VD --> R["Closest documents<br/>context for the LLM"]
+```
+
 **Key facts**
 
 - **VectorDistance(vector_expr_1, vector_expr_2, bool_expr, obj_expr)**: document path, query vector, optional **true to force brute force**, optional options object.
@@ -81,6 +101,16 @@ Turn the user's question into an embedding with the **same model** you used for 
 
 Real searches mix **meaning** with **rules**: only published networking guides, only this user's access group. Add WHERE filters to vector queries. When users type exact codes like 0x80070005, add **full-text** scoring and merge both rankings with **RRF**.
 
+```mermaid
+---
+title: Vector, hybrid, or filtered?
+---
+flowchart TD
+    Q{"What does the user type?"} -->|Natural language| V["Vector search"]
+    Q -->|Exact codes or terms,<br/>e.g. 0x80070005| H["Hybrid: RRF of<br/>VectorDistance + FullTextScore"]
+    Q -->|Must respect who can see it| W["Add WHERE ARRAY_CONTAINS<br/>(c.accessGroups, @group)"]
+```
+
 **Key facts**
 
 - Combine VectorDistance with WHERE filters (category, date, product, `ARRAY_CONTAINS(c.accessGroups, @userGroup)`, status = 'published').
@@ -110,6 +140,17 @@ Real searches mix **meaning** with **rules**: only published networking guides, 
 📘 Microsoft Learn: [Use the change feed to trigger embedding refresh](https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-cosmos-db/5-change-feed-trigger-embedding-refresh)
 
 The change feed is a **running diary** of every insert and update in a container. A function reads the diary and **re-embeds** documents whose text changed, so search never serves stale meaning. A separate **lease container** is the bookmark that remembers how far each worker has read.
+
+```mermaid
+---
+title: Keep embeddings fresh
+---
+flowchart LR
+    APP["App updates a document"] --> CF["Change feed<br/>ordered per partition key"]
+    CF -->|push: Functions trigger<br/>or processor library| FN["Re-embed changed text"]
+    FN -->|upsert new vector| DB[("Container")]
+    CF -.->|pull: continuation token| BATCH["Batch job or migration"]
+```
 
 **Key facts**
 

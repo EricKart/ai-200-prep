@@ -19,6 +19,16 @@ pgvector turns PostgreSQL into a vector store. You'll learn the vector types and
 
 pgvector adds a **vector** column type to PostgreSQL, so an embedding sits in the same row as the document's title and category. Three operators measure closeness: `<->` straight-line, `<=>` angle (cosine, the usual choice for text), `<#>` negative inner product. Smaller result = closer.
 
+```mermaid
+---
+title: Which distance operator?
+---
+flowchart TD
+    Q{"Embeddings for…"} -->|Text, direction matters| C["&lt;=&gt; cosine distance"]
+    Q -->|Magnitude carries meaning| L["&lt;-&gt; L2 distance"]
+    Q -->|Maximum inner product search| I["&lt;#&gt; negative inner product"]
+```
+
 **Key facts**
 
 - Enable with `CREATE EXTENSION IF NOT EXISTS vector;` (server admin or **azure_pg_admin** role). Check with `SELECT * FROM pg_extension WHERE extname = 'vector';`.
@@ -46,6 +56,15 @@ pgvector adds a **vector** column type to PostgreSQL, so an embedding sits in th
 📘 Microsoft Learn: [Perform fast vector similarity search](https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/3-perform-fast-vector-similarity-search)
 
 Without an index, every query measures distance to every row: exact but slow. **IVFFlat** groups vectors into clusters and searches the nearest few (needs data first). **HNSW** builds a layered graph and hops toward the answer: faster and better recall, more memory. The index's operator class must match the query's operator, or PostgreSQL ignores it.
+
+```mermaid
+---
+title: IVFFlat or HNSW?
+---
+flowchart TD
+    Q{"Is the table empty now,<br/>or do you need the best recall?"} -->|Yes| H["HNSW<br/>better recall, more memory, slower build"]
+    Q -->|No: tight memory, fast rebuilds| I["IVFFlat<br/>build after loading data"]
+```
 
 **Key facts**
 
@@ -77,6 +96,17 @@ Without an index, every query measures distance to every row: exact but slow. **
 📘 Microsoft Learn: [Manage index lifecycle and embedding updates](https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/4-manage-index-lifecycle-embedding-updates)
 
 Vector indexes age: lots of new or different data makes them less accurate. Rebuild them **without downtime** using CREATE INDEX CONCURRENTLY. Keep embeddings in step with content (now, or in batches via a "stale" flag), and switch embedding models with a **parallel column**.
+
+```mermaid
+---
+title: Switch embedding models with no downtime
+---
+flowchart LR
+    A["Add column<br/>embedding_v2"] --> B["Backfill in batches"]
+    B --> C["CREATE INDEX CONCURRENTLY"]
+    C --> D["Switch queries to v2"]
+    D --> E["Drop the old column"]
+```
 
 **Key facts**
 
@@ -130,6 +160,17 @@ Real searches add **filters** (category, date), a **quality floor** (distance th
 📘 Microsoft Learn: [Implement retrieval patterns for RAG pipelines](https://learn.microsoft.com/en-us/training/modules/implement-vector-search-azure-database-postgresql/6-implement-retrieval-patterns-rag-pipelines)
 
 In RAG, PostgreSQL is the **librarian**: it finds the right passages (chunks) and hands them, with citations, to the language model. Split documents into chunks, keep a link back to the source, sometimes grab the neighbouring chunks too, and measure how good retrieval is with precision, recall and MRR.
+
+```mermaid
+---
+title: RAG retrieval with pgvector
+---
+flowchart LR
+    Q["Question"] --> E["Embed"]
+    E --> S["ORDER BY embedding &lt;=&gt; $1<br/>LIMIT k"]
+    S --> F["Filter by threshold"]
+    F --> L["LLM answers from the chunks"]
+```
 
 **Key facts**
 

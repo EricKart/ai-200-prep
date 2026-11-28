@@ -18,6 +18,17 @@ Event Grid tells your services that something happened, such as a new blob. You'
 
 Event Grid is a **doorbell system**: when something happens (a blob lands, a model finishes training), it rings every handler that subscribed, instead of each one checking again and again. Azure services ring through **system topics**; your own app rings through **custom topics**.
 
+```mermaid
+---
+title: System topic or custom topic
+---
+flowchart LR
+    BLOB["Blob Storage<br/>(Azure service)"] -->|BlobCreated| ST["System topic"]
+    APP["Your AI app"] -->|InferenceCompleted| CT["Custom topic"]
+    ST --> SUB1["Subscription → Function"]
+    CT --> SUB2["Subscription → webhook"]
+```
+
 **Key facts**
 
 - Fully managed **event routing**: low latency, millions of events per second, **per-event pricing**. Removes polling.
@@ -47,6 +58,17 @@ Event Grid is a **doorbell system**: when something happens (a blob lands, a mod
 📘 Microsoft Learn: [Work with event schemas and properties](https://learn.microsoft.com/en-us/training/modules/event-driven-workflows-event-grid/3-event-schemas-properties)
 
 Use **CloudEvents**, the open standard envelope: **type** says what happened, **source** where, **id** which one, **subject** a path you can filter on. Subscriptions then pick events by **type**, by **subject** prefix or suffix, or by values **inside the data**.
+
+```mermaid
+---
+title: Filters, from cheapest to most specific
+---
+flowchart LR
+    E["Event"] --> T["Event type<br/>--included-event-types"]
+    T --> S["Subject<br/>begins with / ends with"]
+    S --> AD["Advanced filter on data<br/>data.confidence &gt; 0.9"]
+    AD --> H["Handler"]
+```
 
 **Key facts**
 
@@ -78,6 +100,17 @@ Use **CloudEvents**, the open standard envelope: **type** says what happened, **
 📘 Microsoft Learn: [Configure delivery and retry policies for reliable event processing](https://learn.microsoft.com/en-us/training/modules/event-driven-workflows-event-grid/4-delivery-retry-policies)
 
 Event Grid knocks on your endpoint and waits **30 seconds**. No answer, or a temporary error? It knocks again later (10 s, 30 s, 1 min, 5 min…) for up to a day. Some answers (400, 403, 413) mean "stop trying". If it finally gives up, it can drop the event in a **Blob Storage dead-letter** container, but only if you set one.
+
+```mermaid
+---
+title: What Event Grid does with the response
+---
+flowchart TD
+    R{"Handler response"} -->|200–204 or 202| OK["Delivered"]
+    R -->|400, 403, 413| NO["No retry<br/>dead-letter if configured"]
+    R -->|503 or timeout over 30 s| RT["Retry with backoff"]
+    RT -->|retries or TTL used up| DL["Dead-letter blob"]
+```
 
 **Key facts**
 

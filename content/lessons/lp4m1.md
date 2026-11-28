@@ -17,6 +17,17 @@ Cosmos DB for NoSQL stores JSON documents at any scale. You'll learn its resourc
 
 Cosmos DB is a stack of boxes: **account** (the address) → **database** (a label for a group of containers) → **container** (where JSON items live and the unit that scales) → **item**. The **partition key** decides which shelf each item lands on; pick one with lots of different values so no shelf gets crowded.
 
+```mermaid
+---
+title: Account → database → container → item
+---
+flowchart LR
+    A["Account<br/>endpoint + keys"] --> DB["Database<br/>can share throughput"]
+    DB --> C["Container<br/>partition key, indexing, RU/s"]
+    C --> I["Items<br/>JSON documents"]
+    C --> LP["Partition key<br/>high cardinality: no hot partitions"]
+```
+
 **Key facts**
 
 - Hierarchy: **account** (endpoint `https://<account-name>.documents.azure.com:443/`; default consistency, geo-replication regions, network access) → **database** (logical namespace; scope for shared throughput) → **container** (unit of scalability, holds JSON items, schema-agnostic) → **items**.
@@ -49,6 +60,16 @@ Cosmos DB is a stack of boxes: **account** (the address) → **database** (a lab
 
 Create **one CosmosClient** when the app starts and reuse it; it keeps warm connections. Sign in with **Entra ID** (DefaultAzureCredential) rather than an all-powerful key. To fetch one item you know, use a **point read**; it's the cheapest call there is.
 
+```mermaid
+---
+title: Which write method?
+---
+flowchart TD
+    Q{"Does the item exist?"} -->|Must not exist yet| CR["create_item<br/>409 Conflict if it does"]
+    Q -->|Don't care: create or replace| UP["upsert_item"]
+    Q -->|Must exist| RE["replace_item<br/>optional etag check"]
+```
+
 **Key facts**
 
 - **CosmosClient** is the entry point (connection pooling, routing, failover). SDKs for .NET, Python (`azure-cosmos`), JavaScript, Java and Go.
@@ -80,6 +101,16 @@ Create **one CosmosClient** when the app starts and reuse it; it keeps warm conn
 📘 Microsoft Learn: [Query Azure Cosmos DB for NoSQL](https://learn.microsoft.com/en-us/training/modules/build-query-azure-cosmos-db/4-query-cosmos-db-nosql)
 
 Queries look like SQL, but over JSON. They're cheapest when they hit **one partition** (include the partition key), return **only the fields you need**, and use **parameters** for user input.
+
+```mermaid
+---
+title: A parameterized query, step by step
+---
+flowchart LR
+    F["FROM products p"] --> W["WHERE ARRAY_CONTAINS(p.features, @feature)"]
+    W --> S["SELECT VALUE p.name"]
+    S --> T["TOP 10"]
+```
 
 **Key facts**
 

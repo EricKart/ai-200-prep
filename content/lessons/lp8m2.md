@@ -18,6 +18,17 @@ App Configuration holds settings and feature flags that change without redeployi
 
 App Configuration is a **central settings board**. Each setting has a **key** (like `OpenAI:Endpoint`), a value, and optionally a **label** (like Production). The Python **provider** loads the settings you pick into a dictionary, and can refresh them when you change a **sentinel** key.
 
+```mermaid
+---
+title: One key, several labels
+---
+flowchart LR
+    K["Key<br/>OpenAI:Endpoint"] --> L0["label: (null)<br/>default value"]
+    K --> L1["label: dev"]
+    K --> L2["label: prod"]
+    APP["App loads label prod"] --> L2
+```
+
 **Key facts**
 
 - Each setting: **key** (case-sensitive; hierarchy with `:` or `/`), **value** (key + value ≤ **10 KB**), **label** (variants; no label = **null label**, the default), **content type** (e.g. application/json; Key Vault reference types), **tags**.
@@ -49,6 +60,16 @@ App Configuration is a **central settings board**. Each setting has a **key** (l
 
 Same key, different label per environment: `Pipeline:BatchSize` is 10 in Development and 200 in Production. Load defaults first, then the environment's label on top. **Feature flags** are switches you flip at runtime: kill switches, gradual model rollouts, A/B tests.
 
+```mermaid
+---
+title: Refresh with a sentinel key
+---
+flowchart LR
+    APP["App"] -->|poll every interval| SEN["Sentinel key"]
+    SEN -->|changed?| R{"Yes"}
+    R --> ALL["Reload all settings<br/>+ feature flags"]
+```
+
 **Key facts**
 
 - Labels create variants of one key (Development 10, Staging 50, Production 200). **Null label** (`\0`) = default.
@@ -71,6 +92,15 @@ Same key, different label per environment: `Pipeline:BatchSize` is 10 in Develop
 
 A **Key Vault reference** is a setting whose value is a **pointer** to a secret. The app loads everything through App Configuration, and the provider quietly fetches the secret from Key Vault. The app's identity needs **two roles**: one on each service.
 
+```mermaid
+---
+title: A Key Vault reference
+---
+flowchart LR
+    APP["App"] -->|reads OpenAI:ApiKey| AC["App Configuration<br/>holds only the secret URI"]
+    APP -->|"its own identity resolves it<br/>(Secrets User)"| KV["Key Vault<br/>holds the value"]
+```
+
 **Key facts**
 
 - A reference's value is a URI to a Key Vault secret; content type `application/vnd.microsoft.appconfig.keyvaultref+json;charset=utf-8`. It supports labels and selectors like any key.
@@ -92,6 +122,19 @@ A **Key Vault reference** is a setting whose value is a **pointer** to a secret.
 📘 Microsoft Learn: [Decide what to store in App Configuration vs Key Vault](https://learn.microsoft.com/en-us/training/modules/manage-app-settings-app-config/5-decide-app-config-vs-key-vault)
 
 Simple test: **could this value alone let someone in?** Yes → Key Vault. No → App Configuration. Then use App Configuration as the **single front door**, with Key Vault references for the secrets.
+
+```mermaid
+---
+title: Where does this setting go?
+---
+flowchart TD
+    Q{"Is it a secret?"} -->|No| F{"On/off switch?"}
+    F -->|Yes| FF["App Configuration<br/>feature flag"]
+    F -->|No| V["App Configuration value"]
+    Q -->|Yes| C{"Certificate?"}
+    C -->|Yes| KVD["Key Vault directly"]
+    C -->|No| REF["Key Vault, referenced<br/>from App Configuration"]
+```
 
 **Key facts**
 

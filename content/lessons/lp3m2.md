@@ -17,6 +17,16 @@ Applications need settings, secrets and sometimes durable storage. You'll learn 
 
 A ConfigMap is a **settings sheet** kept outside the image. Pods can read it as environment variables (read once at start) or as **files** on disk (which refresh when the sheet changes). An **immutable** ConfigMap is a sheet that's been laminated: to change it, make a new one.
 
+```mermaid
+---
+title: Will the Pod see a ConfigMap change?
+---
+flowchart TD
+    Q{"How is it consumed?"} -->|Environment variables| E["No: restart the Pods"]
+    Q -->|Mounted volume| V["Yes: updated on kubelet sync"]
+    Q -->|Mounted with subPath| S["No"]
+```
+
 **Key facts**
 
 - **ConfigMaps** store **non-sensitive** configuration (feature flags, endpoints) as key-value pairs in `data`; `binaryData` holds base64 binary values.
@@ -46,6 +56,18 @@ A ConfigMap is a **settings sheet** kept outside the image. Pods can read it as 
 
 Kubernetes Secrets are the cluster's **small safe** for API keys and passwords. For stricter rules (audit trails, automatic rotation), keep the secrets in **Key Vault** and let the CSI driver bring them into Pods as files, or let **App Configuration** decide which secrets each app gets.
 
+```mermaid
+---
+title: Three places a Pod's secrets can come from
+---
+flowchart LR
+    KS["Kubernetes Secret<br/>lives in the cluster"] -->|env vars or files| P["Pod"]
+    KV["Azure Key Vault"] -->|Secrets Store CSI Driver<br/>polls and updates| F["Mounted files<br/>no Pod restart"]
+    F --> P
+    AC["App Configuration provider"] -->|generates| KS2["Kubernetes Secrets<br/>from Key Vault references"]
+    KS2 --> P
+```
+
 **Key facts**
 
 - Secrets hold sensitive values (connection strings, API keys) out of source control and images. `kubectl create secret generic app-secrets --from-literal=…`; also from files or YAML (GitOps).
@@ -74,6 +96,17 @@ Kubernetes Secrets are the cluster's **small safe** for API keys and passwords. 
 📘 Microsoft Learn: [Attach persistent storage to an app](https://learn.microsoft.com/en-us/training/modules/configure-apps-azure-kubernetes-service/4-persistent-storage)
 
 A Pod's own disk is **wiped** when it restarts. A **PersistentVolumeClaim** is a request slip: "I need 10 GiB of this kind of storage". Azure Disk is a **personal drive** (one node at a time); Azure Files is a **shared drive** many Pods can use at once.
+
+```mermaid
+---
+title: Disk or Files?
+---
+flowchart TD
+    Q{"How many Pods write at once?"} -->|One| D["Azure Disk<br/>managed-csi, ReadWriteOnce"]
+    Q -->|Several| F["Azure Files<br/>azurefile-csi, ReadWriteMany"]
+    PVC["PersistentVolumeClaim"] -->|storageClassName| D
+    PVC -->|storageClassName| F
+```
 
 **Key facts**
 

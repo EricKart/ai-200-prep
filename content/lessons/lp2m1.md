@@ -19,6 +19,18 @@ Azure Container Apps runs containers without you managing Kubernetes. This modul
 
 A Container Apps **environment** is like an **office floor**: the apps on the same floor share the internal network and the same logging setup. Put services that talk privately on the same floor, and give dev, test and production their own floors.
 
+```mermaid
+---
+title: One environment, two kinds of ingress
+---
+flowchart LR
+    U["Web client"] -->|HTTPS| API["doc-api<br/>ingress: external"]
+    subgraph ENV["Container Apps environment<br/>shared network + logs"]
+        API -->|internal call| EMB["embedding-worker<br/>ingress: internal"]
+    end
+    ENV --> LA[("Log Analytics")]
+```
+
 **Key facts**
 
 - An **environment** is a logical boundary where one or more container apps run. It scopes **shared networking** and **observability integration**.
@@ -45,6 +57,17 @@ A Container Apps **environment** is like an **office floor**: the apps on the sa
 📘 Microsoft Learn: [Deploy a container app using the Azure CLI and YAML](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/3-deploy-container-app)
 
 There are two ways to ship: the **quick start button** (`az containerapp up`, which creates what's missing) and the **recipe card** (a YAML file in source control that says exactly how the app should look). Every update creates a new **revision**, a numbered snapshot of the app's setup.
+
+```mermaid
+---
+title: Which deploy command?
+---
+flowchart TD
+    Q{"What are you doing?"} -->|First deploy or prototype| UP["az containerapp up<br/>creates what's missing"]
+    Q -->|Deploy into an existing environment| CR["az containerapp create"]
+    Q -->|Ship a new image| UPD["az containerapp update --image<br/>makes a new revision"]
+    Q -->|Repeatable config in source control| Y["create/update --yaml<br/>other flags are ignored"]
+```
 
 **Key facts**
 
@@ -74,6 +97,16 @@ There are two ways to ship: the **quick start button** (`az containerapp up`, wh
 📘 Microsoft Learn: [Configure runtime settings with environment variables and secrets](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/4-configure-runtime)
 
 Environment variables are the app's **settings dial**; secrets are the **locked drawer**. Instead of copying a key into a variable, you point the variable at the drawer with `secretref:`. For pulling private images, a managed identity is the **badge** that ACR recognises, so no registry password has to be stored.
+
+```mermaid
+---
+title: How a secret reaches the container
+---
+flowchart LR
+    S["Container Apps secret<br/>embeddings-api-key"] -->|secretref:embeddings-api-key| E["Env var<br/>EMBEDDINGS_API_KEY"]
+    E --> C["Container reads it<br/>like any variable"]
+    KV["Key Vault"] -.->|optional reference| S
+```
 
 **Key facts**
 
@@ -105,6 +138,15 @@ Environment variables are the app's **settings dial**; secrets are the **locked 
 
 A private registry needs credentials or an identity before Container Apps can pull from it. Username and password works with any registry. Managed identity is better for ACR, because there's no long-lived password to store or rotate.
 
+```mermaid
+---
+title: Two ways to pull a private image
+---
+flowchart TD
+    Q{"Is the registry ACR?"} -->|Yes| MI["registry set --identity system<br/>grant AcrPull, nothing to rotate"]
+    Q -->|No| UP["registry set --username --password<br/>stored as a secret, rotate it"]
+```
+
 **Key facts**
 
 - Configure a registry on an existing app with `az containerapp registry set`, using `--server` plus either `--username`/`--password` or `--identity system`.
@@ -130,6 +172,18 @@ A private registry needs credentials or an identity before Container Apps can pu
 📘 Microsoft Learn: [Verify deployments with logs and status](https://learn.microsoft.com/en-us/training/modules/deploy-containers-azure-container-apps/6-verify-deployment)
 
 After you deploy, check three things: **what the app says** (console logs), **what the platform says** (system logs) and **what is actually running** (revisions and replicas).
+
+```mermaid
+---
+title: Question → command
+---
+flowchart LR
+    A["Ingress and FQDN right?"] --> A1["containerapp show"]
+    B["Crashed at startup?"] --> B1["logs show"]
+    C["Platform problem?"] --> C1["logs show --type system"]
+    D["New revision created?"] --> D1["revision list --all"]
+    E["Anything running?"] --> E1["replica list"]
+```
 
 **Key facts**
 

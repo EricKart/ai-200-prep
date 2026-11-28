@@ -16,6 +16,7 @@ Hints are also scanned for words that appear only in the correct option (a warni
 | Absolute words | ≤ 10% of questions have "always / never / only…" only in the wrong options | No "absolute word = wrong" shortcut |
 | Formatting tell | The correct option is never the only one shown as `code` | Formatting must not give the answer away |
 | No bare URLs | URLs in question text sit in code spans (real references use `[text](url)`) | Example and wrong-answer URLs must not become clickable links |
+| Diagrams | Every Mermaid block has a `title:` and a known diagram type; 2+ diagrams per lesson (warning); a site widget marker is always followed by a diagram | Readers on GitHub and the site see the same picture |
 | Hint | ≤ 200 characters, never contains the correct option's text, never says "the answer is" | A hint points you somewhere; it doesn't hand you the answer |
 | Scenario floor | ≥ 60% scenario questions in every module, every mock, and overall | The exam tests decisions, not recall |
 | Coverage | Every Learn content unit has at least one question | Nothing in the syllabus is skipped |

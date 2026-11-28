@@ -37,6 +37,27 @@ npm run report         # per-module stats
 - **Hints point; they don't tell.** Name the concept to think about, never the answer.
 - Keep the credit line at the bottom of every Markdown/HTML file.
 
+### Diagrams in lessons
+
+Lessons use [Mermaid](https://mermaid.js.org/) diagrams, which GitHub renders. On aryantripathi.dev they animate and can be
+walked through box by box, in the order the boxes first appear in the source, so write each flow in order.
+
+````markdown
+```mermaid
+---
+title: Where requests go
+---
+flowchart LR
+    U["Request"] --> FE["App Service front end"]
+    FE --> C["Container"]
+```
+````
+
+- Every diagram needs a `title:` and shows only facts the lesson text already teaches.
+- Keep rows to about four boxes; use `flowchart TD` for longer chains so it stays readable on a phone.
+- `<!-- widget: Name -->` right before a diagram swaps in an interactive version on the site. GitHub hides the comment
+  and shows the diagram.
+
 ## Pull requests
 
 1. Fork the repo, create a branch, and make your change.

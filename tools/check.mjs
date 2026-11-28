@@ -275,6 +275,18 @@ for (const m of modules) {
   if (order.some((x, i) => i && x < order[i - 1])) err(f, 'unit sections are not in Learn order');
   for (const u of m.units.filter((u) => !u.exercise)) if (!text.includes(u.url)) err(f, `no link to the Learn unit ${u.u} (${u.url})`);
   if (!/^# /m.test(text)) err(f, 'missing the # title');
+  // Diagrams: a title (Mermaid frontmatter, shown on GitHub and the site) and a known diagram type.
+  const blocks = [...text.matchAll(/^```mermaid\n([\s\S]*?)^```$/gm)].map((x) => x[1]);
+  for (const b of blocks) {
+    const fm = /^---\ntitle: (.+)\n---\n([\s\S]*)$/.exec(b);
+    if (!fm) { err(f, 'mermaid block needs a title: start it with ---\\ntitle: …\\n---'); continue; }
+    if (!/^(flowchart (TD|TB|LR|RL|BT)|sequenceDiagram|stateDiagram-v2|classDiagram)\b/.test(fm[2])) err(f, `diagram "${fm[1]}": unknown or missing diagram type`);
+  }
+  if (!ONLY && blocks.length < 2) warn(f, `only ${blocks.length} diagram(s); aim for 2+ per module`);
+  // A site widget must sit right before a diagram, which is what GitHub readers see instead.
+  for (const w of text.matchAll(/^<!-- widget: (\w+) -->\n/gm)) {
+    if (!text.slice(w.index + w[0].length).replace(/^\n+/, '').startsWith('```mermaid')) err(f, `widget ${w[1]} must be followed by a mermaid diagram (its GitHub fallback)`);
+  }
 }
 if (!ONLY) for (const p of course.paths) if (!exists(`content/cheatsheets/lp${p.n}.md`)) err(`content/cheatsheets/lp${p.n}.md`, 'missing cheat sheet');
 

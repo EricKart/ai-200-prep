@@ -20,6 +20,16 @@ Some AI work needs live updates for several people at once. You'll learn when We
 
 Pick the simplest pipe that fits: one person waiting for one answer → **HTTP streaming** or **SSE**; rare status changes → **polling**; many people watching the same live job → **Web PubSub** groups.
 
+```mermaid
+---
+title: Which real-time approach?
+---
+flowchart TD
+    Q{"Who watches the updates?"} -->|One user, one generated answer| SSE["HTTP streaming or SSE"]
+    Q -->|Rare state changes, final result| PO["Polling"]
+    Q -->|Several people watch one live operation| WP["Web PubSub group"]
+```
+
 **Key facts**
 
 - Choose by **direction**, **number of recipients** and **lifetime** of the work. The channel affects delivery, not how reliably the backend processes work.
@@ -48,6 +58,17 @@ Pick the simplest pipe that fits: one person waiting for one answer → **HTTP s
 
 Web PubSub is the **loudspeaker**, not the **work queue**. The work goes through Service Bus, Event Grid or Durable Functions, the truth lives in a **durable operation record**, and notifications only describe changes already saved.
 
+```mermaid
+---
+title: The browser never talks to the workers
+---
+flowchart LR
+    W["AI workers"] -->|progress events| BE["Backend"]
+    BE -->|send_to_group| WPS["Web PubSub"]
+    WPS -->|WebSocket| B1["Responder 1"]
+    WPS -->|WebSocket| B2["Responder 2"]
+```
+
 **Key facts**
 
 - Async request-reply: return an operation ID and status URL; Web PubSub adds live observation, it doesn't replace the **status endpoint**.
@@ -69,6 +90,21 @@ Web PubSub is the **loudspeaker**, not the **work queue**. The work goes through
 📘 Microsoft Learn: [Negotiate authenticated client connections](https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/4-negotiate-authenticated-client-connections)
 
 Before a browser connects, your backend checks **who** the user is and **which investigation** they may watch, then hands back a short-lived access URL allowing them to **join only that group**. The backend's own Azure permission to mint tokens is a separate thing.
+
+```mermaid
+---
+title: Negotiate, then connect
+---
+sequenceDiagram
+    participant B as Browser
+    participant API as Backend
+    participant W as Web PubSub
+    B->>API: GET /negotiate (signed in)
+    API->>API: may this user watch this operation?
+    API-->>B: client URL + token, role: joinLeaveGroup.op-42
+    B->>W: connect, join group op-42
+    W-->>B: live updates
+```
 
 **Key facts**
 
@@ -119,6 +155,16 @@ Use one **hub** for the scenario and one **group** per investigation. Every upda
 📘 Microsoft Learn: [Design reconnection and operation recovery](https://learn.microsoft.com/en-us/training/modules/real-time-ai-web-pubsub/6-design-reconnection-operation-recovery)
 
 Each investigation's updates are numbered 1, 2, 3… The browser applies only the **next** number, ignores repeats and, when a number is **missing**, fetches a fresh **snapshot** from the status API. The snapshot says "I include everything up to N", and live updates continue from N+1.
+
+```mermaid
+---
+title: Apply updates by sequence number
+---
+flowchart TD
+    I{"Incoming seq vs last applied"} -->|Same| D["Duplicate: ignore"]
+    I -->|Exactly one more| A["Apply, remember it"]
+    I -->|Gap| H["Hold, fetch current state<br/>from the backend"]
+```
 
 **Key facts**
 

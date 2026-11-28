@@ -19,6 +19,17 @@ Azure Functions runs event-driven code without servers. You'll learn the hosting
 
 **Flex Consumption** is the default: pay for what runs, scale to zero, keep a few **always-ready** instances warm for the impatient endpoints. **Premium** keeps a worker always warm (no cold starts) for near-constant load or custom images. HTTP calls are cut off at **230 seconds**, so long AI jobs go through a queue.
 
+```mermaid
+---
+title: Which hosting plan?
+---
+flowchart TD
+    Q{"What does the workload need?"} -->|Serverless, scale to zero, a few warm endpoints| FX["Flex Consumption<br/>+ always-ready"]
+    Q -->|No cold starts, continuous load, custom image| PR["Premium"]
+    Q -->|GPU inference| CA["Container Apps hosting"]
+    Q -->|Spare App Service capacity| DE["Dedicated plan"]
+```
+
 **Key facts**
 
 - **Cold start**: allocating an instance, loading the runtime and dependencies before the first request. Per instance only. AI libraries and connection warm-up make it longer.
@@ -82,6 +93,17 @@ Install **Core Tools** (the local Functions runtime) and the VS Code extension, 
 
 A **trigger** is the doorbell that starts a function (exactly one). **Bindings** are the pipes that carry data in or out without SDK code (zero or more). For services with no binding, such as Azure OpenAI or Document Intelligence, create the SDK client **once, outside the handler**.
 
+```mermaid
+---
+title: A document pipeline in one function app
+---
+flowchart LR
+    SB["Service Bus queue"] -->|trigger| FN["Function"]
+    FN -->|SDK client at module level| AOAI["Azure OpenAI"]
+    FN -->|output binding| BL["Blob: processed text"]
+    FN -->|output binding| CDB["Cosmos DB: results"]
+```
+
 **Key facts**
 
 - Every function has **exactly one trigger**; the trigger also acts as an input binding. **Bindings** (input/output) are optional; zero or many.
@@ -132,6 +154,16 @@ Settings become environment variables. Secrets live in **Key Vault**, and the ap
 📘 Microsoft Learn: [Configure identity and access for Functions](https://learn.microsoft.com/en-us/training/modules/build-backends-azure-functions/6-configure-identity-access)
 
 Swap connection strings for **identity-based connections**: the setting holds only the endpoint (`…__fullyQualifiedNamespace`), and the app's managed identity gets a role. For HTTP endpoints, **keys** are a basic gate, not identity.
+
+```mermaid
+---
+title: Identity-based connections
+---
+flowchart LR
+    FA["Function app<br/>managed identity"] -->|"ServiceBusConnection__fullyQualifiedNamespace"| SB["Service Bus<br/>Data Receiver role"]
+    FA -->|"AzureWebJobsStorage__accountName"| ST["Storage<br/>Blob Data Owner"]
+    FA -->|"…__accountEndpoint"| CO["Cosmos DB<br/>Built-in Data Contributor"]
+```
 
 **Key facts**
 

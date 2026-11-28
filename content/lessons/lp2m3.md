@@ -19,6 +19,17 @@ Container Apps scales on HTTP traffic, TCP connections, CPU, memory, or events t
 
 Scale rules are **if-this-then-add-replicas** instructions. HTTP and TCP rules count requests or connections and can drop to zero. CPU and memory rules need at least one replica running to measure anything, so they never reach zero. Scale-up is quick (1, 4, 8, 16…); scale-down waits five minutes.
 
+```mermaid
+---
+title: Which scale rule?
+---
+flowchart TD
+    Q{"What drives the load?"} -->|HTTP requests| H["HTTP rule<br/>default 10 concurrent per replica<br/>scales to zero"]
+    Q -->|Long-lived connections, WebSockets, gRPC| T["TCP rule<br/>scales to zero"]
+    Q -->|Queue depth, lag, custom metric| K["KEDA event rule<br/>polled every 30 s, scales to zero"]
+    Q -->|CPU or memory| C["CPU/memory rule<br/>can't scale to zero"]
+```
+
 **Key facts**
 
 - A scale definition has **limits** (min and max replicas), **rules** (triggers) and **behavior** (timing and algorithms). Container Apps is powered by **KEDA**.
@@ -50,6 +61,17 @@ Scale rules are **if-this-then-add-replicas** instructions. HTTP and TCP rules c
 📘 Microsoft Learn: [Implement event-driven scaling with KEDA](https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/3-event-driven-scaling-keda)
 
 KEDA watches your **to-do pile** (a queue, a stream) and hires enough workers to clear it. With Service Bus, **messages ÷ messageCount = replicas**. With Event Hubs, you can't have more useful workers than **partitions**. When the pile is empty, all workers can go home (scale to zero).
+
+```mermaid
+---
+title: A queue scales the worker
+---
+flowchart LR
+    P["Producer"] -->|messages| Q[("Queue")]
+    K["KEDA scaler<br/>polls every 30 s"] -->|reads queue length| Q
+    K -->|"replicas = length ÷ threshold<br/>(up to max)"| W["Worker replicas"]
+    W -->|process| Q
+```
 
 **Key facts**
 
@@ -111,6 +133,15 @@ Beyond Azure services, KEDA can watch **Kafka lag**, **Redis lists and streams**
 
 You choose a size for each container (CPU cores and GiB of memory, memory at least twice the CPU) and Container Apps multiplies it by the number of replicas. Run out of memory and the replica is **killed and restarted**; run out of CPU and it's merely **slowed down**.
 
+```mermaid
+---
+title: Consumption or dedicated?
+---
+flowchart TD
+    Q{"Need a GPU, more than 4 cores / 8 GiB,<br/>or steady low latency?"} -->|Yes| DP["Dedicated workload profile"]
+    Q -->|No| C["Consumption<br/>pay per use, scale to zero"]
+```
+
 **Key facts**
 
 - CPU in cores, memory in **GiB**, per container. **Memory ≥ 2 × CPU** (0.5 cores → at least 1.0 GiB). Default **0.25 cores / 0.5 GiB**.
@@ -140,6 +171,15 @@ You choose a size for each container (CPU cores and GiB of memory, memory at lea
 📘 Microsoft Learn: [Choose and apply revision modes](https://learn.microsoft.com/en-us/training/modules/scale-containers-azure-container-apps/6-revision-modes-traffic-management)
 
 Changes to the **template** (image, scale rules, environment variables) make a new revision; changes to the **app** (secrets, ingress, traffic rules) don't. Single revision mode swaps old for new automatically. Multiple revision mode lets you split traffic and use **labels**, private URLs that always hit one revision.
+
+```mermaid
+---
+title: Does this change make a new revision?
+---
+flowchart LR
+    R["Revision scope<br/>image, env vars, scale rules"] --> NEW["New revision"]
+    A["Application scope<br/>secrets, ingress, traffic split"] --> SAME["No new revision"]
+```
 
 **Key facts**
 

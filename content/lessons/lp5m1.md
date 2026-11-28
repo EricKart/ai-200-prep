@@ -19,6 +19,16 @@ Azure Database for PostgreSQL is managed PostgreSQL with a rich extension ecosys
 
 Azure Database for PostgreSQL is **community PostgreSQL that Microsoft runs for you**: patching, backups and high availability are handled. Pick a size class (Burstable for dev, General Purpose for steady production, Memory Optimized for big in-memory work) and add superpowers with **extensions** such as pgvector.
 
+```mermaid
+---
+title: Which compute tier?
+---
+flowchart TD
+    Q{"What is it for?"} -->|Dev, test, intermittent load| B["Burstable (B)<br/>no PgBouncer"]
+    Q -->|Typical production backend| G["General Purpose (D)"]
+    Q -->|Large in-memory sets, analytics| M["Memory Optimized (E)"]
+```
+
 **Key facts**
 
 - Fully managed, based on the **community edition** of PostgreSQL. Microsoft manages hardware, patching, backups and HA; you control maintenance windows, HA options and compute.
@@ -47,6 +57,15 @@ Azure Database for PostgreSQL is **community PostgreSQL that Microsoft runs for 
 📘 Microsoft Learn: [Connect to PostgreSQL](https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/3-connect-to-postgresql)
 
 To connect you need the server address (`name.postgres.database.azure.com`), port, database, user and a password. With **Entra ID**, the "password" is a short-lived token. Always encrypt; in production also **verify the certificate and hostname** (sslmode=verify-full).
+
+```mermaid
+---
+title: What each sslmode checks
+---
+flowchart LR
+    R["require<br/>encrypts only"] --> CA["verify-ca<br/>+ trusted CA"]
+    CA --> FULL["verify-full<br/>+ hostname matches"]
+```
 
 **Key facts**
 
@@ -109,6 +128,15 @@ Server → databases → schemas → tables. Pick types that fit: **JSONB** for 
 
 PostgreSQL adds handy tools: **ILIKE** for case-insensitive search, **->>** to pull text out of JSONB, **@>** to test what JSONB contains, **keyset pagination** that stays fast on page 1,000, **RETURNING** to get new IDs back, and **ON CONFLICT** for upserts.
 
+```mermaid
+---
+title: Offset or keyset pagination?
+---
+flowchart TD
+    Q{"Deep pages, large table?"} -->|No| O["LIMIT … OFFSET …<br/>simple"]
+    Q -->|Yes| K["Keyset: WHERE (created_at, id) &lt; last seen<br/>ORDER BY … LIMIT …"]
+```
+
 **Key facts**
 
 - Logical order: FROM → WHERE → GROUP BY → HAVING → **SELECT** → ORDER BY → LIMIT/OFFSET. Aliases defined in SELECT work in **ORDER BY** but **not in WHERE**.
@@ -139,6 +167,17 @@ PostgreSQL adds handy tools: **ILIKE** for case-insensitive search, **->>** to p
 📘 Microsoft Learn: [Integrate SDKs and applications](https://learn.microsoft.com/en-us/training/modules/build-query-azure-database-postgresql/6-integrate-sdks-apps)
 
 In Python use **psycopg 3**. Always pass values as **parameters** (never glue strings together), use `with` blocks so connections close, set timeouts, retry only **transient** errors, and borrow connections from a **pool**.
+
+```mermaid
+---
+title: Retry or not?
+---
+flowchart TD
+    E{"Which error?"} -->|OperationalError: network, timeout| R["Retry with exponential backoff"]
+    E -->|DeadlockDetected| RD["Roll back, retry,<br/>lock in a consistent order"]
+    E -->|Unique / foreign key / check violation| NO["Roll back, explain to the user,<br/>don't retry"]
+    E -->|Syntax error| FIX["Fix the code"]
+```
 
 **Key facts**
 
