@@ -17,6 +17,17 @@ Azure Managed Redis keeps hot data in memory. You'll learn its tiers and caching
 
 Azure Managed Redis keeps **hot data in memory** so reads take well under a millisecond. Typical jobs: cache database results (**cache-aside**: look in Redis first, fetch from the database only on a miss), cache page fragments, and hold user sessions. Tiers trade memory against compute.
 
+```mermaid
+---
+title: Which tier?
+---
+flowchart TD
+    Q{"What limits you?"} -->|Memory, dev/test| MO["Memory Optimized 8:1"]
+    Q -->|Standard workload| BA["Balanced 4:1"]
+    Q -->|Throughput| CO["Compute Optimized 2:1"]
+    Q -->|Huge dataset, lower cost| FO["Flash Optimized<br/>RAM + NVMe (preview)"]
+```
+
 **Key facts**
 
 - Azure Managed Redis is an in-memory store based on **Redis Enterprise**, operated by Microsoft and usable from inside or outside Azure.
@@ -73,6 +84,17 @@ Pick a client for your language, mind the **clustering policy** (it changes whic
 📘 Microsoft Learn: [Implement data operations](https://learn.microsoft.com/en-us/training/modules/implement-data-operations-azure-managed-redis/4-implement-data-operations)
 
 Redis has a few building blocks: **strings** (SET/GET), **hashes** (a mini object per key), **lists** (queues and feeds), and **atomic counters** (INCR). Give keys an expiry (TTL) so stale data cleans itself up. Azure Managed Redis listens on port **10000**.
+
+```mermaid
+---
+title: Cache-aside
+---
+flowchart LR
+    A["App"] -->|1. GET key| R[("Redis")]
+    R -->|hit| A
+    A -->|2. miss: read| DB[("Database")]
+    A -->|3. SETEX key ttl value| R
+```
 
 **Key facts**
 

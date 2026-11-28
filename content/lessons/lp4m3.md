@@ -19,6 +19,17 @@ Indexes and consistency levels decide how fast and how expensive Cosmos DB is. Y
 
 By default Cosmos DB **indexes everything**, which is easy but costs storage and slows writes. You tell it what to index with paths: `/*` is everything, `/title/?` is one value, `/tags/[]` is every element of an array. The more specific path wins when rules overlap.
 
+```mermaid
+---
+title: Index paths on one document
+---
+flowchart LR
+    ROOT["/* everything"] --> T["/title/? scalar value"]
+    ROOT --> TG["/tags/[] each array element"]
+    ROOT --> M["/metadata/* everything under it"]
+    X["excludedPaths"] -.->|skip big fields you never filter on| ROOT
+```
+
 **Key facts**
 
 - Default policy: every property of every item gets a **range index**; easy, but each indexed property costs storage and write overhead.
@@ -50,6 +61,16 @@ By default Cosmos DB **indexes everything**, which is easy but costs storage and
 
 Sorting on two fields at once needs a **composite index** that lists those fields in the **same order and directions** (or exactly the reverse). For multi-field filters, put the **equality** fields first and at most **one range** field last.
 
+```mermaid
+---
+title: Can this composite index serve the ORDER BY?
+---
+flowchart TD
+    I["Composite index:<br/>relevanceScore DESC, uploadDate DESC"] --> A["Same order<br/>DESC, DESC ✓"]
+    I --> B["Exact reverse<br/>ASC, ASC ✓"]
+    I --> C["Mixed<br/>DESC, ASC ✗ needs its own index"]
+```
+
 **Key facts**
 
 - Range indexes support filters by type, status, category, dates and thresholds; string functions can use them when the indexed property is the **first argument**.
@@ -78,6 +99,16 @@ Sorting on two fields at once needs a **composite index** that lists those field
 📘 Microsoft Learn: [Tune vector indexes for embedding workloads](https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/4-tune-vector-indexes-embeddings)
 
 Pick the vector index by size: **flat** when filters leave a small set and you need exact answers (≤505 dimensions), **quantizedFlat** for roughly 1,000–50,000 vectors per partition, **diskANN** for more. Defaults are usually fine; the vector policy itself can never change.
+
+```mermaid
+---
+title: Vector index by partition size
+---
+flowchart LR
+    S["Small, exact, ≤505 dims"] --> F["flat"]
+    M["About 1,000 to 50,000"] --> Q["quantizedFlat"]
+    L["More than 50,000"] --> D["diskANN"]
+```
 
 **Key facts**
 
@@ -131,6 +162,17 @@ Indexed queries cost in proportion to **what they return**; scans cost in propor
 📘 Microsoft Learn: [Choose consistency levels for optimal performance](https://learn.microsoft.com/en-us/training/modules/optimize-query-performance-azure-cosmos-db/6-choose-consistency-levels-performance)
 
 Five levels from strictest to loosest: **Strong → Bounded staleness → Session → Consistent prefix → Eventual**. Stricter means fresher reads but more latency and, for the top two, **double the read RUs**. Session ("you always see your own writes") fits most apps.
+
+```mermaid
+---
+title: Consistency: stronger costs more
+---
+flowchart LR
+    S["Strong<br/>2× read RU"] --> B["Bounded staleness<br/>2× read RU"]
+    B --> SE["Session<br/>read your own writes"]
+    SE --> CP["Consistent prefix<br/>never out of order"]
+    CP --> E["Eventual<br/>cheapest, no ordering"]
+```
 
 **Key facts**
 

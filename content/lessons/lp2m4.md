@@ -18,6 +18,15 @@ AI agents write code, and running that code next to your API is risky. Dynamic s
 
 A session pool is a **rack of ready-made sandboxes**. When your AI agent wants to run code, the backend grabs one in milliseconds, runs the code inside it (isolated by Hyper-V), and later the sandbox is thrown away. Use the **built-in code interpreter** when Python is enough; bring a **custom container** when you need your own tools or protocol.
 
+```mermaid
+---
+title: Code interpreter or custom container?
+---
+flowchart TD
+    Q{"Is it short Python,<br/>e.g. analyze a CSV, draw a chart?"} -->|Yes| CI["Built-in code interpreter<br/>no image to build"]
+    Q -->|No: native binaries or a specialized app| CC["Custom container pool"]
+```
+
 **Key facts**
 
 - A **session pool** holds **prewarmed** environments allocated in **milliseconds**. Each session runs in its own **Hyper-V-isolated sandbox**, separate from the host and from other sessions.
@@ -50,6 +59,18 @@ A session pool is a **rack of ready-made sandboxes**. When your AI agent wants t
 
 Three dials: **how many** sessions can run at once (cost and safety cap), **how long** an idle session lives (cooldown), and **whether code can reach the internet** (egress, off by default). Remember: the sandbox keeps sessions apart, but code inside a session can read **everything you put in it**.
 
+```mermaid
+---
+title: Who talks to the pool
+---
+flowchart LR
+    U["End user"] -->|chat request| BE["Your backend<br/>Session Executor role"]
+    BE -->|"token for dynamicsessions.io<br/>+ server-made session id"| POOL["Session pool"]
+    POOL --> S1["Session A<br/>Hyper-V sandbox"]
+    POOL --> S2["Session B<br/>Hyper-V sandbox"]
+    S1 -.->|egress blocked by default| NET["Internet"]
+```
+
 **Key facts**
 
 - **Maximum concurrent sessions** caps allocated sessions running at once. Size it from **concurrent** use (10 analyzing at once, not 50 online), and it also caps cost and downstream load.
@@ -80,6 +101,20 @@ Three dials: **how many** sessions can run at once (cost and safety cap), **how 
 📘 Microsoft Learn: [Execute code and exchange files](https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/4-execute-code-exchange-files)
 
 The backend shows a **badge** (an Entra token for `https://dynamicsessions.io`) and a **locker number** (the session identifier). Same locker number = same sandbox, with your uploaded files still in `/mnt/data`. The locker number is made by the server, never chosen by the user.
+
+```mermaid
+---
+title: One analysis, start to finish
+---
+sequenceDiagram
+    participant B as Backend
+    participant P as Session pool
+    B->>P: POST files (CSV) ?identifier=uuid
+    B->>P: POST executions (code)
+    P-->>B: stdout, result
+    B->>P: GET files/chart.png/content
+    P-->>B: the chart
+```
 
 **Key facts**
 
@@ -113,6 +148,19 @@ The backend shows a **badge** (an Entra token for `https://dynamicsessions.io`) 
 📘 Microsoft Learn: [Manage lifecycle and execution failures](https://learn.microsoft.com/en-us/training/modules/dynamic-sessions-azure-container-apps/5-manage-lifecycle-failures)
 
 Sessions are **temporary**: after the cooldown they vanish with their files, and the same identifier may then get a fresh, empty sandbox. So keep originals in your own storage, sort failures into clear buckets, retry only what's safe to repeat, and tidy up when you're done.
+
+```mermaid
+---
+title: Did it really work?
+---
+flowchart TD
+    T{"Transport OK?<br/>no 401, capacity, network error"} -->|No| TF["Transport failure<br/>retry only if idempotent"]
+    T -->|Yes| E{"Code ran without error?"}
+    E -->|No| EF["Execution failure<br/>e.g. ZeroDivisionError"]
+    E -->|Yes| V{"Output passes validation?"}
+    V -->|No| VF["Validation failure<br/>e.g. chart file missing"]
+    V -->|Yes| OK["Success"]
+```
 
 **Key facts**
 

@@ -17,6 +17,21 @@ Every container you run on Azure starts in a registry. This module shows how Azu
 
 Think of ACR as a **private warehouse for container images**. The **registry** is the building (with its own address, `name.azurecr.io`), a **repository** is one shelf for all versions of one image, and an **artifact** is one box on that shelf. A **tag** is a sticky label you can move to another box; a **digest** is the box's serial number, which never changes.
 
+<!-- widget: RegistryHierarchy -->
+
+```mermaid
+---
+title: Registry → repository → artifact
+---
+flowchart LR
+    R["Registry<br/>contosoinference.azurecr.io"] --> P["Repository<br/>production/inference-api"]
+    P --> T1["Tag v1.2.0"]
+    P --> T2["Tag stable"]
+    T1 --> M["Manifest<br/>sha256:0a2e… (immutable)"]
+    T2 --> M
+    M --> L["Layers<br/>shared with other images"]
+```
+
 **Key facts**
 
 - Azure Container Registry is a **managed, private Docker registry** for container images and related artifacts: Docker images, **Helm charts** and **OCI artifacts** in one registry.
@@ -48,6 +63,18 @@ Think of ACR as a **private warehouse for container images**. The **registry** i
 📘 Microsoft Learn: [Build and run images with ACR Tasks](https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/3-build-run-acr-tasks)
 
 ACR Tasks is a **build server inside your registry**. You hand it your source code and it builds the image in Azure, so nobody needs Docker on their laptop. It can build **once on demand** (quick task), **automatically** when code, a base image or a clock says so, or run a **whole recipe** of steps (multi-step YAML).
+
+```mermaid
+---
+title: Which ACR Tasks feature?
+---
+flowchart TD
+    Q{"What do you need?"} -->|One build now, no local Docker| A["Quick task<br/>az acr build"]
+    Q -->|Build on every commit| B["Source code trigger<br/>az acr task create --context git-url"]
+    Q -->|Rebuild when the base image is patched| C["Base image trigger<br/>automatic for FROM"]
+    Q -->|Nightly or periodic| D["Scheduled trigger<br/>--schedule cron"]
+    Q -->|Build, push, then test| E["Multi-step task<br/>YAML steps"]
+```
 
 **Key facts**
 
@@ -83,6 +110,19 @@ ACR Tasks is a **build server inside your registry**. You hand it your source co
 📘 Microsoft Learn: [Tag and version images](https://learn.microsoft.com/en-us/training/modules/store-manage-containers-azure-container-registry/4-tag-version-images)
 
 Stable tags (`v1`, `latest`) are like a **"current edition" sign** that moves to each new print. Unique tags (`v1.2.0-build456`) are like an **ISBN**: one book only. Use the sign where you want updates to flow in, and the ISBN in production so every node runs the same thing.
+
+<!-- widget: TagMover -->
+
+```mermaid
+---
+title: Moving a stable tag
+---
+flowchart LR
+    B1["Build 1<br/>sha256:aaa"] -->|tagged| S1["stable + v1"]
+    B2["Build 2<br/>sha256:bbb"] -->|push stable again| S2["stable + v2"]
+    S1 -.->|stable moves away| K["Build 1 keeps v1<br/>(unique tags never move)"]
+    B3["Image with only a stable tag"] -.->|tag moves| U["Untagged manifest<br/>still uses storage until purged"]
+```
 
 **Key facts**
 

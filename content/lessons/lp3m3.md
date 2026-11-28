@@ -17,6 +17,18 @@ When something breaks on AKS, you need to know where to look. This module covers
 
 Use the **portal for the big picture** (Monitoring tab, Container insights, Live Logs) and **kubectl for the close-up** (logs of one Pod, `kubectl top` for a quick usage snapshot). Compare usage with the requests and limits you set.
 
+```mermaid
+---
+title: Which tool?
+---
+flowchart LR
+    A["Quick health overview"] --> A1["Portal Monitoring tab"]
+    B["Watch output live"] --> B1["Live Logs"]
+    C["Trends across Pods over time"] --> C1["Container insights"]
+    D["One Pod's logs"] --> D1["kubectl logs"]
+    E["CPU/memory now"] --> E1["kubectl top"]
+```
+
 **Key facts**
 
 - Key signals for AI workloads: **latency and throughput**, **error rates** (HTTP 5xx, timeouts), **Pod restarts and exit codes**, **CPU and memory vs requests and limits**.
@@ -48,6 +60,16 @@ Use the **portal for the big picture** (Monitoring tab, Container insights, Live
 
 Go from symptom to cause: read the **Pod status**, then **describe** the Pod to read its events, peek **inside** the container if needed, and check the **Service** really points at the Pods. Fix it in the manifest, not by hand inside the container.
 
+```mermaid
+---
+title: Dig in layer by layer
+---
+flowchart TD
+    W["Workloads: status, restarts"] --> DS["Diagnose and solve problems"]
+    DS --> DP["kubectl describe pod<br/>events, probes, mounts"]
+    DP --> EX["kubectl exec<br/>look inside the container"]
+```
+
 **Key facts**
 
 - Pod problems: **ImagePullBackOff** (wrong image reference or registry credentials), **CrashLoopBackOff** (starts and exits with an error), **Pending** (resource constraints), frequent restarts (memory leaks, unhandled exceptions).
@@ -76,6 +98,16 @@ Go from symptom to cause: read the **Pod status**, then **describe** the Pod to 
 📘 Microsoft Learn: [Verify service connectivity and endpoints](https://learn.microsoft.com/en-us/training/modules/monitor-apps-azure-kubernetes-service/4-verify-connectivity)
 
 Test the path a request takes: from your laptop straight into the Service (**port-forward**), then from the internet through the **load balancer or ingress**. If the Service has no endpoints, fix the labels first.
+
+```mermaid
+---
+title: Why does the Service get no traffic?
+---
+flowchart LR
+    SVC["Service<br/>selector app=api"] -->|matches labels| EPS["EndpointSlice<br/>Pod IPs"]
+    EPS --> P["Ready Pods<br/>label app=api"]
+    X["Pod labelled app=api-v2"] -.->|no match: not an endpoint| SVC
+```
 
 **Key facts**
 

@@ -17,6 +17,18 @@ Redis can also move messages. You'll learn when pub/sub's fast broadcast fits, w
 
 Pub/sub is a **loudspeaker**: whoever is listening on a channel right now hears the announcement; anyone who isn't, misses it. Nothing is stored and the speaker never knows who heard. Great for instant "clear your cache" broadcasts, wrong for work that must not be lost.
 
+```mermaid
+---
+title: Pub/sub: every subscriber gets it
+---
+flowchart LR
+    P["Publisher"] -->|PUBLISH model-updated| CH(("Channel"))
+    CH --> S1["API instance 1"]
+    CH --> S2["API instance 2"]
+    CH --> S3["API instance 3"]
+    CH -.->|offline subscribers miss it| X["No history"]
+```
+
 **Key facts**
 
 - Publishers send to named **channels**; Redis delivers immediately to all **active** subscribers. Available in Azure Cache for Redis and Azure Managed Redis.
@@ -38,6 +50,18 @@ Pub/sub is a **loudspeaker**: whoever is listening on a channel right now hears 
 📘 Microsoft Learn: [Implement task queues with Redis Streams](https://learn.microsoft.com/en-us/training/modules/implement-event-messaging-azure-managed-redis/3-redis-streams)
 
 A Stream is a **to-do list that remembers**. The API adds a job (XADD) and returns at once; workers take jobs (XREADGROUP) and tick them off (XACK). If a worker crashes mid-job, the job stays on a **pending list** to be retried. The catch: the list keeps growing until you trim it.
+
+```mermaid
+---
+title: A stream with a consumer group
+---
+flowchart LR
+    P["Producer"] -->|XADD| ST[("Stream")]
+    ST -->|XREADGROUP| W1["Worker 1"]
+    ST -->|XREADGROUP| W2["Worker 2"]
+    W1 -->|XACK when done| ST
+    ST -.->|XPENDING / XCLAIM stuck tasks| W2
+```
 
 **Key facts**
 
@@ -69,6 +93,16 @@ A Stream is a **to-do list that remembers**. The API adds a job (XADD) and retur
 📘 Microsoft Learn: [Choose between broadcast and coordinated distribution](https://learn.microsoft.com/en-us/training/modules/implement-event-messaging-azure-managed-redis/4-coordinate-multiple-subscribers)
 
 Three subscribers on a pub/sub channel = **three copies** of every message (good for "everyone, clear your cache", bad for "someone, do this job"). Three workers in a Stream consumer group = each job goes to **exactly one** worker. Big systems often use both.
+
+```mermaid
+---
+title: Broadcast or coordinate?
+---
+flowchart TD
+    Q{"Should every listener act on it?"} -->|Yes: clear every cache| PS["Pub/sub"]
+    Q -->|No: exactly one worker per task| SG["Stream + consumer group"]
+    Q -->|Both: queue it and announce it| HY["Stream + pub/sub"]
+```
 
 **Key facts**
 

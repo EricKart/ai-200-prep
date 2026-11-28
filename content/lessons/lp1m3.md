@@ -18,6 +18,17 @@ A sidecar runs next to your main container on the same App Service instance, for
 
 A sidecar is a **helper container that rides along** with your main app on every instance: same start, same stop, same scale. It's great when each API copy needs its own small local model server. If the helper needs its own GPU, its own scaling or serves many apps, give it **its own house** (a separate service) instead.
 
+```mermaid
+---
+title: Sidecar or separate service?
+---
+flowchart TD
+    Q{"Does the helper need its own<br/>GPU, scaling or many callers?"} -->|Yes| SEP["Separate service"]
+    Q -->|No| Z{"Must it stay up while<br/>the app scales to zero?"}
+    Z -->|Yes| SEP
+    Z -->|No| SC["Sidecar<br/>same instance, same lifecycle"]
+```
+
 **Key facts**
 
 - A sidecar is an **auxiliary container** in the same environment as the main **Linux** app container: local AI inference, telemetry collection or caching without putting them in the main image.
@@ -51,6 +62,17 @@ A sidecar is a **helper container that rides along** with your main app on every
 📘 Microsoft Learn: [Configure main and sidecar containers](https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/3-configure-sidecar-containers)
 
 Each container gets its own **name card**: image, role (main or not), the port it listens on and how it logs in to the registry. App settings are a **shared notice board** every container can read; container-specific variables are **private notes** for one container.
+
+```mermaid
+---
+title: One sidecar-enabled app
+---
+flowchart LR
+    IN["External traffic"] --> MAIN["main-api<br/>isMain: true<br/>listens on 8080"]
+    MAIN -.-> SIDE["model-server<br/>isMain: false<br/>targetPort 11434"]
+    AS["App settings"] -->|referenced by name| MAIN
+    AS -->|referenced by name| SIDE
+```
 
 **Key facts**
 
@@ -86,6 +108,19 @@ Each container gets its own **name card**: image, role (main or not), the port i
 
 Containers in one app are **roommates in the same flat**: they call each other on **localhost** (each on its own port) and leave files for each other in the shared **/home** folder. But a roommate can still be asleep or slow, so the main API needs timeouts, and /home isn't a safe-deposit box.
 
+<!-- widget: SidecarScale -->
+
+```mermaid
+---
+title: Inside one instance
+---
+flowchart LR
+    MAIN["main-api"] -->|http://localhost:11434| SIDE["model-server"]
+    MAIN --- H[("/home<br/>shared storage")]
+    SIDE --- H
+    X["http://model-server:11434"] -.->|wrong: no name resolution| SIDE
+```
+
 **Key facts**
 
 - Containers share **one network namespace**: call another container at **localhost:`<port>`**, not by container or service name. Each process needs a **unique port**.
@@ -118,6 +153,18 @@ Containers in one app are **roommates in the same flat**: they call each other o
 📘 Microsoft Learn: [Diagnose sidecar failures](https://learn.microsoft.com/en-us/training/modules/deploy-sidecar-azure-app-service/5-diagnose-sidecar-failures)
 
 A sidecar problem usually shows up as an **error from the main app**. Work from the outside in, one boundary at a time: did the definition arrive, did the image pull, did the process start and stay up, is memory squeezed, does localhost connect, is the request right? Change one thing at a time.
+
+```mermaid
+---
+title: Work from the outside in
+---
+flowchart TD
+    A["Definitions arrived?<br/>sitecontainers list"] --> B["Image pulled?<br/>pull role, tag"]
+    B --> C["Process started?<br/>sitecontainers status"]
+    C --> D["CPU or memory pressure?"]
+    D --> E["localhost connection?<br/>refused vs timeout"]
+    E --> F["Request and response<br/>at the sidecar"]
+```
 
 **Key facts**
 

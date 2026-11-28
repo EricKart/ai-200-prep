@@ -18,6 +18,18 @@ Service Bus queues and topics decouple AI work from the API that accepts it. You
 
 Service Bus is a **post office between your API and your AI workers**. The API drops a letter (message) in a queue and answers the user at once; workers pick letters up at their own pace. Spikes pile up in the queue instead of crashing the workers, and nothing is lost if a worker is offline.
 
+```mermaid
+---
+title: Load leveling with competing consumers
+---
+flowchart LR
+    API["API<br/>accepts requests fast"] -->|send| Q[("Queue<br/>absorbs bursts")]
+    Q -->|one message, one worker| W1["Inference worker 1"]
+    Q --> W2["Inference worker 2"]
+    Q --> W3["Inference worker 3"]
+    Q -.->|queue depth| K["KEDA or alerts<br/>scale workers"]
+```
+
 **Key facts**
 
 - Fully managed enterprise broker: **queues** (point-to-point) and **topics with subscriptions** (publish-subscribe), inside a **namespace** (`<name>.servicebus.windows.net`). Protocol: **AMQP 1.0**. Ordering, duplicate detection and transactions.
@@ -47,6 +59,17 @@ Service Bus is a **post office between your API and your AI workers**. The API d
 📘 Microsoft Learn: [Choose between queues and topics with subscriptions](https://learn.microsoft.com/en-us/training/modules/queue-process-operations-service-bus/3-choose-queues-topics-subscriptions)
 
 A **queue** is one inbox: each message goes to one worker. A **topic** is a newsletter: every **subscription** gets its own copy, and filters let each subscription pick only the messages it cares about. Add subscribers later without touching the sender.
+
+```mermaid
+---
+title: Queue or topic?
+---
+flowchart TD
+    Q{"How many consumers need<br/>each message?"} -->|One pipeline| QU["Queue"]
+    Q -->|Several: notify, audit, dashboard| T["Topic + one subscription each"]
+    T --> F["Subscription filter<br/>e.g. priority = high"]
+    QU --> S["Need per-document order?<br/>queue with sessions"]
+```
 
 **Key facts**
 
@@ -107,6 +130,18 @@ A message is an **envelope**: the letter inside (body, usually JSON), labels on 
 📘 Microsoft Learn: [Process messages reliably](https://learn.microsoft.com/en-us/training/modules/queue-process-operations-service-bus/5-process-messages-reliably)
 
 In **peek-lock**, a worker borrows a message, does the work, then reports back: **complete** (done), **abandon** (try again), **dead-letter** (this will never work) or **defer** (later). Messages that fail too often land in the **dead-letter queue**. Long jobs must keep renewing their lock.
+
+```mermaid
+---
+title: Settle every message
+---
+flowchart TD
+    R["Receive (peek-lock)"] --> P{"Outcome?"}
+    P -->|Succeeded, result saved| C["complete_message"]
+    P -->|Transient, e.g. timeout| A["abandon_message<br/>delivered again"]
+    P -->|Can never succeed: bad JSON| D["dead_letter_message<br/>reason + description"]
+    P -->|Not ready yet| DF["defer_message<br/>fetch later by sequence number"]
+```
 
 **Key facts**
 

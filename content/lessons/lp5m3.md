@@ -19,6 +19,17 @@ Vector search puts unusual load on PostgreSQL. You'll learn which server paramet
 
 Vector search is **maths-heavy and memory-hungry**. Keep indexes in memory (shared_buffers), give sorts room (work_mem, per query), tell the planner the disks are SSDs (random_page_cost low) so it prefers indexes, and turn the accuracy dials (probes, ef_search). Measure first, change one thing at a time.
 
+```mermaid
+---
+title: Memory settings that matter
+---
+flowchart LR
+    SB["shared_buffers<br/>about 25% of RAM"] --> HIT["Cache hit ratio ≥ 99%"]
+    WM["work_mem<br/>per sort, per connection"] --> HIT
+    ECS["effective_cache_size<br/>about 75%, a planner hint"] --> PLAN["Planner picks index scans"]
+    RPC["random_page_cost 1.1–1.5 on SSD"] --> PLAN
+```
+
 **Key facts**
 
 - A 1,536-dim distance = 1,536 float operations; 1M vectors without an index ≈ 1.5 billion operations per query.
@@ -51,6 +62,18 @@ Vector search is **maths-heavy and memory-hungry**. Keep indexes in memory (shar
 📘 Microsoft Learn: [Choose and configure vector indexes](https://learn.microsoft.com/en-us/training/modules/optimize-vector-search-azure-database-postgresql/3-choose-configure-vector-indexes)
 
 Small tables don't need a vector index; past a million rows it's essential. **HNSW** = higher recall and steady speed for read-mostly data, more memory, slower builds. **IVFFlat** = lighter and quicker to build, tunable at query time, lower recall ceiling. Build with **CONCURRENTLY** in production.
+
+```mermaid
+---
+title: Pick a vector index
+---
+flowchart TD
+    Q{"How many rows?"} -->|Under 10,000 or exact results| SEQ["Sequential scan"]
+    Q -->|100 million+| DA["DiskANN"]
+    Q -->|In between| M{"Memory tight or frequent bulk reloads?"}
+    M -->|Yes| IV["IVFFlat"]
+    M -->|No, need 99%+ recall| HN["HNSW"]
+```
 
 **Key facts**
 
@@ -85,6 +108,16 @@ Small tables don't need a vector index; past a million rows it's essential. **HN
 
 Store the fields you filter on as **real columns** with B-tree indexes; keep rare or changing attributes in **JSONB**. Filter first, then measure distance on the few rows left. For huge tables, **partition** by date or category so each piece has its own smaller index.
 
+```mermaid
+---
+title: Filter first, then measure distance
+---
+flowchart LR
+    Q["Query"] --> F["B-tree / GIN / partial index<br/>narrows the rows"]
+    F --> V["Vector distance<br/>on what's left"]
+    V --> R["Top results"]
+```
+
 **Key facts**
 
 - Storage per vector (single precision): 384 ≈ 1.5 KB, 768 ≈ 3 KB, **1536 ≈ 6 KB**, 3072 ≈ 12 KB. Explicit dimensions (`vector(768)`) validate inserts.
@@ -115,6 +148,17 @@ Store the fields you filter on as **real columns** with B-tree indexes; keep rar
 📘 Microsoft Learn: [Scale for high-volume workloads](https://learn.microsoft.com/en-us/training/modules/optimize-vector-search-azure-database-postgresql/5-scale-high-volume-workloads)
 
 First make the server bigger (**scale up**), especially with more memory per vCore so indexes stay cached. When one server can't take the query volume, add **read replicas** for similarity searches and **cache** repeatable answers in Redis. Watch CPU above 70% and plan before you hit the wall.
+
+```mermaid
+---
+title: Scale reads
+---
+flowchart LR
+    APP["App"] -->|writes and just-saved data| P[("Primary")]
+    APP -->|search queries| RR[("Read replicas<br/>async, up to 5")]
+    P -->|streaming replication| RR
+    APP -.->|many connections| PB["PgBouncer<br/>pools connections"]
+```
 
 **Key facts**
 

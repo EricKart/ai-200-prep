@@ -18,6 +18,18 @@ Durable Functions coordinates long-running, multi-step AI workflows with state, 
 
 An **orchestrator** is the **conductor**: it decides what plays next but never plays an instrument. **Activities** are the **musicians**: they call models, read blobs, write databases. The conductor's score is re-read from the top after every restart (replay), so it must give the same instructions every time: no clocks, no random numbers, no direct I/O.
 
+```mermaid
+---
+title: Orchestrator coordinates, activities do the work
+---
+flowchart LR
+    C["Client starts an instance"] --> O["Orchestrator<br/>deterministic, replays"]
+    O -->|call_activity| A1["Extract text"]
+    O -->|call_activity| A2["Call the model"]
+    O -->|call_activity| A3["Save results"]
+    A1 & A2 & A3 -->|results in history| O
+```
+
 **Key facts**
 
 - Roles: **client** function (start, query, terminate, send events; returns status URLs), **orchestrator** (sequence, branches, parallel tasks, durable waits, aggregation), **activity** (one unit of nondeterministic work: blob reads, model calls, notifications, DB updates), **entity** (small durable state).
@@ -49,6 +61,17 @@ An **orchestrator** is the **conductor**: it decides what plays next but never p
 
 Fan-out/fan-in is **"everyone start now, tell me when you're all done"**. Create one task per document, wait for all of them with `task_all`, then summarise. For thousands of items, go in **batches** so you don't swamp the model's rate limits.
 
+```mermaid
+---
+title: Fan-out / fan-in
+---
+flowchart LR
+    O["Orchestrator"] --> P1["Summarize page 1"]
+    O --> P2["Summarize page 2"]
+    O --> P3["Summarize page N"]
+    P1 & P2 & P3 -->|task_all| AG["Combine the results"]
+```
+
 **Key facts**
 
 - Use when items don't depend on each other: text extraction, image classification, embeddings per chunk, content moderation.
@@ -71,6 +94,18 @@ Fan-out/fan-in is **"everyone start now, tell me when you're all done"**. Create
 
 The workflow sends a reviewer a request, then **sleeps for free** until either the reviewer answers (an **external event**) or the **deadline timer** rings, whichever comes first. It doesn't hold a worker while it waits, so the wait can last days.
 
+```mermaid
+---
+title: Wait for a person, but not forever
+---
+flowchart TD
+    O["Orchestrator"] --> W["wait_for_external_event('Approval')"]
+    O --> T["create_timer(deadline)"]
+    W & T --> ANY{"task_any: which came first?"}
+    ANY -->|Approval| GO["Continue"]
+    ANY -->|Timer| ESC["Escalate or reject"]
+```
+
 **Key facts**
 
 - An **external event** is a named one-way message to one orchestration instance; wait with `wait_for_external_event("ApprovalResponse")`. Events arriving early are **buffered**.
@@ -92,6 +127,18 @@ The workflow sends a reviewer a request, then **sleeps for free** until either t
 📘 Microsoft Learn: [Design reliable workflow steps](https://learn.microsoft.com/en-us/training/modules/orchestrate-durable-functions/5-design-reliable-workflow-steps)
 
 Not every failure deserves a retry. Retry **transient** ones a bounded number of times; send **permanent** and **business** failures down their own path. Make each step safe to run twice (**idempotent**) and, when a later step fails, **compensate** earlier ones instead of pretending to roll back.
+
+```mermaid
+---
+title: Match the response to the failure
+---
+flowchart TD
+    F{"What failed?"} -->|429 throttled| R["Bounded retry"]
+    F -->|Unsupported content type| V["Validate early,<br/>terminal outcome"]
+    F -->|403 Forbidden| P["Fix permissions,<br/>don't keep retrying"]
+    F -->|Low confidence| M["Manual review branch"]
+    F -->|Retries exhausted after partial writes| CP["Compensate, then fail"]
+```
 
 **Key facts**
 

@@ -19,6 +19,16 @@ Telemetry only helps if you can ask it questions. You'll learn KQL, failure and 
 
 A KQL query is a **pipeline**: start with a table, then each `|` step narrows, reshapes or summarises it. `where` filters, `project` picks columns, `summarize … by bin(timestamp, 1h)` makes hourly groups, and `render timechart` draws it.
 
+```mermaid
+---
+title: A KQL query is a pipeline
+---
+flowchart LR
+    T["requests"] -->|"| where success == false"| W["failed requests"]
+    W -->|"| summarize count() by bin(timestamp, 5m)"| S["count per 5 minutes"]
+    S -->|"| render timechart"| C["chart"]
+```
+
 **Key facts**
 
 - KQL is used across Azure Monitor, Log Analytics and Azure Data Explorer; queries start with a table and flow through operators separated by **|**. Written in the Log Analytics query editor (IntelliSense, charts).
@@ -116,6 +126,16 @@ A **workbook** is an **interactive report**: pick a time range or service at the
 📘 Microsoft Learn: [Set alerts for app failures and anomalies](https://learn.microsoft.com/en-us/training/modules/analyze-telemetry-logs-metrics/6-set-alerts-app-failures-anomalies)
 
 Alerts watch while nobody else does. A rule has **what to watch** (scope), **when to fire** (condition), **who to tell or what to run** (action group) and **how urgent** (severity 0–4). Add **smart detection** to catch problems you didn't think to set a threshold for.
+
+```mermaid
+---
+title: From signal to someone's phone
+---
+flowchart LR
+    Q["Log query or metric"] --> R["Alert rule<br/>condition + frequency"]
+    R -->|fires with a severity 0–4| AG["Action group"]
+    AG --> N["Email, SMS, webhook, Function"]
+```
 
 **Key facts**
 

@@ -19,6 +19,17 @@ Day-two operations: rolling out new images safely with revisions, stopping and r
 
 Each meaningful update makes a new **revision**, a numbered snapshot of the app. You check the new snapshot is healthy before sending users to it. If one goes bad, you **switch it off** (deactivate) rather than throwing it away, so you keep the evidence and a way back.
 
+```mermaid
+---
+title: A canary release with multiple revisions
+---
+flowchart LR
+    U["Traffic"] -->|80%| R1["Revision v1<br/>known good"]
+    U -->|20%| R2["Revision v2<br/>new image"]
+    R2 -->|healthy| P["Shift to 100%<br/>deactivate v1"]
+    R2 -->|failing| B["Send 100% back to v1<br/>deactivate v2"]
+```
+
 **Key facts**
 
 - **Tags** (dev, staging) are convenient but can change. **Digests** are immutable and give strong traceability for production: you can prove which artifact served requests.
@@ -45,6 +56,17 @@ Each meaningful update makes a new **revision**, a numbered snapshot of the app.
 📘 Microsoft Learn: [Manage the container app lifecycle](https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/3-app-lifecycle-management)
 
 Three levers: **scale to zero** happens on its own when there's no work, **stop** is you pulling the plug so nothing starts, and **restart** is turning it off and on again to clear a stuck state. Stop and restart act on the **whole app**, so for one bad release, deactivate that revision instead.
+
+```mermaid
+---
+title: Pick the narrowest action
+---
+flowchart TD
+    Q{"What's wrong?"} -->|One bad release| D["Deactivate that revision"]
+    Q -->|Config must apply now, stuck process| R["Restart the app"]
+    Q -->|Upstream outage: nothing may run| S["Stop the app"]
+    Q -->|Idle between bursts| Z["Let scale rules go to zero"]
+```
 
 **Key facts**
 
@@ -93,6 +115,17 @@ Logs are your **black box recorder**. Stream them live while you reproduce a pro
 📘 Microsoft Learn: [Configure health probes and troubleshoot failures](https://learn.microsoft.com/en-us/training/modules/manage-containers-azure-container-apps/5-health-probes)
 
 A **readiness** probe is the bouncer asking "are you ready for guests?": if not, no traffic. A **liveness** probe is the doctor asking "are you still alive?": if not, restart. For AI apps that load big models, give both probes enough time, or the doctor will keep restarting a patient who's still waking up.
+
+```mermaid
+---
+title: What each probe does on failure
+---
+flowchart LR
+    RP["Replica"] --> RD{"Readiness probe:<br/>can it take traffic now?"}
+    RD -->|fails| NR["Stop routing requests to it"]
+    RP --> LV{"Liveness probe:<br/>healthy enough to keep running?"}
+    LV -->|fails| RS["Restart the replica"]
+```
 
 **Key facts**
 

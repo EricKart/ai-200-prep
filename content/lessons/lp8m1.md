@@ -18,6 +18,17 @@ Key Vault keeps your API keys, connection strings and certificates out of code. 
 
 Key Vault is a **bank vault for credentials**. **Secrets** are strings (API keys, connection strings), **keys** do cryptography _inside_ the vault, **certificates** manage TLS certs. Give each app and environment its own vault, give apps the **Secrets User** role, and turn on **purge protection** in production.
 
+```mermaid
+---
+title: Least privilege on Key Vault
+---
+flowchart TD
+    Q{"Who needs access?"} -->|App reading values| U["Key Vault Secrets User"]
+    Q -->|Operators, CI/CD writing secrets| O["Key Vault Secrets Officer"]
+    Q -->|Monitoring tools, metadata only| R["Key Vault Reader"]
+    Q -->|Managing the vault resource| C["Key Vault Contributor<br/>can't read secrets"]
+```
+
 **Key facts**
 
 - Three capabilities: **secrets**, **keys**, **certificates**. Everything is encrypted at rest; access = Entra ID authentication + Azure RBAC authorization.
@@ -52,6 +63,17 @@ Key Vault is a **bank vault for credentials**. **Secrets** are strings (API keys
 
 Install **azure-keyvault-secrets** and **azure-identity**, create a **SecretClient** with the vault URL and **DefaultAzureCredential**, then call `get_secret()`. Handle a missing secret differently from a network blip.
 
+```mermaid
+---
+title: Reading a secret
+---
+flowchart LR
+    APP["App"] -->|DefaultAzureCredential| ID["Managed identity<br/>or your az login"]
+    ID -->|token| KV["Key Vault"]
+    APP -->|SecretClient.get_secret| KV
+    KV -->|latest enabled version| APP
+```
+
 **Key facts**
 
 - `pip install azure-keyvault-secrets azure-identity`; SecretClient(vault_url, credential). URL: `https://<vault-name>.vault.azure.net/`.
@@ -72,6 +94,17 @@ Install **azure-keyvault-secrets** and **azure-identity**, create a **SecretClie
 📘 Microsoft Learn: [Handle secret versioning and rotation](https://learn.microsoft.com/en-us/training/modules/manage-app-secrets-key-vault/4-handle-versioning-rotation)
 
 Saving a secret with the same name **adds a new version**; apps that ask for the name get the newest. Rotate by hand, automatically when Key Vault says a secret is **near expiry**, or with **two keys** so something valid always exists. Apps should refetch and retry when a key stops working.
+
+```mermaid
+---
+title: Dual-credential rotation, no downtime
+---
+flowchart LR
+    A["Apps use key 1"] --> B["Regenerate key 2"]
+    B --> C["Store key 2 as the<br/>new secret version"]
+    C --> D["Wait until every app<br/>has picked it up"]
+    D --> E["Regenerate key 1"]
+```
 
 **Key facts**
 
@@ -100,6 +133,16 @@ Saving a secret with the same name **adds a new version**; apps that ask for the
 📘 Microsoft Learn: [Implement caching strategies to reduce Key Vault calls](https://learn.microsoft.com/en-us/training/modules/manage-app-secrets-key-vault/5-implement-caching-strategies)
 
 Don't call Key Vault on every request: keep secrets in memory for a while. The cache time depends on how often the secret rotates. To refresh immediately after a rotation, listen for **SecretNewVersionCreated**. If you see **429**s, your cache is too short or something bypasses it.
+
+```mermaid
+---
+title: Cache, but drop it when the secret changes
+---
+flowchart LR
+    APP["App cache<br/>TTL 5–15 min"] -->|miss or expired| KV["Key Vault"]
+    KV -->|SecretNewVersionCreated| EG["Event Grid"]
+    EG -->|invalidate| APP
+```
 
 **Key facts**
 

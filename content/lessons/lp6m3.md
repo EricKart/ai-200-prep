@@ -17,6 +17,16 @@ Redis can store and search vectors with very low latency. You'll learn to create
 
 Tell Redis what your vectors look like (an **index schema**: field, dimensions, type, metric, algorithm) and which keys to watch (a **prefix** such as `doc:`). Store each vector as **bytes** in a hash with its metadata; Redis indexes it automatically. Then ask for the **K nearest**, optionally inside a category, or for everything within a distance.
 
+```mermaid
+---
+title: A vector query in Redis
+---
+flowchart LR
+    Q["Query text"] --> E["Embed"]
+    E -->|$query_vec bytes| FT["*=>[KNN 5 @embedding $query_vec AS score]"]
+    FT --> R["Nearest documents with scores"]
+```
+
 **Key facts**
 
 - Vector search in Azure Managed Redis uses **RediSearch**. The schema's **VectorField** sets the field name, **DIM** (must match the model exactly), **TYPE** (FLOAT32 standard), **DISTANCE_METRIC** (COSINE for text) and algorithm.
@@ -50,6 +60,15 @@ Tell Redis what your vectors look like (an **index schema**: field, dimensions, 
 
 Three choices: **type** (FLOAT32 almost always), **metric** (COSINE for text, L2 for images) and **algorithm** (FLAT for small sets, HNSW for big ones). Then test EF_RUNTIME on your own data.
 
+```mermaid
+---
+title: FLAT or HNSW?
+---
+flowchart TD
+    Q{"How big is the index?"} -->|Small, exact results| F["FLAT"]
+    Q -->|Large| H["HNSW<br/>raise EF_RUNTIME for accuracy"]
+```
+
 **Key facts**
 
 - **FLOAT32**: 4 bytes per dimension (1,536 dims ≈ **6 KB**), ~7 decimal digits, enough for embeddings. **FLOAT64**: 8 bytes (≈12 KB), slower, rarely more accurate; only for specialized research.
@@ -78,6 +97,15 @@ Three choices: **type** (FLOAT32 almost always), **metric** (COSINE for text, L2
 📘 Microsoft Learn: [Optimize Redis data structures for vector storage](https://learn.microsoft.com/en-us/training/modules/implement-vector-storage-azure-managed-redis/4-optimize-redis-data-structure)
 
 Store vectors in a **Hash** (flat fields, vector as bytes: smallest and fastest) or in **JSON** (nested objects, vector as a number list: more flexible, a bit bigger and slower). Pick Hash unless your data really is nested.
+
+```mermaid
+---
+title: Hash or JSON?
+---
+flowchart TD
+    Q{"Need nested objects?"} -->|Yes| J["JSON<br/>vector as numeric array, more memory"]
+    Q -->|No| H["Hash<br/>vector as binary bytes, faster, less memory"]
+```
 
 **Key facts**
 

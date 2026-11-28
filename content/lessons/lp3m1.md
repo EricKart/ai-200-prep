@@ -17,6 +17,18 @@ On AKS, you describe what you want in YAML manifests, and Kubernetes keeps the c
 
 A Deployment manifest is a **work order**: "run 2 copies of this image, each needs this much memory and CPU, with these settings". Kubernetes keeps that order true, restarting copies that crash.
 
+```mermaid
+---
+title: What a Deployment creates
+---
+flowchart LR
+    D["Deployment<br/>replicas: 3"] --> RS["ReplicaSet"]
+    RS --> P1["Pod"]
+    RS --> P2["Pod"]
+    RS --> P3["Pod"]
+    P1 -.->|"requests: scheduling<br/>limits: max (OOMKill)"| N["Node"]
+```
+
 **Key facts**
 
 - A **Deployment** manifest (`apiVersion: apps/v1`, `kind: Deployment`) describes the **desired state**: image, number of copies, resources, environment variables. AKS pulls the image, launches Pods, monitors them and restarts crashed ones.
@@ -47,6 +59,17 @@ A Deployment manifest is a **work order**: "run 2 copies of this image, each nee
 
 Pods come and go with new IP addresses. A **Service** is the **fixed phone number** that always reaches whichever Pods currently carry the right label. The Service type decides **who can dial it**: only the cluster (ClusterIP), anyone who knows a node (NodePort) or the internet (LoadBalancer).
 
+```mermaid
+---
+title: Which Service type?
+---
+flowchart TD
+    Q{"Who calls it?"} -->|Only other Pods| CIP["ClusterIP (default)"]
+    Q -->|The internet, production| LB["LoadBalancer<br/>public IP"]
+    Q -->|You, while testing| NP["NodePort<br/>node-ip:3xxxx"]
+    Q -->|It's an outside service| EN["ExternalName<br/>maps to DNS"]
+```
+
 **Key facts**
 
 - A **Service** gives a stable IP or DNS name and routes traffic to Pods whose labels match its **selector**, load balancing across them.
@@ -75,6 +98,17 @@ Pods come and go with new IP addresses. A **Service** is the **fixed phone numbe
 📘 Microsoft Learn: [Deploy applications to Azure Kubernetes Services](https://learn.microsoft.com/en-us/training/modules/deploy-apps-azure-kubernetes-service/4-deploy-verify-results)
 
 `kubectl apply` hands your work orders to the cluster and returns immediately; the real work happens in the background. Then you check: are Pods **Running**, does the Service have an address, does it answer? Each failure status points at a different cause.
+
+```mermaid
+---
+title: Pod status → first command
+---
+flowchart LR
+    A["ImagePullBackOff"] --> A1["kubectl describe pod<br/>image, tag, pull rights"]
+    B["CrashLoopBackOff"] --> B1["kubectl logs --previous"]
+    C["Pending"] --> C1["kubectl describe pod<br/>not enough CPU/memory"]
+    D["Endpoints: none"] --> D1["get pods --show-labels<br/>selector mismatch"]
+```
 
 **Key facts**
 
